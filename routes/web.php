@@ -20,7 +20,7 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => '/v1'], function () use ($router) {
 
-  // TIPO USUARIO
+  // TIPO USUARIOS
   $router->group(['prefix' => '/tipoUsuario'], function () use ($router) {
     $router->get('/', 'TipoUsuarioController@listAll');
     $router->get('/{id}', 'TipoUsuarioController@get');
@@ -30,12 +30,24 @@ $router->group(['prefix' => '/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'TipoUsuarioController@restore');
   });
 
-  // TIPO DOCUMENTO
+  // TIPO DOCUMENTOS
   $router->group(['prefix' => '/tipoDocumento'], function () use ($router) {
-    $router->get('/', 'TipoDocumentoController@index');
-    $router->get('/{id}', 'TipoDocumentoController@show');
-    $router->post('/', 'TipoDocumentoController@store');
+    $router->get('/', 'TipoDocumentoController@listAll');
+    $router->get('/{id}', 'TipoDocumentoController@get');
+    $router->post('/', 'TipoDocumentoController@create');
     $router->put('/{id}', 'TipoDocumentoController@update');
-    $router->delete('/{id}', 'TipoDocumentoController@destroy');
+    $router->delete('/{id}', 'TipoDocumentoController@delete');
+    $router->get('/restore/{id}', 'TipoDocumentoController@restore');
+  });
+
+  // USUARIOS
+  $router->group(['prefix' => '/usuario'], function () use ($router) {
+    $router->post('/login', 'UsuarioController@login');
+    $router->get('/', 'UsuarioController@listAll');
+    $router->get('/{id}', 'UsuarioController@get');
+    $router->post('/', 'UsuarioController@create');
+    $router->put('/{id}', 'UsuarioController@update');
+    $router->delete('/{id}', 'UsuarioController@delete');
+    $router->get('/restore/{id}', 'UsuarioController@restore');
   });
 });

@@ -2,12 +2,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\TipoUsuario;
 use App\Services\Implementation\TipoUsuarioService;
 use App\Validator\TipoUsuarioValidator;
+use Illuminate\Support\Carbon;
 
 class TipoUsuarioController extends Controller{
 
+  /**
+ * @var Request
+ */
+
+  private $request;
   /**
    * @var TipoUsuarioService
    */
@@ -18,13 +23,7 @@ class TipoUsuarioController extends Controller{
    */
   private $tipoUsuarioValidator;
   
-  /**
-   * @var Request
-   */
-  private $request;
-
-
-  public function __construct(TipoUsuarioService $tipoUsuarioService, Request $request, TipoUsuarioValidator $tipoUsuarioValidator)
+  public function __construct(Request $request, TipoUsuarioService $tipoUsuarioService, TipoUsuarioValidator $tipoUsuarioValidator)
   {
     $this->request = $request;
     $this->tipoUsuarioService = $tipoUsuarioService;
@@ -32,72 +31,102 @@ class TipoUsuarioController extends Controller{
   }
 
   public function listAll(){
-    $result = $this->tipoUsuarioService->getAll();
-    $response = $this->response();
-
-    if($result != null){
-      $response = $this->response($result);
-    } 
-
-    return $response;
+    try{
+      $result = $this->tipoUsuarioService->getAll();
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los tipo de usuarios', 'error' => $e->getMessage()], 500);
+    }
   }
 
   public function get($id){
-    $result = $this->tipoUsuarioService->getById($id);
-    $response = $this->response();
-
-    if($result != null){
-      $response = $this->response([$result]);
-    } 
-
-    return $response;
+    try{
+      $result = $this->tipoUsuarioService->getById($id);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response([$result]);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos del tipo de usuario', 'error' => $e->getMessage()], 500);
+    }
+    
   }
 
   public function create(){
-    $validator = $this->tipoUsuarioValidator->validate();
-
-    if($validator->fails()){
-      $response = $this->responseError($validator->errors(), 422);
-    } else {
-      $result = $this->tipoUsuarioService->create($this->request->all());
-      $response = $this->responseCreated([$result]);
+    try{
+      $validator = $this->tipoUsuarioValidator->validate();
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
+      } else {
+        $this->request->merge(['fecha_registro' => Carbon::now()]);
+        $result = $this->tipoUsuarioService->create($this->request->all());
+        $response = $this->responseCreated([$result]);
+      }
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al crear el tipo de usuario', 'error' => $e->getMessage()], 500);
     }
-
-    return $response;
   }
 
   public function update($id){
-    $validator = $this->tipoUsuarioValidator->validate();
-
-    if($validator->fails()){
-      $response = $this->responseError($validator->errors(), 422);
-    } else {
-      $result = $this->tipoUsuarioService->update($this->request->all(), $id);
-      $response = $this->responseUpdate([$result]);
+    try {
+      $validator = $this->tipoUsuarioValidator->validate('update');
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
+      } else {
+        $result = $this->tipoUsuarioService->update($this->request->all(), $id);
+        if($result != null){
+          $response = $this->responseUpdate([$result]);
+        } else {
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del tipo de usuario']);
+        }
+      }
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al actualizar los datos del tipo de usuario', 'error' => $e->getMessage()], 500);
     }
-
-    return $response;
   }
 
   public function delete($id){
-    $result = $this->tipoUsuarioService->delete($id);
-    if($result){
-      $response = $this->responseDelete([$result]);
-    } else {
-      $response = $this->responseError(['message' => 'El recurso solicitado no existe o ha sido eliminado previamente.']);
+    try {
+      $result = $this->tipoUsuarioService->delete($id);
+      if($result){
+        $response = $this->responseDelete([$result]);
+      } else {
+        $response = $this->responseError(['message' => 'El recurso solicitado no existe o ha sido eliminado previamente.']);
+      }
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al eliminar el tipo de usuario', 'error' => $e->getMessage()], 500);
     }
-
-    return $response;
   }
 
   public function restore($id){
-    $result = $this->tipoUsuarioService->restore($id);
-    if($result){
-      $response = $this->responseRestore([$result]);
-    } else {
-      $response = $this->responseError(['message' => 'El recurso solicitado ha sido restaurado previamente.']);
+    try {
+      $result = $this->tipoUsuarioService->restore($id);
+      if($result){
+        $response = $this->responseRestore([$result]);
+      } else {
+        $response = $this->responseError(['message' => 'El recurso solicitado ha sido restaurado previamente.']);
+      }
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al restaurar el tipo de usuario', 'error' => $e->getMessage()], 500);
     }
-
-    return $response;
   }
 }

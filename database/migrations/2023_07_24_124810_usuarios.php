@@ -24,6 +24,8 @@ return new class extends Migration{
             $table->string('celular', 11)->nullable()->default('');
             $table->string('direccion', 100)->nullable()->default('');
             $table->string('foto', 100)->nullable()->default('');
+            $table->string('api_token')->nullable();
+            $table->timestamp('expires_at')->nullable();
             $table->boolean('logueado')->default(false);
             $table->boolean('estado')->default(true);
             $table->dateTime('ultima_conexion')->nullable();

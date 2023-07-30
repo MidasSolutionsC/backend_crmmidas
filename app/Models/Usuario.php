@@ -31,6 +31,8 @@ class Usuario extends Model implements AuthenticatableContract, AuthorizableCont
         'fotoestado',
         'estado',
         'ultima_conexion',
+        'api_token',
+        'expires_at',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -43,6 +45,8 @@ class Usuario extends Model implements AuthenticatableContract, AuthorizableCont
      */
     protected $hidden = [
         'clave',
+        'api_token',
+        'expires_at',
     ];
 
     // public $timestamps = false;

@@ -25,14 +25,7 @@ class UsuarioController extends Controller{
         $response = $this->responseError($validator->errors(), 422);
       } else {
         $result = $this->usuarioService->login($this->request->all());
-        $response = $this->response();
-    
-        if($result){
-          $this->request->session()->regenerate();
-          $response = $this->response(['login' => $result]);
-        } else {
-          $response = $this->response(['login' => $result, 'message' => 'Correo o clave incorrecta']);
-        }
+        $response = $this->response($result);
       }
 
       return $response;
@@ -41,12 +34,21 @@ class UsuarioController extends Controller{
     }
   }
 
+  public function logout($id){
+    try{
+      $result = $this->usuarioService->logout($id);
+      return $this->response($result);
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al cerrar sesión', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->usuarioService->getAll();
       $response = $this->response();
   
-      if($result != null){
+      if(!is_null($result)){
         $response = $this->response($result);
       } 
   
@@ -61,7 +63,7 @@ class UsuarioController extends Controller{
       $result = $this->usuarioService->getById($id);
       $response = $this->response();
   
-      if($result != null){
+      if(!is_null($result)){
         $response = $this->response([$result]);
       } 
   
@@ -97,11 +99,7 @@ class UsuarioController extends Controller{
         $response = $this->responseError($validator->errors(), 422);
       } else {
         $result = $this->usuarioService->update($this->request->all(), $id);
-        if($result != null){
-          $response = $this->responseUpdate([$result]);
-        } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos del usuario']);
-        }
+        $response = $this->responseUpdate([$result]);
       }
   
       return $response;
@@ -113,12 +111,7 @@ class UsuarioController extends Controller{
   public function delete($id){
     try {
       $result = $this->usuarioService->delete($id);
-      if($result){
-        $response = $this->responseDelete([$result]);
-      } else {
-        $response = $this->responseError(['message' => 'El recurso solicitado no existe o ha sido eliminado previamente.']);
-      }
-  
+      $response = $this->responseDelete([$result]);  
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al eliminar el usuario', 'error' => $e->getMessage()], 500);
@@ -128,12 +121,7 @@ class UsuarioController extends Controller{
   public function restore($id){
     try {
       $result = $this->usuarioService->restore($id);
-      if($result){
-        $response = $this->responseRestore([$result]);
-      } else {
-        $response = $this->responseError(['message' => 'El recurso solicitado ha sido restaurado previamente.']);
-      }
-  
+      $response = $this->responseRestore([$result]);
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al restaurar el usuario', 'error' => $e->getMessage()], 500);

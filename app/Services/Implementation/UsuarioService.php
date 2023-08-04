@@ -5,6 +5,7 @@ namespace App\Services\Implementation;
 use App\Models\Usuario;
 use App\Services\Interfaces\IUsuario;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class UsuarioService implements IUsuario {
 
@@ -15,15 +16,59 @@ class UsuarioService implements IUsuario {
   }
 
   public function login(array $data){
-    $result = $this->model->where('correo', $data['correo'])->first();
-    $login = false;
-    if($result != null){
-      $pass = $data['clave'];
-      if(password_verify($pass, $result->clave)){
-        $login = true;
+    $usuario = $this->model->where('correo', $data['correo'])->first();
+    $result = [
+      'login' => false,
+      'message' => 'Usuario no encontrado'
+    ];
+
+    if(!is_null($usuario)){
+      if(password_verify($data['clave'], $usuario->clave)){
+        $apiToken = Str::random(250);
+        $expiresAt  = Carbon::now()->addHours(12);
+  
+        $usuario->api_token = $apiToken;
+        $usuario->expires_at = $expiresAt;
+        $usuario->logueado = 1;
+        $usuario->ultima_conexion = Carbon::now();
+        $usuario->save();
+  
+        $result = [
+          'login' => true,
+          'message' => 'Bienvenido al sistema',
+          'api_token' => $apiToken,
+          'usuario' => $usuario
+        ];
+      } else {
+        $result['message'] = 'Contraseña incorrecta';
       }
+    } 
+
+    return $result;
+  }
+
+  public function logout(int $id){
+    $usuario = $this->model->find($id);
+    $result = [
+      'login' => true,
+      'message' => 'Usuario no encontrado, no se pudo cerrar la sesión'
+    ];
+
+    if(!is_null($usuario)){
+
+      $usuario->api_token = NULL;
+      $usuario->expires_at = NULL;
+      $usuario->logueado = 0;
+      $usuario->ultima_conexion = Carbon::now();
+      $usuario->save();
+
+      $result = [
+        'login' => false,
+        'message' => 'Sesión cerrada, hasta pronto...'
+      ];
     }
-    return $login;
+    
+    return $result;
   }
   
   public function getAll(){
@@ -64,14 +109,14 @@ class UsuarioService implements IUsuario {
       $usuario->save();
       $usuario->fecha_modificado = Carbon::parse($usuario->updated_at)->format('d-m-Y H:i:s');
       return $usuario;
+    } else {
+      return ['message' => 'Error al actualizar los datos del usuario'];
     }
-
-    return null;
   }
 
   public function delete(int $id){
     $usuario = $this->model->find($id);
-    if($usuario != null){
+    if(!is_null($usuario)){
       $usuario->estado = 0;
       $usuario->save();
       $result = $usuario->delete();
@@ -79,23 +124,23 @@ class UsuarioService implements IUsuario {
         $usuario->fecha_eliminado = Carbon::parse($usuario->deleted_at)->format('d-m-Y H:i:s');
         return $usuario;
       }
+    } else {
+      return ['message' => 'El recurso solicitado no existe o ha sido eliminado previamente.'];
     }
-
-    return false;
   }
 
   public function restore(int $id){
     $usuario = $this->model->withTrashed()->find($id);
-    if($usuario != null && $usuario->trashed()){
+    if(!is_null($usuario) && $usuario->trashed()){
       $usuario->estado = 1;
       $usuario->save();
       $result = $usuario->restore();
       if($result){
         return $usuario;
       }
+    } else {
+      return ['message' => 'El recurso solicitado ha sido restaurado previamente.'];
     }
-
-    return false;
   }
   
 }

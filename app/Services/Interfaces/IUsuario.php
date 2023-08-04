@@ -4,6 +4,7 @@ namespace App\Services\Interfaces;
 
 interface IUsuario {
   function login(array $data);
+  function logout(int $id);
   function getAll();
   function getById(int $id);
   function create(array $data);

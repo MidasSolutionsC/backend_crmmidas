@@ -2,7 +2,7 @@
 
 namespace App\Services\Interfaces;
 
-interface IUsuario {
+interface IUser {
   function getAll();
   function getById(int $id);
   function create(array $data);

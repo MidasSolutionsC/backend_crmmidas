@@ -5,7 +5,7 @@ namespace App\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class UsuarioValidator {
+class UserValidator {
   
   private $request;
 

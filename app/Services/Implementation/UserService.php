@@ -3,11 +3,11 @@
 namespace App\Services\Implementation;
 
 use App\Models\Usuario;
-use App\Services\Interfaces\IUsuario;
+use App\Services\Interfaces\IUser;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
-class UsuarioService implements IUsuario {
+class UserService implements IUser {
 
   private $model;
 

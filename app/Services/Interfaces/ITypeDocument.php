@@ -2,7 +2,7 @@
 
 namespace App\Services\Interfaces;
 
-interface ITipoDocumento{
+interface ITypeDocument{
   function getAll();
   function getById(int $id);
   function create(array $data);

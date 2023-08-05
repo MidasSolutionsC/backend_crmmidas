@@ -2,11 +2,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\Implementation\TipoUsuarioService;
-use App\Validator\TipoUsuarioValidator;
-use Illuminate\Support\Carbon;
+use App\Services\Implementation\TypeUserService;
+use App\Validator\TypeUserValidator;
 
-class TipoUsuarioController extends Controller{
+class TypeUserController extends Controller{
 
   /**
  * @var Request
@@ -14,25 +13,25 @@ class TipoUsuarioController extends Controller{
 
   private $request;
   /**
-   * @var TipoUsuarioService
+   * @var typeUserService
    */
-  private $tipoUsuarioService;
+  private $typeUserService;
 
   /**
-   * @var TipoUsuarioValidator
+   * @var typeUserValidator
    */
-  private $tipoUsuarioValidator;
+  private $typeUserValidator;
   
-  public function __construct(Request $request, TipoUsuarioService $tipoUsuarioService, TipoUsuarioValidator $tipoUsuarioValidator)
+  public function __construct(Request $request, TypeUserService $typeUserService, TypeUserValidator $typeUserValidator)
   {
     $this->request = $request;
-    $this->tipoUsuarioService = $tipoUsuarioService;
-    $this->tipoUsuarioValidator = $tipoUsuarioValidator;
+    $this->typeUserService = $typeUserService;
+    $this->typeUserValidator = $typeUserValidator;
   }
 
   public function listAll(){
     try{
-      $result = $this->tipoUsuarioService->getAll();
+      $result = $this->typeUserService->getAll();
       $response = $this->response();
   
       if($result != null){
@@ -47,7 +46,7 @@ class TipoUsuarioController extends Controller{
 
   public function get($id){
     try{
-      $result = $this->tipoUsuarioService->getById($id);
+      $result = $this->typeUserService->getById($id);
       $response = $this->response();
   
       if($result != null){
@@ -63,13 +62,13 @@ class TipoUsuarioController extends Controller{
 
   public function create(){
     try{
-      $validator = $this->tipoUsuarioValidator->validate();
+      $validator = $this->typeUserValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
         // $this->request->merge(['fecha_registro' => Carbon::now()]);
-        $result = $this->tipoUsuarioService->create($this->request->all());
+        $result = $this->typeUserService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
   
@@ -81,12 +80,12 @@ class TipoUsuarioController extends Controller{
 
   public function update($id){
     try {
-      $validator = $this->tipoUsuarioValidator->validate('update');
+      $validator = $this->typeUserValidator->validate('update');
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $result = $this->tipoUsuarioService->update($this->request->all(), $id);
+        $result = $this->typeUserService->update($this->request->all(), $id);
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
@@ -102,7 +101,7 @@ class TipoUsuarioController extends Controller{
 
   public function delete($id){
     try {
-      $result = $this->tipoUsuarioService->delete($id);
+      $result = $this->typeUserService->delete($id);
       if($result){
         $response = $this->responseDelete([$result]);
       } else {
@@ -117,7 +116,7 @@ class TipoUsuarioController extends Controller{
 
   public function restore($id){
     try {
-      $result = $this->tipoUsuarioService->restore($id);
+      $result = $this->typeUserService->restore($id);
       if($result){
         $response = $this->responseRestore([$result]);
       } else {

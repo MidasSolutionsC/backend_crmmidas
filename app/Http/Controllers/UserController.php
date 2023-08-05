@@ -2,25 +2,25 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\Implementation\UsuarioService;
-use App\Validator\UsuarioValidator;
+use App\Services\Implementation\UserService;
+use App\Validator\UserValidator;
 use Illuminate\Support\Carbon;
 
-class UsuarioController extends Controller{
+class UserController extends Controller{
 
   private $request;
-  private $usuarioService;
-  private $usuarioValidator;
+  private $userService;
+  private $userValidator;
 
-  public function __construct(Request $request, UsuarioService $usuarioService, UsuarioValidator $usuarioValidator) {
+  public function __construct(Request $request, UserService $userService, UserValidator $userValidator) {
     $this->request = $request;
-    $this->usuarioService = $usuarioService;
-    $this->usuarioValidator = $usuarioValidator;
+    $this->userService = $userService;
+    $this->userValidator = $userValidator;
   }
 
   public function listAll(){
     try{
-      $result = $this->usuarioService->getAll();
+      $result = $this->userService->getAll();
       $response = $this->response();
   
       if(!is_null($result)){
@@ -35,7 +35,7 @@ class UsuarioController extends Controller{
 
   public function get($id){
     try{
-      $result = $this->usuarioService->getById($id);
+      $result = $this->userService->getById($id);
       $response = $this->response();
   
       if(!is_null($result)){
@@ -50,13 +50,13 @@ class UsuarioController extends Controller{
 
   public function create(){
     try{
-      $validator = $this->usuarioValidator->validate();
+      $validator = $this->userValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
         $this->request->merge(['fecha_registro' => Carbon::now()]);
-        $result = $this->usuarioService->create($this->request->all());
+        $result = $this->userService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
   
@@ -68,12 +68,12 @@ class UsuarioController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->usuarioValidator->validate('update');
+      $validator = $this->userValidator->validate('update');
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $result = $this->usuarioService->update($this->request->all(), $id);
+        $result = $this->userService->update($this->request->all(), $id);
         $response = $this->responseUpdate([$result]);
       }
   
@@ -85,7 +85,7 @@ class UsuarioController extends Controller{
 
   public function delete($id){
     try {
-      $result = $this->usuarioService->delete($id);
+      $result = $this->userService->delete($id);
       $response = $this->responseDelete([$result]);  
       return $response;
     } catch(\Exception $e){
@@ -95,7 +95,7 @@ class UsuarioController extends Controller{
 
   public function restore($id){
     try {
-      $result = $this->usuarioService->restore($id);
+      $result = $this->userService->restore($id);
       $response = $this->responseRestore([$result]);
       return $response;
     } catch(\Exception $e){

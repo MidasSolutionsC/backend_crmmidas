@@ -3,10 +3,10 @@
 namespace App\Services\Implementation;
 
 use App\Models\TipoDocumento;
-use App\Services\Interfaces\ITipoDocumento;
+use App\Services\Interfaces\ITypeDocument;
 use Illuminate\Support\Carbon;
 
-class TipoDocumentoService implements ITipoDocumento{
+class TypeDocumentService implements ITypeDocument{
   
   private $model;
 

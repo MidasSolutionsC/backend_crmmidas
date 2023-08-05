@@ -18,31 +18,6 @@ class UsuarioController extends Controller{
     $this->usuarioValidator = $usuarioValidator;
   }
 
-  public function login(){
-    try{
-      $validator = $this->usuarioValidator->validate('login');
-      if($validator->fails()){
-        $response = $this->responseError($validator->errors(), 422);
-      } else {
-        $result = $this->usuarioService->login($this->request->all());
-        $response = $this->response($result);
-      }
-
-      return $response;
-    } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al iniciar sesión', 'error' => $e->getMessage()], 500);
-    }
-  }
-
-  public function logout($id){
-    try{
-      $result = $this->usuarioService->logout($id);
-      return $this->response($result);
-    } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al cerrar sesión', 'error' => $e->getMessage()], 500);
-    }
-  }
-
   public function listAll(){
     try{
       $result = $this->usuarioService->getAll();

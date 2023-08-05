@@ -31,8 +31,8 @@ return new class extends Migration{
             $table->dateTime('ultima_conexion')->nullable();
             $table->unique(['tipo_documentos_id', 'documento']);
             //$table->foreign('grupos_id')->references('id')->on('grupos');
-            //$table->foreign('tipo_usuarios_id')->references('id')->on('tipo_usuarios');
-            //$table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
+            $table->foreign('tipo_usuarios_id')->references('id')->on('tipo_usuarios');
+            $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
             $table->timestamps();
             $table->softDeletes();
         });

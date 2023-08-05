@@ -60,7 +60,7 @@ $app->singleton(
 */
 
 $app->configure('app');
-$app->configure('cors');
+// $app->configure('cors');
 
 //$app->setlocale('es');
 
@@ -76,8 +76,7 @@ $app->configure('cors');
 */
 
 $app->middleware([
-    Fruitcake\Cors\HandleCors::class,
-    App\Http\Middleware\CorsMiddleware::class,
+    // App\Http\Middleware\CorsMiddleware::class,
     App\Http\Middleware\ExampleMiddleware::class,
     //App\Http\Middleware\AccessMiddleware::class,
 ]);
@@ -85,6 +84,7 @@ $app->middleware([
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
     'access' => App\Http\Middleware\AccessMiddleware::class,
+    'cors' => App\Http\Middleware\CorsMiddleware::class
 ]);
 
 
@@ -104,7 +104,6 @@ $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AccessServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 
-$app->register(Fruitcake\Cors\CorsServiceProvider::class);
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
 
 /*

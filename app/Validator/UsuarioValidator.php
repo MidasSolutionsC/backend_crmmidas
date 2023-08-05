@@ -4,8 +4,6 @@ namespace App\Validator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Carbon;
-use Illuminate\Validation\Rule;
 
 class UsuarioValidator {
   
@@ -16,14 +14,14 @@ class UsuarioValidator {
   }
 
   public function validate(string $process = 'create'){
+    if($process == 'auth'){
+      return Validator::make($this->request->all(), $this->rulesAuth(), $this->messages());
+    }
     if($process == 'create'){
       return Validator::make($this->request->all(), $this->rules(), $this->messages());
     }
     if($process == 'update'){
       return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
-    }
-    if($process == 'login'){
-      return Validator::make($this->request->all(), $this->rulesLogin(), $this->messages());
     }
   }
 
@@ -55,7 +53,7 @@ class UsuarioValidator {
     ];
   }
 
-  private function rulesLogin(){
+  private function rulesAuth(){
     return [
       'correo' => 'required|email',
       'clave' => 'required'

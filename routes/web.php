@@ -18,7 +18,7 @@ $router->get('/', function () use ($router) {
 });
 
 
-$router->group(['prefix' => '/v1'], function () use ($router) {
+$router->group(['prefix' => '/v1', 'middleware' => 'cors'], function () use ($router) {
 
   // TIPO USUARIOS
   $router->group(['prefix' => '/tipoUsuario'], function () use ($router) {
@@ -49,8 +49,8 @@ $router->group(['prefix' => '/v1'], function () use ($router) {
     
   // USUARIOS
   $router->group(['prefix' => '/usuario'], function () use ($router) {
-    $router->post('/login', 'UsuarioController@login');
-    $router->get('/logout/{id}', 'UsuarioController@logout');
+    $router->post('/login', 'AuthController@login');
+    $router->get('/logout/{id}', 'AuthController@logout');
     $router->post('/', 'UsuarioController@create');
     
     $router->group(['middleware' => 'auth'], function () use ($router) {

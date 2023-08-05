@@ -39,7 +39,7 @@ class TipoDocumentoValidator {
   private function messages(){
     return [
       'nombre.required' => 'El nombre es requerido.',
-      'nombre.unique' => 'El nombre no ya existe en la base de datos',
+      'nombre.unique' => 'El nombre ya existe en la base de datos',
       'abreviacion.required' => 'La abreviación es requerido.',
     ];
   }

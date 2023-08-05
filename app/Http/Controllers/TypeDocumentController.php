@@ -2,26 +2,24 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\TipoDocumento;
-use App\Services\Implementation\TipoDocumentoService;
-use App\Validator\TipoDocumentoValidator;
-use Illuminate\Support\Carbon;
+use App\Services\Implementation\TypeDocumentService;
+use App\Validator\TypeDocumentValidator;
 
-class TipoDocumentoController extends Controller{
+class TypeDocumentController extends Controller{
   
   private $request;
-  private $tipoDocumentoService;
-  private $tipoDocumentoValidator;
+  private $typeDocumentService;
+  private $typeDocumentValidator;
 
-  public function __construct(Request $request, TipoDocumentoService $tipoDocumentoService, TipoDocumentoValidator $tipoDocumentoValidator) {
+  public function __construct(Request $request, TypeDocumentService $typeDocumentService, TypeDocumentValidator $typeDocumentValidator) {
     $this->request = $request;
-    $this->tipoDocumentoService = $tipoDocumentoService;
-    $this->tipoDocumentoValidator = $tipoDocumentoValidator;
+    $this->typeDocumentService = $typeDocumentService;
+    $this->typeDocumentValidator = $typeDocumentValidator;
   }
 
   public function listAll(){
     try{
-      $result = $this->tipoDocumentoService->getAll();
+      $result = $this->typeDocumentService->getAll();
       $response = $this->response();
   
       if($result != null){
@@ -36,7 +34,7 @@ class TipoDocumentoController extends Controller{
 
   public function get($id){
     try{
-      $result = $this->tipoDocumentoService->getById($id);
+      $result = $this->typeDocumentService->getById($id);
       $response = $this->response();
   
       if($result != null){
@@ -51,13 +49,13 @@ class TipoDocumentoController extends Controller{
 
   public function create(){
     try{
-      $validator = $this->tipoDocumentoValidator->validate();
+      $validator = $this->typeDocumentValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
         // $this->request->merge(['fecha_registro' => Carbon::now()]);
-        $result = $this->tipoDocumentoService->create($this->request->all());
+        $result = $this->typeDocumentService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
   
@@ -69,12 +67,12 @@ class TipoDocumentoController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->tipoDocumentoValidator->validate('update');
+      $validator = $this->typeDocumentValidator->validate('update');
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $result = $this->tipoDocumentoService->update($this->request->all(), $id);
+        $result = $this->typeDocumentService->update($this->request->all(), $id);
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
@@ -90,7 +88,7 @@ class TipoDocumentoController extends Controller{
 
   public function delete($id){
     try{
-      $result = $this->tipoDocumentoService->delete($id);
+      $result = $this->typeDocumentService->delete($id);
       if($result){
         $response = $this->responseDelete([$result]);
       } else {
@@ -105,7 +103,7 @@ class TipoDocumentoController extends Controller{
 
   public function restore($id){
     try{
-      $result = $this->tipoDocumentoService->restore($id);
+      $result = $this->typeDocumentService->restore($id);
       if($result){
         $response = $this->responseRestore([$result]);
       } else {

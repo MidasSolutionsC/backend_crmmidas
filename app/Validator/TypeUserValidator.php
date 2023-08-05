@@ -5,11 +5,16 @@ namespace App\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class TipoDocumentoValidator {
+class TypeUserValidator{
+  
 
+  /**
+   * @var Request
+   */
   private $request;
 
-  public function __construct(Request $request) {
+  public function __construct(Request $request)
+  {
     $this->request = $request;
   }
 
@@ -21,26 +26,24 @@ class TipoDocumentoValidator {
       return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
     }
   }
-  
+
   private function rules(){
     return [
-      'nombre' => 'required|unique:tipo_documentos,nombre,' . $this->request->input('id'),
-      'abreviacion' => 'required'
+      'nombre' => 'required|unique:tipo_usuarios,nombre,id,' . $this->request->input('id'),
     ];
   }
-  
+
   private function rulesUpdate(){
     return [
       'nombre' => 'required',
-      'abreviacion' => 'required'
     ];
   }
 
   private function messages(){
     return [
       'nombre.required' => 'El nombre es requerido.',
-      'nombre.unique' => 'El nombre ya existe en la base de datos',
-      'abreviacion.required' => 'La abreviación es requerido.',
+      'nombre.unique' => 'El nombre ya existe en la base de datos.',
+      'descripcion.required' => 'La descripción es requerido.',
     ];
   }
 }

@@ -3,10 +3,10 @@
 namespace App\Services\Implementation;
 
 use App\Models\TipoUsuario;
-use App\Services\Interfaces\ITipoUsuario;
+use App\Services\Interfaces\ITypeUser;
 use Illuminate\Support\Carbon;
 
-class TipoUsuarioService implements ITipoUsuario{
+class TypeUserService implements ITypeUser{
 
   private $model;
 

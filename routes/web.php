@@ -20,45 +20,38 @@ $router->get('/', function () use ($router) {
 
 $router->group(['prefix' => '/v1', 'middleware' => 'cors'], function () use ($router) {
 
-  // TIPO USUARIOS
-  $router->group(['prefix' => '/tipoUsuario'], function () use ($router) {
-    $router->get('/', 'TipoUsuarioController@listAll');
-    $router->get('/{id}', 'TipoUsuarioController@get');
-    $router->post('/', 'TipoUsuarioController@create');
-    $router->put('/{id}', 'TipoUsuarioController@update');
-    $router->delete('/{id}', 'TipoUsuarioController@delete');
-    $router->get('/restore/{id}', 'TipoUsuarioController@restore');
+  // TIPO UserS
+  $router->group(['prefix' => '/typeUser'], function () use ($router) {
+    $router->get('/', 'TypeUserController@listAll');
+    $router->get('/{id}', 'TypeUserController@get');
+    $router->post('/', 'TypeUserController@create');
+    $router->put('/{id}', 'TypeUserController@update');
+    $router->delete('/{id}', 'TypeUserController@delete');
+    $router->get('/restore/{id}', 'TypeUserController@restore');
   });
 
   // TIPO DOCUMENTOS
-  $router->group(['prefix' => '/tipoDocumento'], function () use ($router) {
-    $router->get('/', 'TipoDocumentoController@listAll');
-    $router->get('/{id}', 'TipoDocumentoController@get');
-    $router->post('/', 'TipoDocumentoController@create');
-    $router->put('/{id}', 'TipoDocumentoController@update');
-    $router->delete('/{id}', 'TipoDocumentoController@delete');
-    $router->get('/restore/{id}', 'TipoDocumentoController@restore');
+  $router->group(['prefix' => '/typeDocument'], function () use ($router) {
+    $router->get('/', 'TypeDocumentController@listAll');
+    $router->get('/{id}', 'TypeDocumentController@get');
+    $router->post('/', 'TypeDocumentController@create');
+    $router->put('/{id}', 'TypeDocumentController@update');
+    $router->delete('/{id}', 'TypeDocumentController@delete');
+    $router->get('/restore/{id}', 'TypeDocumentController@restore');
   });
 
-  // EJEMPLO DE USAR MIDDLEWARE
-  // $router->group(['middleware' => 'access'], function () use ($router) {
-  //   $router->get('/', 'UsuarioController@listAll');
-  // });
-  //$router->post('/login', ['middleware' => 'access', 'uses' => 'UsuarioController@login']);
-  
-    
-  // USUARIOS
-  $router->group(['prefix' => '/usuario'], function () use ($router) {
+  // UserS
+  $router->group(['prefix' => '/user'], function () use ($router) {
     $router->post('/login', 'AuthController@login');
     $router->get('/logout/{id}', 'AuthController@logout');
-    $router->post('/', 'UsuarioController@create');
+    $router->post('/', 'UserController@create');
     
     $router->group(['middleware' => 'auth'], function () use ($router) {
-      $router->get('/', 'UsuarioController@listAll');
-      $router->get('/{id}', 'UsuarioController@get');
-      $router->put('/{id}', 'UsuarioController@update');
-      $router->delete('/{id}', 'UsuarioController@delete');
-      $router->get('/restore/{id}', 'UsuarioController@restore');
+      $router->get('/', 'UserController@listAll');
+      $router->get('/{id}', 'UserController@get');
+      $router->put('/{id}', 'UserController@update');
+      $router->delete('/{id}', 'UserController@delete');
+      $router->get('/restore/{id}', 'UserController@restore');
     });
   });
 });

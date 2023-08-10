@@ -44,7 +44,12 @@ class AccessMiddleware {
     //   //return redirect('/v1/usuario');
     // }
     if ($this->auth->guard($guard)->guest()) {
-      return response('Unauthorized.', 401);
+      return response()->json([
+          'code' => 401,
+          'status' => 'Unauthorized',
+          'message' => 'No tiene autorización para acceder a este recurso.', 
+      ], 401);
+      // return response('Unauthorized.', 401);
     }
 
     return $next($request);

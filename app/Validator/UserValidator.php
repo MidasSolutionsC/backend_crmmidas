@@ -18,14 +18,14 @@ class UserValidator {
       return Validator::make($this->request->all(), $this->rulesAuth(), $this->messages());
     }
     if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rules(), $this->messages());
+      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
     }
     if($process == 'update'){
       return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
     }
   }
 
-  private function rules(){
+  private function rulesCreate(){
     return [
       'tipo_usuarios_id' => 'required',
       'nombres' => 'required',

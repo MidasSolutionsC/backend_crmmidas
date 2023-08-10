@@ -15,14 +15,14 @@ class TypeDocumentValidator {
 
   public function validate(string $process = 'create'){
     if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rules(), $this->messages());
+      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
     }
     if($process == 'update'){
       return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
     }
   }
   
-  private function rules(){
+  private function rulesCreate(){
     return [
       'nombre' => 'required|unique:tipo_documentos,nombre,' . $this->request->input('id'),
       'abreviacion' => 'required'
@@ -38,9 +38,9 @@ class TypeDocumentValidator {
 
   private function messages(){
     return [
-      'nombre.required' => 'El nombre es requerido.',
-      'nombre.unique' => 'El nombre ya existe en la base de datos',
-      'abreviacion.required' => 'La abreviación es requerido.',
+      'nombre.required' => 'El :attribute es requerido.',
+      'nombre.unique' => 'El :attribute ya existe en la base de datos',
+      'abreviacion.required' => 'La :attribute es requerido.',
     ];
   }
 }

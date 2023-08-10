@@ -67,7 +67,6 @@ class TypeUserController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        // $this->request->merge(['fecha_registro' => Carbon::now()]);
         $result = $this->typeUserService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }

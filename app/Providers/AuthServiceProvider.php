@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Models\User;
-use App\Models\Usuario;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Carbon;
@@ -37,7 +36,7 @@ class AuthServiceProvider extends ServiceProvider
             //     return Usuario::where('api_token', $request->input('api_token'))->first();
             // }
             if ($request->input('api_token')) {
-                return Usuario::where('api_token', $request->input('api_token'))->where('expires_at', '>=', Carbon::now())->first();
+                return User::where('api_token', $request->input('api_token'))->where('expires_at', '>=', Carbon::now())->first();
             }
         });
     }

@@ -2,8 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Usuario;
-use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Carbon;
 
@@ -32,7 +31,7 @@ class AccessServiceProvider extends ServiceProvider
         // the User instance via an API token or any other method necessary.
         $this->app['auth']->viaRequest('api', function ($request) {
             if ($request->input('api_token')) {
-                return Usuario::where('api_token', $request->input('api_token'))->where('expires_at', '>=', Carbon::now())->first();
+                return User::where('api_token', $request->input('api_token'))->where('expires_at', '>=', Carbon::now())->first();
             }
         });
     }

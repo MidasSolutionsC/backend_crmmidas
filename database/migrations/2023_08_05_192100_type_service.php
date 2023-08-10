@@ -13,9 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('grupos', function (Blueprint $table) {
+        Schema::create('tipo_servicios', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
+            $table->string('nombre')->unique();
+            $table->mediumText('descripcion');
+            $table->boolean('estado')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -26,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('grupos');
+        Schema::dropIfExists('tipo_productos');
     }
 };

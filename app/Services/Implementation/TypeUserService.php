@@ -2,7 +2,7 @@
 
 namespace App\Services\Implementation;
 
-use App\Models\TipoUsuario;
+use App\Models\TypeUser;
 use App\Services\Interfaces\ITypeUser;
 use Illuminate\Support\Carbon;
 
@@ -12,11 +12,11 @@ class TypeUserService implements ITypeUser{
 
   public function __construct()
   {
-    $this->model = new TipoUsuario();
+    $this->model = new TypeUser();
   }
 
   public function getAll(){
-    $result = $this->model->select('id', 'nombre', 'descripcion', 'estado')->get();
+    $result = $this->model->select()->get();
     foreach($result as $row){
       $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
       $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');

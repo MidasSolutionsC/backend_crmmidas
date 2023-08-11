@@ -8,17 +8,16 @@ return new class extends Migration{
     
     public function up(){
         Schema::create('usuarios', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
-
+            $table->engine = 'InnoDB';  
             $table->id();
-            $table->foreignId('grupos_id')->nullable()->default(0);
+            $table->foreignId('grupos_id')->nullable();
             $table->foreignId('tipo_usuarios_id');
             $table->string('nombres', 60);
             $table->string('paterno', 60);
             $table->string('materno', 60);
             $table->foreignId('tipo_documentos_id');
             $table->string('documento', 11);
-            $table->string('correo', 100);
+            $table->string('correo', 100)->unique();
             $table->string('clave', 100);
             $table->date('fecha_nacimiento');
             $table->string('celular', 11)->nullable()->default('');
@@ -30,11 +29,11 @@ return new class extends Migration{
             $table->boolean('estado')->default(true);
             $table->dateTime('ultima_conexion')->nullable();
             $table->unique(['tipo_documentos_id', 'documento']);
-            //$table->foreign('grupos_id')->references('id')->on('grupos');
-            $table->foreign('tipo_usuarios_id')->references('id')->on('tipo_usuarios');
-            $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('tipo_usuarios_id')->references('id')->on('tipo_usuarios');
+            $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
+            // $table->foreign('grupos_id')->references('id')->on('grupos');
         });
     }
 

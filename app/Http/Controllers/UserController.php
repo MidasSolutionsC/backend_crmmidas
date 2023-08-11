@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\Implementation\UserService;
 use App\Validator\UserValidator;
-use Illuminate\Support\Carbon;
 
 class UserController extends Controller{
 
@@ -55,7 +54,6 @@ class UserController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $this->request->merge(['fecha_registro' => Carbon::now()]);
         $result = $this->userService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }

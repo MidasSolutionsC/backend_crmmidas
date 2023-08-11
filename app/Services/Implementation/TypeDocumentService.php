@@ -2,7 +2,7 @@
 
 namespace App\Services\Implementation;
 
-use App\Models\TipoDocumento;
+use App\Models\TypeDocument;
 use App\Services\Interfaces\ITypeDocument;
 use Illuminate\Support\Carbon;
 
@@ -11,7 +11,7 @@ class TypeDocumentService implements ITypeDocument{
   private $model;
 
   public function __construct() {
-    $this->model = new TipoDocumento();
+    $this->model = new TypeDocument();
   }
 
   public function getAll(){

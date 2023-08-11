@@ -1,26 +1,41 @@
-<?php
-
+<?php   
 namespace App\Models;
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Laravel\Lumen\Auth\Authorizable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 
+class User extends Model implements AuthenticatableContract, AuthorizableContract{
+    use Authenticatable, Authorizable, HasFactory, SoftDeletes;
+    protected $table = "usuarios";
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract
-{
-    use Authenticatable, Authorizable, HasFactory;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var string[]
-     */
     protected $fillable = [
-        'name', 'email',
+        'grupos_id',
+        'tipo_usuarios_id',
+        'nombres',
+        'paterno',
+        'materno',
+        'tipo_documentos_id',
+        'documento',
+        'correo',
+        'clave',
+        'fecha_nacimiento',
+        'celular',
+        'direccion',
+        'foto',
+        'logueado',
+        'fotoestado',
+        'estado',
+        'ultima_conexion',
+        'api_token',
+        'expires_at',
+        'created_at',
+        'updated_at',
+        'deleted_at',
     ];
 
     /**
@@ -29,6 +44,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var string[]
      */
     protected $hidden = [
-        'password',
+        'clave',
+        'api_token',
+        'expires_at',
     ];
+
+    // public $timestamps = false;
 }

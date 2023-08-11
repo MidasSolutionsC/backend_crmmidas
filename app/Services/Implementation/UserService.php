@@ -2,17 +2,16 @@
 
 namespace App\Services\Implementation;
 
-use App\Models\Usuario;
+use App\Models\User;
 use App\Services\Interfaces\IUser;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 class UserService implements IUser {
 
   private $model;
 
   public function __construct() {
-    $this->model = new Usuario();
+    $this->model = new User();
   }
   
   public function getAll(){

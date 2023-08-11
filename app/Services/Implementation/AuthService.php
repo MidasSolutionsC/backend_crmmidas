@@ -2,7 +2,7 @@
 
 namespace App\Services\Implementation;
 
-use App\Models\Usuario;
+use App\Models\User;
 use App\Services\Interfaces\IAuth;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -12,7 +12,7 @@ class AuthService implements IAuth{
   private $model;
 
   public function __construct() {
-    $this->model = new Usuario();
+    $this->model = new User();
   }
 
   public function login(array $data){

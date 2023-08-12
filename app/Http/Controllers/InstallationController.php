@@ -76,7 +76,7 @@ class InstallationController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos de la instalación']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos de la instalación', 'error' => $result]);
         }
       }
   

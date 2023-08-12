@@ -76,7 +76,7 @@ class ServiceController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos del servicio']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del servicio', 'error' => $result]);
         }
       }
   

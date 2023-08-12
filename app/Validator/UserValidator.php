@@ -27,54 +27,51 @@ class UserValidator {
 
   private function rulesCreate(){
     return [
-      'tipo_usuarios_id' => 'required',
-      'nombres' => 'required',
-      'paterno' => 'required',
-      'materno' => 'required',
-      'tipo_documentos_id' => 'required',
-      'documento' => 'required|unique:usuarios,documento,tipo_documentos_id,' . $this->request->input('id'),
-      'correo' => 'required|email|unique:usuarios,correo,'. $this->request->input('id'),
+      'personas_id' => 'required|integer',
+      'tipo_usuarios_id' => 'required|integer',
+      'nombre_usuario' => 'required|string|max:20|unique:usuarios,nombre_usuario,'. $this->request->input('id'),
       'clave' => 'required',
-      'fecha_nacimiento' => 'required|date:Y-m-d',
     ];
   }
 
   private function rulesUpdate(){
     return [
-      'tipo_usuarios_id' => 'required',
-      'nombres' => 'required',
-      'paterno' => 'required',
-      'materno' => 'required',
-      'tipo_documentos_id' => 'required',
-      'documento' => 'required',
-      'correo' => 'required|email',
-      'clave' => 'required',
-      'fecha_nacimiento' => 'required|date:Y-m-d',
+      'personas_id' => 'required|integer',
+      'tipo_usuarios_id' => 'required|integer',
+      'nombre_usuario' => 'required|string|max:20',
+      'clave' => 'required|max:100',
     ];
   }
 
   private function rulesAuth(){
     return [
-      'correo' => 'required|email',
-      'clave' => 'required'
+      'nombre_usuario' => 'required|string|max:20',
+      'clave' => 'required|max:100'
     ];
   }
   
   private function messages(){
     return [
-      'tipo_usuarios_id.required' => 'El :attribute es requerido.',
-      'nombres.required' => 'El :attribute es requerido.',
-      'paterno.required' => 'El apellido :attribute es requerido.',
-      'materno.required' => 'El apellido :attribute es requerido.',
-      'tipo_documentos_id.required' => 'El :attribute es requerido.',
-      'documento.required' => 'El :attribute es requerido.',
-      'documento.unique' => 'El :attribute ya existe en la base de datos.',
-      'correo.required' => 'El :attribute es requerido.',
-      'correo.email' => 'El :attribute no es un email valido.',
-      'correo.unique' => 'El :attribute ya existe en la base de datos.',
-      'clave.required' => 'El :attribute es requerido.',
-      'fecha_nacimiento.required' => 'La :attribute es requerido.',
-      'fecha_nacimiento.date' => 'El formato de fecha de :attribute debe ser Y-m-d.',
+      'personas_id' => [
+        'required' => 'El :attribute es requerido.',
+        'integer' => 'El :attribute no es un numero valido.',
+      ],
+      'tipo_usuarios_id' => [
+        'required' => 'El :attribute es requerido.',
+        'integer' => 'El :attribute no es un numero valido.',
+      ],
+      'nombre_usuario' => [
+        'required' => 'El :attribute es requerido.',
+        'string' => 'El :attribute no es un texto valido.',
+        'size' => 'El :attribute debe tener :size caracteres.',
+        'max' => 'El :attribute debe tener como máximo :max caracteres.',
+      ],
+      'clave' => [
+        'required' => 'El :attribute es requerido.',
+        'string' => 'El :attribute no es un texto valido.',
+        'size' => 'El :attribute debe tener :size caracteres.',
+        'max' => 'El :attribute debe tener como máximo :max caracteres.',
+      ],
     ];
 
   }

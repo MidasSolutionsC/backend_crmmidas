@@ -77,7 +77,7 @@ class ProductController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos del producto']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del producto', 'error' => $result]);
         }
       }
   

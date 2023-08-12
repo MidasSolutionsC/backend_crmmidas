@@ -24,6 +24,124 @@ $router->get('/api/info', function () use ($router) {
 
 $router->group(['prefix' => '/api/v1'], function () use ($router) {
 
+  // PAISES
+  $router->group(['prefix' => '/country'], function () use ($router) {
+    $router->get('/', 'CountryController@listAll');
+    $router->get('/{id}', 'CountryController@get');
+    $router->post('/', 'CountryController@create');
+    $router->put('/{id}', 'CountryController@update');
+    $router->delete('/{id}', 'CountryController@delete');
+    $router->get('/restore/{id}', 'CountryController@restore');
+  });
+
+  // DEPARTAMENTOS
+  $router->group(['prefix' => '/department'], function () use ($router) {
+    $router->get('/', 'DepartmentController@listAll');
+    $router->get('/filterCountry/{countryId}', 'DepartmentController@getFilterByCountry');
+    $router->get('/{id}', 'DepartmentController@get');
+    $router->post('/', 'DepartmentController@create');
+    $router->put('/{id}', 'DepartmentController@update');
+    $router->delete('/{id}', 'DepartmentController@delete');
+    $router->get('/restore/{id}', 'DepartmentController@restore');
+  });
+
+  // PROVINCIAS
+  $router->group(['prefix' => '/province'], function () use ($router) {
+    $router->get('/', 'ProvinceController@listAll');
+    $router->get('/filterDepartment/{departmentId}', 'ProvinceController@getFilterByDepartment');
+    $router->get('/{id}', 'ProvinceController@get');
+    $router->post('/', 'ProvinceController@create');
+    $router->put('/{id}', 'ProvinceController@update');
+    $router->delete('/{id}', 'ProvinceController@delete');
+    $router->get('/restore/{id}', 'ProvinceController@restore');
+  });
+
+  // DISTRITOS
+  $router->group(['prefix' => '/district'], function () use ($router) {
+    $router->get('/', 'DistrictController@listAll');
+    $router->get('/filterProvince/{provinceId}', 'DistrictController@getFilterByProvince');
+    $router->get('/{id}', 'DistrictController@get');
+    $router->post('/', 'DistrictController@create');
+    $router->put('/{id}', 'DistrictController@update');
+    $router->delete('/{id}', 'ProvinceController@delete');
+    $router->get('/restore/{id}', 'DistrictController@restore');
+  });
+
+  // SEDES
+  $router->group(['prefix' => '/campus'], function () use ($router) {
+    $router->get('/', 'CampusController@listAll');
+    $router->get('/{id}', 'CampusController@get');
+    $router->post('/', 'CampusController@create');
+    $router->put('/{id}', 'CampusController@update');
+    $router->delete('/{id}', 'CampusController@delete');
+    $router->get('/restore/{id}', 'CampusController@restore');
+  });
+
+  // SEDES USUARIOS
+  $router->group(['prefix' => '/campusUser'], function () use ($router) {
+    $router->get('/', 'CampusUserController@listAll');
+    $router->get('/filterCampus/{campusId}', 'CampusUserController@getFilterByCampus');
+    $router->get('/{id}', 'CampusUserController@get');
+    $router->post('/', 'CampusUserController@create');
+    $router->put('/{id}', 'CampusUserController@update');
+    $router->delete('/{id}', 'CampusUserController@delete');
+    $router->get('/restore/{id}', 'CampusUserController@restore');
+  });
+
+  // SEDES USUARIOS
+  $router->group(['prefix' => '/permission'], function () use ($router) {
+    $router->get('/', 'PermissionController@listAll');
+    $router->get('/{id}', 'PermissionController@get');
+    $router->post('/', 'PermissionController@create');
+    $router->put('/{id}', 'PermissionController@update');
+    $router->delete('/{id}', 'PermissionController@delete');
+    $router->get('/restore/{id}', 'PermissionController@restore');
+  });
+
+  // SEDES USUARIOS
+  $router->group(['prefix' => '/typeUserPermission'], function () use ($router) {
+    $router->get('/', 'TypeUserPermissionController@listAll');
+    $router->get('/filterTypeUser/{typeUserId}', 'TypeUserPermissionController@getFilterByTypeUser');
+    $router->get('/{id}', 'TypeUserPermissionController@get');
+    $router->post('/', 'TypeUserPermissionController@create');
+    $router->put('/{id}', 'TypeUserPermissionController@update');
+    $router->delete('/{id}', 'TypeUserPermissionController@delete');
+    $router->get('/restore/{id}', 'TypeUserPermissionController@restore');
+  });
+
+  // EMPRESAS
+  $router->group(['prefix' => '/company'], function () use ($router) {
+    $router->get('/', 'CompanyController@listAll');
+    $router->get('/{id}', 'CompanyController@get');
+    $router->post('/', 'CompanyController@create');
+    $router->put('/{id}', 'CompanyController@update');
+    $router->delete('/{id}', 'CompanyController@delete');
+    $router->get('/restore/{id}', 'CompanyController@restore');
+  });
+
+  // PERSONAS
+  $router->group(['prefix' => '/person'], function () use ($router) {
+    $router->get('/', 'PersonController@listAll');
+    $router->get('/{id}', 'PersonController@get');
+    $router->post('/', 'PersonController@create');
+    $router->put('/{id}', 'PersonController@update');
+    $router->delete('/{id}', 'PersonController@delete');
+    $router->get('/restore/{id}', 'PersonController@restore');
+  });
+
+  // CONTACTOS
+  $router->group(['prefix' => '/contact'], function () use ($router) {
+    $router->get('/', 'ContactController@listAll');
+    $router->get('/filterCompany/{companyId}', 'ContactController@getFilterByCompany');
+    $router->get('/filterPerson/{personId}', 'ContactController@getFilterByPerson');
+    $router->get('/{id}', 'ContactController@get');
+    $router->post('/', 'ContactController@create');
+    $router->put('/{id}', 'ContactController@update');
+    $router->delete('/{id}', 'ContactController@delete');
+    $router->get('/restore/{id}', 'ContactController@restore');
+  });
+
+
   // TIPO DE USUARIO
   $router->group(['prefix' => '/typeUser'], function () use ($router) {
     $router->get('/', 'TypeUserController@listAll');

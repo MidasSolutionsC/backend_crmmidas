@@ -52,9 +52,9 @@ class UserService implements IUser {
       $usuario->save();
       $usuario->fecha_modificado = Carbon::parse($usuario->updated_at)->format('d-m-Y H:i:s');
       return $usuario;
-    } else {
-      return ['message' => 'Error al actualizar los datos del usuario'];
-    }
+    } 
+    
+    return null;
   }
 
   public function delete(int $id){
@@ -67,9 +67,9 @@ class UserService implements IUser {
         $usuario->fecha_eliminado = Carbon::parse($usuario->deleted_at)->format('d-m-Y H:i:s');
         return $usuario;
       }
-    } else {
-      return ['message' => 'El recurso solicitado no existe o ha sido eliminado previamente.'];
-    }
+    } 
+    
+    return false;
   }
 
   public function restore(int $id){
@@ -81,9 +81,9 @@ class UserService implements IUser {
       if($result){
         return $usuario;
       }
-    } else {
-      return ['message' => 'El recurso solicitado ha sido restaurado previamente.'];
-    }
+    } 
+    
+    return false;
   }
   
 }

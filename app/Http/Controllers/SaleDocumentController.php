@@ -76,7 +76,7 @@ class SaleDocumentController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos del documento de la venta']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del documento de la venta', 'error' => $result]);
         }
       }
   

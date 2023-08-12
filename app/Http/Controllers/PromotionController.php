@@ -76,7 +76,7 @@ class PromotionController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos de la promoción']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos de la promoción', 'error' => $result]);
         }
       }
   

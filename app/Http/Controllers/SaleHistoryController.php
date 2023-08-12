@@ -76,7 +76,7 @@ class SaleHistoryController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos de la venta']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos de la venta', 'error' => $result]);
         }
       }
   

@@ -76,7 +76,7 @@ class TypeDocumentController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos del tipo de documento']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del tipo de documento', 'error' => $result]);
         }
       }
   

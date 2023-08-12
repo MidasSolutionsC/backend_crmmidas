@@ -77,7 +77,7 @@ class GroupController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos del grupo']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del grupo', 'error' => $result]);
         }
       }
   

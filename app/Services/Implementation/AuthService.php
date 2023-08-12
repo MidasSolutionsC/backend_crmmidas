@@ -16,7 +16,7 @@ class AuthService implements IAuth{
   }
 
   public function login(array $data){
-    $usuario = $this->model->where('correo', $data['correo'])->first();
+    $usuario = $this->model->where('nombre_usuario', $data['nombre_usuario'])->first();
     $result = [
       'login' => false,
       'message' => 'Usuario no encontrado'

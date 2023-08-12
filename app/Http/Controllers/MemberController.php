@@ -76,7 +76,7 @@ class MemberController extends Controller{
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos del integrante']);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del integrante', 'error' => $result]);
         }
       }
   

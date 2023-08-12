@@ -46,14 +46,13 @@ class ClientService implements IClient {
   public function update(array $data, int $id){
     $client = $this->model->find($id);
     if($client){
-      $data['clave'] = password_hash($data['clave'], PASSWORD_BCRYPT);
       $client->fill($data);
       $client->save();
       $client->fecha_modificado = Carbon::parse($client->updated_at)->format('d-m-Y H:i:s');
       return $client;
-    } else {
-      return ['message' => 'Error al actualizar los datos del cliente'];
-    }
+    } 
+    
+    return null;
   }
 
   public function delete(int $id){
@@ -66,9 +65,9 @@ class ClientService implements IClient {
         $client->fecha_eliminado = Carbon::parse($client->deleted_at)->format('d-m-Y H:i:s');
         return $client;
       }
-    } else {
-      return ['message' => 'El recurso solicitado no existe o ha sido eliminado previamente.'];
-    }
+    } 
+
+    return false;
   }
 
   public function restore(int $id){
@@ -80,9 +79,9 @@ class ClientService implements IClient {
       if($result){
         return $client;
       }
-    } else {
-      return ['message' => 'El recurso solicitado ha sido restaurado previamente.'];
-    }
+    } 
+    
+    return false;
   }
 }
 

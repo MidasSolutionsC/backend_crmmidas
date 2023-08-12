@@ -72,7 +72,11 @@ class UserController extends Controller{
         $response = $this->responseError($validator->errors(), 422);
       } else {
         $result = $this->userService->update($this->request->all(), $id);
-        $response = $this->responseUpdate([$result]);
+        if($result != null){
+          $response = $this->responseUpdate([$result]);
+        } else {
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del usuario del usuario', 'error' => $result]);
+        }
       }
   
       return $response;
@@ -84,7 +88,11 @@ class UserController extends Controller{
   public function delete($id){
     try {
       $result = $this->userService->delete($id);
-      $response = $this->responseDelete([$result]);  
+      if($result){
+        $response = $this->responseDelete([$result]);
+      } else {
+        $response = $this->responseError(['message' => 'El recurso solicitado no existe o ha sido eliminado previamente.']);
+      }
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al eliminar el usuario', 'error' => $e->getMessage()], 500);
@@ -94,7 +102,12 @@ class UserController extends Controller{
   public function restore($id){
     try {
       $result = $this->userService->restore($id);
-      $response = $this->responseRestore([$result]);
+      if($result){
+        $response = $this->responseRestore([$result]);
+      } else {
+        $response = $this->responseError(['message' => 'El recurso solicitado ha sido restaurado previamente.']);
+      }
+
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al restaurar el usuario', 'error' => $e->getMessage()], 500);

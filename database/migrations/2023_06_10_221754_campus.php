@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('correo', 100)->nullable();
             $table->string('responsable', 100)->nullable();
             $table->date('fecha_apertura');
-            $table->boolean('estado')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->string('logo', 100)->nullable();
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            

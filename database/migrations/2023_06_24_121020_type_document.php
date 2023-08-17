@@ -15,13 +15,10 @@ return new class extends Migration
     {
         Schema::create('tipo_documentos', function (Blueprint $table) {
             $table->engine= 'InnoDB';
-            // $table->charset = 'utf8mb4';
-            // $table->collation = 'utf8mb4_unicode_ci';
-
             $table->id();
             $table->string('nombre', 40)->unique();
             $table->string('abreviacion', 15);
-            $table->boolean('estado')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

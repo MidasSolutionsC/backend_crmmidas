@@ -82,7 +82,7 @@ class DistrictController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->districtValidator->validate('update');
+      $validator = $this->districtValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

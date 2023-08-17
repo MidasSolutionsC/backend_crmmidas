@@ -16,12 +16,8 @@ class DepartmentService implements IDepartment{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
@@ -32,40 +28,32 @@ class DepartmentService implements IDepartment{
     }
     
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
   public function getById(int $id){
-    $department = $this->model->find($id);
-    if($department){
-      $department->fecha_creado = Carbon::parse($department->created_at)->format('d-m-Y H:i:s');
-      $department->fecha_modificado = Carbon::parse($department->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $department;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $department = $this->model->create($data);
     if($department){
-      $department->fecha_creado = Carbon::parse($department->created_at)->format('d-m-Y H:i:s');
+      $department->created_at = Carbon::parse($department->created_at)->format('Y-m-d H:i:s');
     }
 
     return $department;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now();
     $department = $this->model->find($id);
     if($department){
       $department->fill($data);
       $department->save();
-      $department->fecha_modificado = Carbon::parse($department->updated_at)->format('d-m-Y H:i:s');
+      $department->updated_at = Carbon::parse($department->updated_at)->format('Y-m-d H:i:s');
       return $department;
     }
 
@@ -75,11 +63,11 @@ class DepartmentService implements IDepartment{
   public function delete(int $id){
     $department = $this->model->find($id);
     if($department != null){
-      $department->estado = 0;
+      $department->is_active = 0;
       $department->save();
       $result = $department->delete();
       if($result){
-        $department->fecha_eliminado = Carbon::parse($department->deleted_at)->format('d-m-Y H:i:s');
+        $department->deleted_st = Carbon::parse($department->deleted_at)->format('Y-m-d H:i:s');
         return $department;
       }
     }
@@ -90,7 +78,7 @@ class DepartmentService implements IDepartment{
   public function restore(int $id){
     $department = $this->model->withTrashed()->find($id);
     if($department != null && $department->trashed()){
-      $department->estado = 1;
+      $department->is_active = 1;
       $department->save();
       $result = $department->restore();
       if($result){

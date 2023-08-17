@@ -19,12 +19,12 @@ class Contact extends Model implements AuthenticatableContract, AuthorizableCont
         'personas_id',
         'tipo',
         'contacto',
-        'estado',
-        'es_principal',
+        'is_primary',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

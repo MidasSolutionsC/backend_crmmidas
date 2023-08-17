@@ -8,60 +8,39 @@ use Illuminate\Support\Facades\Validator;
 class CampusValidator {
   
   private $request;
+  private $id;
 
   public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
+  }
+
+  private function rules(){
     return [
       'paises_id' => 'required|integer',
-      'codigo_postal' => 'required|string:6',
+      'distritos_id' => 'nullable|integer',
+      'nombre' => 'required|string|max:100|unique:sedes,nombre,'. $this->id,
+      'ciudad' => 'nullable|string|max:50',
+      'direccion' => 'nullable|string|max:250',
+      'codigo_postal' => 'required|string|max:6',
+      'telefono' => 'nullable|string|max:11',
+      'correo' => 'nullable|string|max:100',
+      'responsable' => 'nullable|string|max:100',
       'fecha_apertura' => 'required|date:Y-m-d',
-      'nombre' => 'required|unique:sedes,nombre,'. $this->request->input('id'),
+      'is_active' => 'nullable|is_active',
+      'logo' => 'nullable|string|max:100',
+      'user_create_id' => 'nullable|integer',
+      'user_update_id' => 'nullable|integer',
+      'user_delete_id' => 'nullable|integer',
     ];
   }
 
-  private function rulesUpdate(){
-    return [
-      'paises_id' => 'required|integer',
-      'codigo_postal' => 'required|string:6',
-      'fecha_apertura' => 'required|date:Y-m-d',
-      'nombre' => 'required'
-    ];
-  }
-  
-  private function messages(){
-    return [
-      'paises_id' => [
-        'required' => 'El :attribute es requerido.',
-        'integer' => 'El :attribute no es un numero valido.',
-      ],
-      'codigo_postal' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un string valido.',
-        'size' => 'El :attribute debe ser de :size caracteres.',
-      ],
-      'fecha_apertura' => [
-        'required' => 'El :attribute es requerido.',
-        'date' => 'El formato de fecha de :attribute debe ser Y-m-d.',
-      ],
-      'nombre' => [
-        'required' => 'El :attribute es requerido.',
-        'unique' => 'El :attribute ya existe en la base de datos.',
-      ],
-    ];
-
-  }
 }
 
 ?>

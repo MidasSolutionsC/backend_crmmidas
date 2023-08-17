@@ -5,32 +5,30 @@ namespace App\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ServiceValidator
-{
+class ServiceValidator{
 
   private $request;
+  private $id;
 
-  public function __construct(Request $request = null)
-  {
+  public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create')
-  {
-    if ($process == 'create') {
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if ($process == 'update') {
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate()
-  {
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
+  }
+
+  private function rules() {
     return [
-      'tipo_servicios_id' => 'required',
-      'productos_id' => 'required',
-      'instalaciones_id' => 'required',
+      'tipo_servicios_id' => 'required|integer',
+      'productos_id' => 'required|integer',
+      'instalaciones_id' => 'required|integer',
+      'promociones_id' => 'nullable|integer',
+      'observacion' => 'nullable|string',
+      'fecha_cierre' => 'nullable|date:Y-m-d',
       // 'datos_json' => 'required',
       'datos_json' => [
         'required',
@@ -67,31 +65,11 @@ class ServiceValidator
         //   }
         // },      
       ],
-    ];
-  }
-
-  private function rulesUpdate()
-  {
-    return [
-      'tipo_servicios_id' => 'required',
-      'productos_id' => 'required',
-      'instalaciones_id' => 'required',
-      'datos_json' => 'required',
-    ];
-  }
-
-  private function messages()
-  {
-    return [
-      'tipo_servicios_id.required' => 'El :attribute es requerido.',
-      'productos_id.required' => 'El :attribute es requerido.',
-      'instalaciones_id.required' => 'El :attribute es requerido.',
-      'datos_json.required' => 'El :attribute es requerido.',
-      'datos_json.json' => 'El :attribute no es un json valido.',
-      // 'datos_json' => [
-      //   // 'required' => 'El :attribute es requerido.',
-      //   'json' => 'El :attribute no es un json valido.',
-      // ]
+      'tipo_estados_id' => 'nullable|integer',
+      'is_active' => 'nullable|boolean',
+      'user_create_id' => 'required|integer',
+      'user_update_id' => 'integer',
+      'user_delete_id' => 'integer',
     ];
   }
 }

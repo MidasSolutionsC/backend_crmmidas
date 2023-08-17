@@ -16,12 +16,8 @@ class DistrictService implements IDistrict{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
@@ -30,42 +26,34 @@ class DistrictService implements IDistrict{
     if($provinceId){
       $query->where('provincias_id', $provinceId);
     }
-    
+
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
   public function getById(int $id){
-    $district = $this->model->find($id);
-    if($district){
-      $district->fecha_creado = Carbon::parse($district->created_at)->format('d-m-Y H:i:s');
-      $district->fecha_modificado = Carbon::parse($district->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $district;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $district = $this->model->create($data);
     if($district){
-      $district->fecha_creado = Carbon::parse($district->created_at)->format('d-m-Y H:i:s');
+      $district->created_at = Carbon::parse($district->created_at)->format('Y-m-d H:i:s');
     }
 
     return $district;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $district = $this->model->find($id);
     if($district){
       $district->fill($data);
       $district->save();
-      $district->fecha_modificado = Carbon::parse($district->updated_at)->format('d-m-Y H:i:s');
+      $district->updated_at = Carbon::parse($district->updated_at)->format('Y-m-d H:i:s');
       return $district;
     }
 
@@ -78,7 +66,7 @@ class DistrictService implements IDistrict{
       $district->save();
       $result = $district->delete();
       if($result){
-        $district->fecha_eliminado = Carbon::parse($district->deleted_at)->format('d-m-Y H:i:s');
+        $district->deleted_st = Carbon::parse($district->deleted_at)->format('Y-m-d H:i:s');
         return $district;
       }
     }

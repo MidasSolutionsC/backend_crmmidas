@@ -29,12 +29,12 @@ class Address extends Model implements AuthenticatableContract, AuthorizableCont
         'localidad',
         'provincia',
         'territorial',
-        'es_principal',
-        'estado',
+        'is_primary',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',  
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

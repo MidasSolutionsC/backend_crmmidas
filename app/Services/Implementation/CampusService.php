@@ -16,40 +16,34 @@ class CampusService implements ICampus{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $campus = $this->model->find($id);
-    if($campus){
-      $campus->fecha_creado = Carbon::parse($campus->created_at)->format('d-m-Y H:i:s');
-      $campus->fecha_modificado = Carbon::parse($campus->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $campus;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $campus = $this->model->create($data);
     if($campus){
-      $campus->fecha_creado = Carbon::parse($campus->created_at)->format('d-m-Y H:i:s');
+      $campus->created_at = Carbon::parse($campus->created_at)->format('Y-m-d H:i:s');
     }
 
     return $campus;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $campus = $this->model->find($id);
     if($campus){
       $campus->fill($data);
       $campus->save();
-      $campus->fecha_modificado = Carbon::parse($campus->updated_at)->format('d-m-Y H:i:s');
+      $campus->updated_at = Carbon::parse($campus->updated_at)->format('Y-m-d H:i:s');
       return $campus;
     }
 
@@ -59,10 +53,11 @@ class CampusService implements ICampus{
   public function delete(int $id){
     $campus = $this->model->find($id);
     if($campus != null){
+      $campus->is_active = false;
       $campus->save();
       $result = $campus->delete();
       if($result){
-        $campus->fecha_eliminado = Carbon::parse($campus->deleted_at)->format('d-m-Y H:i:s');
+        $campus->deleted_st = Carbon::parse($campus->deleted_at)->format('Y-m-d H:i:s');
         return $campus;
       }
     }
@@ -73,6 +68,7 @@ class CampusService implements ICampus{
   public function restore(int $id){
     $campus = $this->model->withTrashed()->find($id);
     if($campus != null && $campus->trashed()){
+      $campus->is_active = true;
       $campus->save();
       $result = $campus->restore();
       if($result){

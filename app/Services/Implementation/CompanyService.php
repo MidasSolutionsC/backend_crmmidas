@@ -16,40 +16,34 @@ class CompanyService implements ICompany{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $company = $this->model->find($id);
-    if($company){
-      $company->fecha_creado = Carbon::parse($company->created_at)->format('d-m-Y H:i:s');
-      $company->fecha_modificado = Carbon::parse($company->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $company;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $company = $this->model->create($data);
     if($company){
-      $company->fecha_creado = Carbon::parse($company->created_at)->format('d-m-Y H:i:s');
+      $company->created_at = Carbon::parse($company->created_at)->format('Y-m-d H:i:s');
     }
 
     return $company;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $company = $this->model->find($id);
     if($company){
       $company->fill($data);
       $company->save();
-      $company->fecha_modificado = Carbon::parse($company->updated_at)->format('d-m-Y H:i:s');
+      $company->updated_at = Carbon::parse($company->updated_at)->format('Y-m-d H:i:s');
       return $company;
     }
 
@@ -59,11 +53,11 @@ class CompanyService implements ICompany{
   public function delete(int $id){
     $company = $this->model->find($id);
     if($company != null){
-      $company->estado = 0;
+      $company->is_active = 0;
       $company->save();
       $result = $company->delete();
       if($result){
-        $company->fecha_eliminado = Carbon::parse($company->deleted_at)->format('d-m-Y H:i:s');
+        $company->deleted_st = Carbon::parse($company->deleted_at)->format('Y-m-d H:i:s');
         return $company;
       }
     }
@@ -74,7 +68,7 @@ class CompanyService implements ICompany{
   public function restore(int $id){
     $company = $this->model->withTrashed()->find($id);
     if($company != null && $company->trashed()){
-      $company->estado = 1;
+      $company->is_active = 1;
       $company->save();
       $result = $company->restore();
       if($result){

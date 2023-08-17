@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('permisos', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
-            $table->string('nombre')->unique();
-            $table->mediumText('descripcion')->nullable();
+            $table->string('nombre', 35)->unique();
+            $table->text('descripcion')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

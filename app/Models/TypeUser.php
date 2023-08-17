@@ -17,11 +17,11 @@ class TypeUser extends Model implements AuthenticatableContract, AuthorizableCon
     protected $fillable = [
         'nombre',
         'descripcion',
-        'estado',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

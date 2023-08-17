@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('empresas_id')->nullable();
             $table->foreignId('personas_id')->nullable();
-            $table->mediumText('domicilio')->nullable();
+            $table->text('domicilio')->nullable();
             $table->string('tipo', 30);
             $table->string('direccion', 250);
             $table->string('numero', 6)->nullable();
@@ -30,8 +30,8 @@ return new class extends Migration
             $table->string('localidad', 90)->nullable();
             $table->string('provincia', 90)->nullable();
             $table->string('territorial', 90)->nullable();
-            $table->boolean('es_principal')->default(false);
-            $table->boolean('estado')->default(true);
+            $table->boolean('is_primary')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('empresas_id')->references('id')->on('empresas');

@@ -22,5 +22,5 @@ class Country extends Model implements AuthenticatableContract, AuthorizableCont
         'deleted_at',    
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

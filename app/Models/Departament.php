@@ -23,5 +23,5 @@ class Departament extends Model implements AuthenticatableContract, Authorizable
         'deleted_at',    
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

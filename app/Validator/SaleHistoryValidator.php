@@ -7,47 +7,32 @@ use Illuminate\Support\Facades\Validator;
 
 class SaleHistoryValidator{
   
-
-  /**
-   * @var Request
-   */
   private $request;
+  private $id;
 
-  public function __construct(Request $request)
-  {
+  public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
-    return [
-      'ventas_id' => 'required',
-      'user_create_id' => 'required',
-      // 'tipo' => 'required',
-    ];
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
   }
 
-  private function rulesUpdate(){
+  private function rules(){
     return [
-      'ventas_id' => 'required',
-      'user_create_id' => 'required',
-      // 'tipo' => 'required',
-    ];
-  }
-
-  private function messages(){
-    return [
-      'ventas_id.required' => 'El :attribute es requerido.',
-      'user_create_id.required' => 'El :attribute es requerido.',
-      'tipo.required' => 'El :attribute es requerido.',
+      'ventas_id' => 'required|integer',
+      'tipo' => 'required|string|size:1',
+      'tipo_estados_id' => 'integer',
+      'fecha' => 'nullable|date:Y-m-d',
+      'hora' => ['nullable', 'regex:/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/'],
+      'comentario' => 'string',
+      'user_create_id' => 'required|integer',
+      'user_update_id' => 'integer',
+      'user_delete_id' => 'integer',
+      'is_active' => 'boolean',
     ];
   }
 }

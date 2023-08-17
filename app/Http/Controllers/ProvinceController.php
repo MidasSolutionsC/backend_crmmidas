@@ -82,7 +82,7 @@ class ProvinceController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->provinceValidator->validate('update');
+      $validator = $this->provinceValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

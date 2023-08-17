@@ -13,26 +13,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('servicios', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
+        Schema::create('ventas_detalles', function (Blueprint $table) {
+            $table->engine = 'InnoDB';  
             $table->id();
-            $table->foreignId('tipo_servicios_id');
-            $table->foreignId('productos_id');
-            $table->foreignId('instalaciones_id');
-            $table->foreignId('promociones_id')->nullable();
-            $table->mediumText('observacion')->nullable();
-            $table->date('fecha_cierre')->nullable();
-            $table->json('datos_json');
-            $table->char('estado')->default('P');
+            $table->foreignId('ventas_id');
+            $table->foreignId('servicios_id');
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
+            $table->unique(['ventas_id', 'servicios_id']);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('tipo_servicios_id')->references('id')->on('tipo_servicios');
-            $table->foreign('productos_id')->references('id')->on('productos');
-            $table->foreign('promociones_id')->references('id')->on('promociones');
-            $table->foreign('instalaciones_id')->references('id')->on('instalaciones');
+            $table->foreign('ventas_id')->references('id')->on('ventas');
+            $table->foreign('servicios_id')->references('id')->on('servicios');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
@@ -46,6 +40,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('servicios');
+        Schema::dropIfExists('ventas_detalles');
     }
 };

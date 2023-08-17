@@ -16,40 +16,34 @@ class PersonService implements IPerson{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $person = $this->model->find($id);
-    if($person){
-      $person->fecha_creado = Carbon::parse($person->created_at)->format('d-m-Y H:i:s');
-      $person->fecha_modificado = Carbon::parse($person->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $person;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $person = $this->model->create($data);
     if($person){
-      $person->fecha_creado = Carbon::parse($person->created_at)->format('d-m-Y H:i:s');
+      $person->created_at = Carbon::parse($person->created_at)->format('Y-m-d H:i:s');
     }
 
     return $person;
   }
 
   public function update(array $data, int $id){
+    $data['created_at'] = Carbon::now(); 
     $person = $this->model->find($id);
     if($person){
       $person->fill($data);
       $person->save();
-      $person->fecha_modificado = Carbon::parse($person->updated_at)->format('d-m-Y H:i:s');
+      $person->updated_at = Carbon::parse($person->updated_at)->format('Y-m-d H:i:s');
       return $person;
     }
 
@@ -62,7 +56,7 @@ class PersonService implements IPerson{
       $person->save();
       $result = $person->delete();
       if($result){
-        $person->fecha_eliminado = Carbon::parse($person->deleted_at)->format('d-m-Y H:i:s');
+        $person->deleted_st = Carbon::parse($person->deleted_at)->format('Y-m-d H:i:s');
         return $person;
       }
     }

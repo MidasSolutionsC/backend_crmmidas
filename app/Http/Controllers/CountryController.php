@@ -67,7 +67,7 @@ class CountryController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->countryValidator->validate('update');
+      $validator = $this->countryValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

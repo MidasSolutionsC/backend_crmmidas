@@ -20,11 +20,11 @@ return new class extends Migration
             $table->foreignId('clientes_id');
             $table->date('fecha')->default(DB::raw('CURRENT_DATE'));
             $table->time('hora')->default(DB::raw('CURRENT_TIME'));
-            $table->mediumText('comentario')->nullable();
-            $table->boolean('estado')->default(true);
-            $table->foreignId('user_create_id')->nullable();            
+            $table->text('comentario')->nullable();
+            $table->foreignId('user_create_id');            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('clientes_id')->references('id')->on('clientes');

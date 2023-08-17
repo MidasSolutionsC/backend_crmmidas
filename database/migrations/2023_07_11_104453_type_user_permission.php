@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('permisos_id');
             $table->foreignId('tipo_usuarios_id');
-            $table->boolean('estado')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
             $table->unique(['permisos_id', 'tipo_usuarios_id']);

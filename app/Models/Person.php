@@ -32,5 +32,5 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
         'deleted_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

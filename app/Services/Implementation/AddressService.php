@@ -5,6 +5,7 @@ namespace App\Services\Implementation;
 use App\Models\Address;
 use App\Services\Interfaces\IAddress;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class AddressService implements IAddress{
 
@@ -16,12 +17,12 @@ class AddressService implements IAddress{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    
+    // $query->addSelect(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS fecha_creado"));
+    // $query->addSelect(DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS fecha_modificado"));
+    
+    $result = $query->get();
     return $result;
   }
 
@@ -32,12 +33,6 @@ class AddressService implements IAddress{
     }
     
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
@@ -48,42 +43,33 @@ class AddressService implements IAddress{
     }
     
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
 
-
   public function getById(int $id){
-    $address = $this->model->find($id);
-    if($address){
-      $address->fecha_creado = Carbon::parse($address->created_at)->format('d-m-Y H:i:s');
-      $address->fecha_modificado = Carbon::parse($address->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $address;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $address = $this->model->create($data);
     if($address){
-      $address->fecha_creado = Carbon::parse($address->created_at)->format('d-m-Y H:i:s');
+      $address->created_at = Carbon::parse($address->created_at)->format('Y-m-d H:i:s');
     }
 
     return $address;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $address = $this->model->find($id);
     if($address){
       $address->fill($data);
       $address->save();
-      $address->fecha_modificado = Carbon::parse($address->updated_at)->format('d-m-Y H:i:s');
+      $address->updated_at = Carbon::parse($address->updated_at)->format('Y-m-d H:i:s');
       return $address;
     }
 
@@ -93,11 +79,11 @@ class AddressService implements IAddress{
   public function delete(int $id){
     $address = $this->model->find($id);
     if($address != null){
-      $address->estado = 0;
+      $address->is_active = 0;
       $address->save();
       $result = $address->delete();
       if($result){
-        $address->fecha_eliminado = Carbon::parse($address->deleted_at)->format('d-m-Y H:i:s');
+        $address->deleted_st = Carbon::parse($address->deleted_at)->format('Y-m-d H:i:s');
         return $address;
       }
     }
@@ -108,7 +94,7 @@ class AddressService implements IAddress{
   public function restore(int $id){
     $address = $this->model->withTrashed()->find($id);
     if($address != null && $address->trashed()){
-      $address->estado = 1;
+      $address->is_active = 1;
       $address->save();
       $result = $address->restore();
       if($result){

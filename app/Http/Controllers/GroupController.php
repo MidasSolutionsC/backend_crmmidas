@@ -68,7 +68,7 @@ class GroupController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->groupValidator->validate('update');
+      $validator = $this->groupValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

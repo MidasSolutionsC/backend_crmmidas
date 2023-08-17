@@ -17,11 +17,11 @@ class TypeDocument extends Model implements AuthenticatableContract, Authorizabl
     protected $fillable = [
         'nombre',
         'abreviacion',
-        'estado',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

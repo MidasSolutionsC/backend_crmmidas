@@ -24,5 +24,5 @@ class Province extends Model implements AuthenticatableContract, AuthorizableCon
         'deleted_at',   
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

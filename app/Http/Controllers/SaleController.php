@@ -67,7 +67,7 @@ class SaleController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->saleValidator->validate('update');
+      $validator = $this->saleValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

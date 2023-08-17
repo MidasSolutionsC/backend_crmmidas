@@ -22,7 +22,8 @@ class Service extends Model implements AuthorizableContract, AuthenticatableCont
         'observacion',
         'fecha_cierre',
         'datos_json',
-        'estado',
+        'tipo_estados_id',
+        'is_active',
         'user_create_id',
         'user_update_id',
         'user_delete_id',
@@ -35,5 +36,5 @@ class Service extends Model implements AuthorizableContract, AuthenticatableCont
         'datos_json' => 'json',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

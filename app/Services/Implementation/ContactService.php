@@ -16,12 +16,8 @@ class ContactService implements IContact{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
@@ -30,14 +26,8 @@ class ContactService implements IContact{
     if($companyId){
       $query->where('empresas_id', $companyId);
     }
-    
+
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
@@ -46,42 +36,34 @@ class ContactService implements IContact{
     if($personId){
       $query->where('personas_id', $personId);
     }
-    
+
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
   public function getById(int $id){
-    $contact = $this->model->find($id);
-    if($contact){
-      $contact->fecha_creado = Carbon::parse($contact->created_at)->format('d-m-Y H:i:s');
-      $contact->fecha_modificado = Carbon::parse($contact->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $contact;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $contact = $this->model->create($data);
     if($contact){
-      $contact->fecha_creado = Carbon::parse($contact->created_at)->format('d-m-Y H:i:s');
+      $contact->created_at = Carbon::parse($contact->created_at)->format('Y-m-d H:i:s');
     }
 
     return $contact;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $contact = $this->model->find($id);
     if($contact){
       $contact->fill($data);
       $contact->save();
-      $contact->fecha_modificado = Carbon::parse($contact->updated_at)->format('d-m-Y H:i:s');
+      $contact->updated_at = Carbon::parse($contact->updated_at)->format('Y-m-d H:i:s');
       return $contact;
     }
 
@@ -91,11 +73,11 @@ class ContactService implements IContact{
   public function delete(int $id){
     $contact = $this->model->find($id);
     if($contact != null){
-      $contact->estado = 0;
+      $contact->is_active = 0;
       $contact->save();
       $result = $contact->delete();
       if($result){
-        $contact->fecha_eliminado = Carbon::parse($contact->deleted_at)->format('d-m-Y H:i:s');
+        $contact->deleted_st = Carbon::parse($contact->deleted_at)->format('Y-m-d H:i:s');
         return $contact;
       }
     }
@@ -106,7 +88,7 @@ class ContactService implements IContact{
   public function restore(int $id){
     $contact = $this->model->withTrashed()->find($id);
     if($contact != null && $contact->trashed()){
-      $contact->estado = 1;
+      $contact->is_active = 1;
       $contact->save();
       $result = $contact->restore();
       if($result){

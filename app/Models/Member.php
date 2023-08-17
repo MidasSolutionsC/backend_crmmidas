@@ -17,11 +17,11 @@ class Member extends Model implements AuthorizableContract, AuthenticatableContr
     protected $fillable = [
         'grupos_id',
         'usuarios_id',
-        'estado',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

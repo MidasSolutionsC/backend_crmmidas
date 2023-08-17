@@ -15,40 +15,34 @@ class ClientService implements IClient {
   }
 
   public function getAll(){
-    $result = $this->model->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $client = $this->model->find($id);
-    if($client){
-      $client->fecha_creado = Carbon::parse($client->created_at)->format('d-m-Y H:i:s');
-      $client->fecha_modificado = Carbon::parse($client->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $client;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $client = $this->model->create($data);
     if($client){
-      $client->fecha_creado = Carbon::parse($client->created_at)->format('d-m-Y H:i:s');
+      $client->created_at = Carbon::parse($client->created_at)->format('Y-m-d H:i:s');
     }
 
     return $client;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $client = $this->model->find($id);
     if($client){
       $client->fill($data);
       $client->save();
-      $client->fecha_modificado = Carbon::parse($client->updated_at)->format('d-m-Y H:i:s');
+      $client->updated_at = Carbon::parse($client->updated_at)->format('Y-m-d H:i:s');
       return $client;
     } 
     
@@ -58,11 +52,11 @@ class ClientService implements IClient {
   public function delete(int $id){
     $client = $this->model->find($id);
     if(!is_null($client)){
-      $client->estado = 0;
+      $client->is_active = 0;
       $client->save();
       $result = $client->delete();
       if($result){
-        $client->fecha_eliminado = Carbon::parse($client->deleted_at)->format('d-m-Y H:i:s');
+        $client->deleted_st = Carbon::parse($client->deleted_at)->format('Y-m-d H:i:s');
         return $client;
       }
     } 
@@ -73,7 +67,7 @@ class ClientService implements IClient {
   public function restore(int $id){
     $client = $this->model->withTrashed()->find($id);
     if(!is_null($client) && $client->trashed()){
-      $client->estado = 1;
+      $client->is_active = 1;
       $client->save();
       $result = $client->restore();
       if($result){

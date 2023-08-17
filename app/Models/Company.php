@@ -27,7 +27,7 @@ class Company extends Model implements AuthenticatableContract, AuthorizableCont
         'ciudad',
         'telefono',
         'correo',
-        'estado ',
+        'is_active ',
         'user_create_id ',
         'user_update_id ',
         'user_delete_id ',
@@ -36,5 +36,5 @@ class Company extends Model implements AuthenticatableContract, AuthorizableCont
         'deleted_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

@@ -25,7 +25,7 @@ class Campus extends Model implements AuthenticatableContract, AuthorizableContr
         'correo',
         'responsable',
         'fecha_apertura',
-        'estado',
+        'is_active',
         'logo',
         'user_create_id',
         'user_update_id',
@@ -35,5 +35,9 @@ class Campus extends Model implements AuthenticatableContract, AuthorizableContr
         'deleted_at',   
     ];
 
-    // public $timestamps = false;
+    // Evitar agregar fechas por defecto al crear y modificar
+    public $timestamps = false;
+
+    // Evitar ocultar campos al retornar el objeto
+    protected $hidden = [];
 }

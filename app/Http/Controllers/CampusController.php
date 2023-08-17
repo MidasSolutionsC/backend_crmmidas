@@ -67,7 +67,7 @@ class CampusController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->campusValidator->validate('update');
+      $validator = $this->campusValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

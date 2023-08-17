@@ -17,8 +17,8 @@ return new class extends Migration
             $table->engine = 'InnoDB';
             $table->id();
             $table->string('nombre')->unique();
-            $table->mediumText('descripcion');
-            $table->boolean('estado')->default(true);
+            $table->text('descripcion')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

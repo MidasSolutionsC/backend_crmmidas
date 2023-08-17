@@ -15,40 +15,34 @@ class TypeDocumentService implements ITypeDocument{
   }
 
   public function getAll(){
-    $result = $this->model->get();
-    // Formatear la columna 'created_at' para cada registro
-    foreach ($result as $row) {
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $tipoDocumento = $this->model->find($id);
-    if($tipoDocumento){
-      $tipoDocumento->fecha_creado = Carbon::parse($tipoDocumento->created_at)->format('d-m-Y H:i:s');
-      $tipoDocumento->fecha_modificado = Carbon::parse($tipoDocumento->updated_at)->format('d-m-Y H:i:s');
-    }
-    return $tipoDocumento;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $tipoDocumento = $this->model->create($data);
     if($tipoDocumento){
-      $tipoDocumento->fecha_creado = Carbon::parse($tipoDocumento->created_at)->format('d-m-Y H:i:s');
+      $tipoDocumento->created_at = Carbon::parse($tipoDocumento->created_at)->format('Y-m-d H:i:s');
     }
 
     return $tipoDocumento;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $tipoDocumento = $this->model->find($id);
     if($tipoDocumento){
       $tipoDocumento->fill($data);
       $tipoDocumento->save();
-      $tipoDocumento->fecha_modificado = Carbon::parse($tipoDocumento->updated_at)->format('d-m-Y H:i:s');
+      $tipoDocumento->updated_at = Carbon::parse($tipoDocumento->updated_at)->format('Y-m-d H:i:s');
       return $tipoDocumento;
     }
 
@@ -58,11 +52,11 @@ class TypeDocumentService implements ITypeDocument{
   public function delete(int $id){
     $tipoDocumento = $this->model->find($id);
     if($tipoDocumento != null){
-      $tipoDocumento->estado = 0;
+      $tipoDocumento->is_active = 0;
       $tipoDocumento->save();
       $result = $tipoDocumento->delete();
       if($result){
-        $tipoDocumento->fecha_eliminado = Carbon::parse($tipoDocumento->deleted_at)->format('d-m-Y H:i:s');
+        $tipoDocumento->deleted_st = Carbon::parse($tipoDocumento->deleted_at)->format('Y-m-d H:i:s');
         return $tipoDocumento;
       }
     }
@@ -73,7 +67,7 @@ class TypeDocumentService implements ITypeDocument{
   public function restore(int $id){
     $tipoDocumento = $this->model->withTrashed()->find($id);
     if($tipoDocumento != null && $tipoDocumento->trashed()){
-      $tipoDocumento->estado = 1;
+      $tipoDocumento->is_active = 1;
       $tipoDocumento->save();
       $result = $tipoDocumento->restore();
       if($result){

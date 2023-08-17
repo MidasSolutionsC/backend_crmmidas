@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('contacto', 60);
             $table->unique(['empresas_id', 'contacto']);
             $table->unique(['personas_id', 'contacto']);
-            $table->boolean('es_principal')->default(false);
-            $table->boolean('estado')->default(true);
+            $table->boolean('is_primary')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('empresas_id')->references('id')->on('empresas');

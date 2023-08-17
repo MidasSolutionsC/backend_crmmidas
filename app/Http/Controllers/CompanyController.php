@@ -67,8 +67,7 @@ class CompanyController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->companyValidator->validate('update');
-  
+      $validator = $this->companyValidator->validate();  
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {

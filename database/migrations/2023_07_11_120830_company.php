@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('distritos_id')->nullable();
             $table->string('razon_social', 80);
             $table->string('nombre_comercial', 80)->nullable();
-            $table->mediumText('descripcion')->nullable();
+            $table->text('descripcion')->nullable();
             $table->foreignId('tipo_documentos_id');
             $table->string('documento', 11);
             $table->string('tipo_empresa', 30)->nullable();
@@ -28,10 +28,10 @@ return new class extends Migration
             $table->string('ciudad', 60)->nullable();
             $table->string('telefono', 11)->nullable();
             $table->string('correo', 100)->unique();
+            $table->boolean('is_active')->default(true);
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
-            $table->boolean('estado')->default(true);
             $table->unique(['tipo_documentos_id', 'documento']);
             $table->timestamps();
             $table->softDeletes();

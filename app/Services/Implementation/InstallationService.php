@@ -16,40 +16,34 @@ class InstallationService implements IInstallation{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $installation = $this->model->find($id);
-    if($installation){
-      $installation->fecha_creado = Carbon::parse($installation->created_at)->format('d-m-Y H:i:s');
-      $installation->fecha_modificado = Carbon::parse($installation->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $installation;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $installation = $this->model->create($data);
     if($installation){
-      $installation->fecha_creado = Carbon::parse($installation->created_at)->format('d-m-Y H:i:s');
+      $installation->created_at = Carbon::parse($installation->created_at)->format('Y-m-d H:i:s');
     }
 
     return $installation;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $installation = $this->model->find($id);
     if($installation){
       $installation->fill($data);
       $installation->save();
-      $installation->fecha_modificado = Carbon::parse($installation->updated_at)->format('d-m-Y H:i:s');
+      $installation->updated_at = Carbon::parse($installation->updated_at)->format('Y-m-d H:i:s');
       return $installation;
     }
 
@@ -59,11 +53,11 @@ class InstallationService implements IInstallation{
   public function delete(int $id){
     $installation = $this->model->find($id);
     if($installation != null){
-      $installation->estado = 0;
+      $installation->is_active = 0;
       $installation->save();
       $result = $installation->delete();
       if($result){
-        $installation->fecha_eliminado = Carbon::parse($installation->deleted_at)->format('d-m-Y H:i:s');
+        $installation->deleted_st = Carbon::parse($installation->deleted_at)->format('Y-m-d H:i:s');
         return $installation;
       }
     }
@@ -74,7 +68,7 @@ class InstallationService implements IInstallation{
   public function restore(int $id){
     $installation = $this->model->withTrashed()->find($id);
     if($installation != null && $installation->trashed()){
-      $installation->estado = 1;
+      $installation->is_active = 1;
       $installation->save();
       $result = $installation->restore();
       if($result){

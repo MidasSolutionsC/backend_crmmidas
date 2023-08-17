@@ -8,85 +8,36 @@ use Illuminate\Support\Facades\Validator;
 class PersonValidator {
   
   private $request;
+  private $id;
 
   public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
+  }
+
+  private function rules(){
     return [
       'nombres' => 'required|string|max:60',
       'apellido_paterno' => 'required|string|max:60',
       'apellido_materno' => 'required|string|max:60',
       'paises_id' => 'required|integer',
+      'distritos_id' => 'nullable|integer',
       'tipo_documentos_id' => 'required|integer',
-      'documento' => 'required|string|max:11|unique:personas,documento,tipo_documentos_id,' . $this->request->input('id'),
+      'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,tipo_documentos_id,' . $this->request->input('tipo_documentos_id'),
+      'reverso_documento' => 'nullable|string|max:250',
+      'fecha_nacimiento' => 'nullable|date:Y-m-d',
+      'telefono' => 'nullable|string|max:11',
+      'correo' => 'nullable|string|max:100',
+      'direccion' => 'nullable|string|max:100',
     ];
   }
 
-  private function rulesUpdate(){
-    return [
-      'nombres' => 'required|string|max:60',
-      'apellido_paterno' => 'required|string|max:60',
-      'apellido_materno' => 'required|string|max:60',
-      'paises_id' => 'required|integer',
-      'tipo_documentos_id' => 'required|integer',
-      'documento' => 'required|string',
-    ];
-  }
-  
-  private function messages(){
-    return [
-      'nombres' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un texto valido.',
-        'max' => 'El :attribute debe tener como máximo :max caracteres.',
-      ],
-      'apellido_paterno' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un texto valido.',
-        'max' => 'El :attribute debe tener como máximo :max caracteres.',
-      ],
-      'apellido_materno' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un texto valido.',
-        'max' => 'El :attribute debe tener como máximo :max caracteres.',
-      ],
-      'paises_id' => [
-        'required' => 'El :attribute es requerido.',
-        'integer' => 'El :attribute no es un numero entero valido.',
-      ],
-      'tipo_documentos_id' => [
-        'required' => 'El :attribute es requerido.',
-        'integer' => 'El :attribute no es un numero entero valido.',
-      ],
-      'documento' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un texto valido.',
-        'unique' => 'El :attribute ya existe en la base de datos.',
-        'max' => 'El :attribute debe tener como máximo :max caracteres.',
-      ],
-      'fecha_nacimiento' => [
-        'required' => 'El :attribute es requerido.',
-        'email' => 'El :attribute no es un email valido.',
-        'unique' => 'El :attribute ya existe en la base de datos.',
-      ],
-      'fecha_nacimiento' => [
-        'required' => 'El :attribute es requerido.',
-        'date' => 'El formato de fecha de :attribute debe ser Y-m-d.',
-      ],
-    ];
-
-  }
 }
 
 ?>

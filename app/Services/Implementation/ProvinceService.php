@@ -16,12 +16,8 @@ class ProvinceService implements IProvince{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
@@ -33,40 +29,32 @@ class ProvinceService implements IProvince{
     }
     
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
   public function getById(int $id){
-    $province = $this->model->find($id);
-    if($province){
-      $province->fecha_creado = Carbon::parse($province->created_at)->format('d-m-Y H:i:s');
-      $province->fecha_modificado = Carbon::parse($province->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $province;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $province = $this->model->create($data);
     if($province){
-      $province->fecha_creado = Carbon::parse($province->created_at)->format('d-m-Y H:i:s');
+      $province->created_at = Carbon::parse($province->created_at)->format('Y-m-d H:i:s');
     }
 
     return $province;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $province = $this->model->find($id);
     if($province){
       $province->fill($data);
       $province->save();
-      $province->fecha_modificado = Carbon::parse($province->updated_at)->format('d-m-Y H:i:s');
+      $province->updated_at = Carbon::parse($province->updated_at)->format('Y-m-d H:i:s');
       return $province;
     }
 
@@ -79,7 +67,7 @@ class ProvinceService implements IProvince{
       $province->save();
       $result = $province->delete();
       if($result){
-        $province->fecha_eliminado = Carbon::parse($province->deleted_at)->format('d-m-Y H:i:s');
+        $province->deleted_st = Carbon::parse($province->deleted_at)->format('Y-m-d H:i:s');
         return $province;
       }
     }

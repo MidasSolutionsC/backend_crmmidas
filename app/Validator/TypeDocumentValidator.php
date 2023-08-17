@@ -8,39 +8,24 @@ use Illuminate\Support\Facades\Validator;
 class TypeDocumentValidator {
 
   private $request;
+  private $id;
 
-  public function __construct(Request $request) {
+  public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
-  
-  private function rulesCreate(){
-    return [
-      'nombre' => 'required|unique:tipo_documentos,nombre,' . $this->request->input('id'),
-      'abreviacion' => 'required'
-    ];
-  }
-  
-  private function rulesUpdate(){
-    return [
-      'nombre' => 'required',
-      'abreviacion' => 'required'
-    ];
-  }
 
-  private function messages(){
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
+  }
+  
+  private function rules(){
     return [
-      'nombre.required' => 'El :attribute es requerido.',
-      'nombre.unique' => 'El :attribute ya existe en la base de datos',
-      'abreviacion.required' => 'La :attribute es requerido.',
+      'nombre' => 'required|string|max:40|unique:tipo_documentos,nombre,' . $this->id,
+      'abreviacion' => 'required|string|max:15',
+      'is_active' => 'nullable|boolean',
     ];
   }
 }

@@ -8,43 +8,27 @@ use Illuminate\Support\Facades\Validator;
 class MemberValidator {
 
   private $request;
+  private $id;
 
-  public function __construct(Request $request) {
+  public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
-  
-  private function rulesCreate(){
-    return [
-      'grupos_id' => 'required',
-      'usuarios_id' => 'required|unique:integrantes,grupos_id,NULL,id,usuarios_id,' . $this->request->input('usuarios_id')
-    ];
-  }
-  
-  private function rulesUpdate(){
-    return [
-      'grupos_id' => 'required',
-      'usuarios_id' => 'required|unique:integrantes,grupos_id,NULL,id,usuarios_id,' . $this->request->input('usuarios_id'),
-      // 'usuarios_id' => 'required',
 
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
+  }
+
+  private function rules(){
+    return [
+      'grupos_id' => 'required|integer',
+      'usuarios_id' => 'required|integer|unique:integrantes,usuarios_id,'. $this->id . ',id,grupos_id,' . $this->request->input('grupos_id'),
+      'is_active' => 'nullable|boolean',
     ];
   }
 
-  private function messages(){
-    return [
-      'grupos_id.required' => 'El :attribute es requerido.',
-      'usuarios_id.required' => 'El :attribute es requerido.',
-      'usuarios_id.unique' => 'El :attribute ya existe en la base de datos.',
-    ];
-  }
 }
 
 

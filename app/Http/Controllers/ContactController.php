@@ -97,7 +97,7 @@ class ContactController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->contactValidator->validate('update');
+      $validator = $this->contactValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

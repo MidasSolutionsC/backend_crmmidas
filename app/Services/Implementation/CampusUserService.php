@@ -5,6 +5,8 @@ namespace App\Services\Implementation;
 use App\Models\CampusUser;
 use App\Services\Interfaces\ICampusUser;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 class CampusUserService implements ICampusUser{
 
@@ -16,57 +18,48 @@ class CampusUserService implements ICampusUser{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    
+    // $query->addSelect(DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS fecha_creado"));
+    // $query->addSelect(DB::raw("DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS fecha_modificado"));
+    
+    $result = $query->get();
     return $result;
   }
 
-  public function getFilterByCampus(int $campusId)
-  {
+  public function getFilterByCampus(int $campusId){
     $query = $this->model->select();
     if($campusId){
       $query->where('sedes_id', $campusId);
     }
     
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
   public function getById(int $id){
-    $campusUser = $this->model->find($id);
-    if($campusUser){
-      $campusUser->fecha_creado = Carbon::parse($campusUser->created_at)->format('d-m-Y H:i:s');
-      $campusUser->fecha_modificado = Carbon::parse($campusUser->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $campusUser;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $campusUser = $this->model->create($data);
     if($campusUser){
-      $campusUser->fecha_creado = Carbon::parse($campusUser->created_at)->format('d-m-Y H:i:s');
+      $campusUser->created_at = Carbon::parse($campusUser->created_at)->format('Y-m-d H:i:s');
     }
 
     return $campusUser;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $campusUser = $this->model->find($id);
     if($campusUser){
       $campusUser->fill($data);
       $campusUser->save();
-      $campusUser->fecha_modificado = Carbon::parse($campusUser->updated_at)->format('d-m-Y H:i:s');
+      $campusUser->updated_at = Carbon::parse($campusUser->updated_at)->format('Y-m-d H:i:s');
       return $campusUser;
     }
 
@@ -76,11 +69,11 @@ class CampusUserService implements ICampusUser{
   public function delete(int $id){
     $campusUser = $this->model->find($id);
     if($campusUser != null){
-      $campusUser->estado = 0;
+      $campusUser->is_active = 0;
       $campusUser->save();
       $result = $campusUser->delete();
       if($result){
-        $campusUser->fecha_eliminado = Carbon::parse($campusUser->deleted_at)->format('d-m-Y H:i:s');
+        $campusUser->deleted_st = Carbon::parse($campusUser->deleted_at)->format('Y-m-d H:i:s');
         return $campusUser;
       }
     }
@@ -91,7 +84,7 @@ class CampusUserService implements ICampusUser{
   public function restore(int $id){
     $campusUser = $this->model->withTrashed()->find($id);
     if($campusUser != null && $campusUser->trashed()){
-      $campusUser->estado = 1;
+      $campusUser->is_active = 1;
       $campusUser->save();
       $result = $campusUser->restore();
       if($result){

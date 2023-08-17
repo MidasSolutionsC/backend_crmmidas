@@ -97,7 +97,7 @@ class AddressController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->addressValidator->validate('update');
+      $validator = $this->addressValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

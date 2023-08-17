@@ -15,42 +15,36 @@ class UserService implements IUser {
   }
   
   public function getAll(){
-    $result = $this->model->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $usuario = $this->model->find($id);
-    if($usuario){
-      $usuario->fecha_creado = Carbon::parse($usuario->created_at)->format('d-m-Y H:i:s');
-      $usuario->fecha_modificado = Carbon::parse($usuario->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $usuario;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $data['clave'] = password_hash($data['clave'], PASSWORD_BCRYPT);
     $usuario = $this->model->create($data);
     if($usuario){
-      $usuario->fecha_creado = Carbon::parse($usuario->created_at)->format('d-m-Y H:i:s');
+      $usuario->created_at = Carbon::parse($usuario->created_at)->format('Y-m-d H:i:s');
     }
 
     return $usuario;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $usuario = $this->model->find($id);
     if($usuario){
       $data['clave'] = password_hash($data['clave'], PASSWORD_BCRYPT);
       $usuario->fill($data);
       $usuario->save();
-      $usuario->fecha_modificado = Carbon::parse($usuario->updated_at)->format('d-m-Y H:i:s');
+      $usuario->updated_at = Carbon::parse($usuario->updated_at)->format('Y-m-d H:i:s');
       return $usuario;
     } 
     
@@ -60,11 +54,11 @@ class UserService implements IUser {
   public function delete(int $id){
     $usuario = $this->model->find($id);
     if(!is_null($usuario)){
-      $usuario->estado = 0;
+      $usuario->is_active = 0;
       $usuario->save();
       $result = $usuario->delete();
       if($result){
-        $usuario->fecha_eliminado = Carbon::parse($usuario->deleted_at)->format('d-m-Y H:i:s');
+        $usuario->deleted_st = Carbon::parse($usuario->deleted_at)->format('Y-m-d H:i:s');
         return $usuario;
       }
     } 
@@ -75,7 +69,7 @@ class UserService implements IUser {
   public function restore(int $id){
     $usuario = $this->model->withTrashed()->find($id);
     if(!is_null($usuario) && $usuario->trashed()){
-      $usuario->estado = 1;
+      $usuario->is_active = 1;
       $usuario->save();
       $result = $usuario->restore();
       if($result){

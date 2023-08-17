@@ -16,40 +16,34 @@ class saleHistoryService implements ISaleHistory{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $saleHistory = $this->model->find($id);
-    if($saleHistory){
-      $saleHistory->fecha_creado = Carbon::parse($saleHistory->created_at)->format('d-m-Y H:i:s');
-      $saleHistory->fecha_modificado = Carbon::parse($saleHistory->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $saleHistory;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $saleHistory = $this->model->create($data);
     if($saleHistory){
-      $saleHistory->fecha_creado = Carbon::parse($saleHistory->created_at)->format('d-m-Y H:i:s');
+      $saleHistory->created_at = Carbon::parse($saleHistory->created_at)->format('Y-m-d H:i:s');
     }
 
     return $saleHistory;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $saleHistory = $this->model->find($id);
     if($saleHistory){
       $saleHistory->fill($data);
       $saleHistory->save();
-      $saleHistory->fecha_modificado = Carbon::parse($saleHistory->updated_at)->format('d-m-Y H:i:s');
+      $saleHistory->updated_at = Carbon::parse($saleHistory->updated_at)->format('Y-m-d H:i:s');
       return $saleHistory;
     }
 
@@ -59,11 +53,11 @@ class saleHistoryService implements ISaleHistory{
   public function delete(int $id){
     $saleHistory = $this->model->find($id);
     if($saleHistory != null){
-      $saleHistory->estado = 0;
+      $saleHistory->is_active = 0;
       $saleHistory->save();
       $result = $saleHistory->delete();
       if($result){
-        $saleHistory->fecha_eliminado = Carbon::parse($saleHistory->deleted_at)->format('d-m-Y H:i:s');
+        $saleHistory->deleted_st = Carbon::parse($saleHistory->deleted_at)->format('Y-m-d H:i:s');
         return $saleHistory;
       }
     }
@@ -74,7 +68,7 @@ class saleHistoryService implements ISaleHistory{
   public function restore(int $id){
     $saleHistory = $this->model->withTrashed()->find($id);
     if($saleHistory != null && $saleHistory->trashed()){
-      $saleHistory->estado = 1;
+      $saleHistory->is_active = 1;
       $saleHistory->save();
       $result = $saleHistory->restore();
       if($result){

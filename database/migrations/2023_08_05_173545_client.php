@@ -23,9 +23,10 @@ return new class extends Migration
             $table->string('codigo_carga', 100)->nullable();
             $table->string('segmento_vodafond', 30)->nullable();
             $table->string('cta_bco', 100)->nullable();
-            $table->foreignId('user_create_id')->nullable();            
+            $table->foreignId('user_create_id');            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('personas_id')->references('id')->on('personas');

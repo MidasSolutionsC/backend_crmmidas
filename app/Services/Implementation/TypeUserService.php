@@ -16,47 +16,34 @@ class TypeUserService implements ITypeUser{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
-    //return $this->model->get();
-    //return $this->model->withTrashed()->get(); // Incluido los eliminados
   }
 
   public function getById(int $id){
-    $tipoUsuario = $this->model->find($id);
-    if($tipoUsuario){
-      $tipoUsuario->fecha_creado = Carbon::parse($tipoUsuario->created_at)->format('d-m-Y H:i:s');
-      $tipoUsuario->fecha_modificado = Carbon::parse($tipoUsuario->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $tipoUsuario;
-    //return $this->model->where('id', $id)->first();
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $tipoUsuario = $this->model->create($data);
     if($tipoUsuario){
-      $tipoUsuario->fecha_creado = Carbon::parse($tipoUsuario->created_at)->format('d-m-Y H:i:s');
+      $tipoUsuario->created_at = Carbon::parse($tipoUsuario->created_at)->format('Y-m-d H:i:s');
     }
 
     return $tipoUsuario;
   }
 
   public function update(array $data, int $id){
-    // return $this->model->where('id', $id)
-    //   ->first()
-    //   ->fill($data)
-    //   ->save();
+    $data['updated_at'] = Carbon::now(); 
     $tipoUsuario = $this->model->find($id);
     if($tipoUsuario){
       $tipoUsuario->fill($data);
       $tipoUsuario->save();
-      $tipoUsuario->fecha_modificado = Carbon::parse($tipoUsuario->updated_at)->format('d-m-Y H:i:s');
+      $tipoUsuario->updated_at = Carbon::parse($tipoUsuario->updated_at)->format('Y-m-d H:i:s');
       return $tipoUsuario;
     }
 
@@ -66,11 +53,11 @@ class TypeUserService implements ITypeUser{
   public function delete(int $id){
     $tipoUsuario = $this->model->find($id);
     if($tipoUsuario != null){
-      $tipoUsuario->estado = 0;
+      $tipoUsuario->is_active = 0;
       $tipoUsuario->save();
       $result = $tipoUsuario->delete();
       if($result){
-        $tipoUsuario->fecha_eliminado = Carbon::parse($tipoUsuario->deleted_at)->format('d-m-Y H:i:s');
+        $tipoUsuario->deleted_st = Carbon::parse($tipoUsuario->deleted_at)->format('Y-m-d H:i:s');
         return $tipoUsuario;
       }
     }
@@ -81,7 +68,7 @@ class TypeUserService implements ITypeUser{
   public function restore(int $id){
     $tipoUsuario = $this->model->withTrashed()->find($id);
     if($tipoUsuario != null && $tipoUsuario->trashed()){
-      $tipoUsuario->estado = 1;
+      $tipoUsuario->is_active = 1;
       $tipoUsuario->save();
       $result = $tipoUsuario->restore();
       if($result){

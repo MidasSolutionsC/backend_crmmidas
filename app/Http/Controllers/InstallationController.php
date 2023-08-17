@@ -67,7 +67,7 @@ class InstallationController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->installationValidator->validate('update');
+      $validator = $this->installationValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

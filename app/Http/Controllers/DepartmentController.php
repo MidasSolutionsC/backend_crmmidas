@@ -82,7 +82,7 @@ class DepartmentController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->departmentValidator->validate('update');
+      $validator = $this->departmentValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

@@ -16,40 +16,34 @@ class ProductService implements IProduct{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $product = $this->model->find($id);
-    if($product){
-      $product->fecha_creado = Carbon::parse($product->created_at)->format('d-m-Y H:i:s');
-      $product->fecha_modificado = Carbon::parse($product->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $product;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $product = $this->model->create($data);
     if($product){
-      $product->fecha_creado = Carbon::parse($product->created_at)->format('d-m-Y H:i:s');
+      $product->created_at = Carbon::parse($product->created_at)->format('Y-m-d H:i:s');
     }
 
     return $product;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $product = $this->model->find($id);
     if($product){
       $product->fill($data);
       $product->save();
-      $product->fecha_modificado = Carbon::parse($product->updated_at)->format('d-m-Y H:i:s');
+      $product->updated_at = Carbon::parse($product->updated_at)->format('Y-m-d H:i:s');
       return $product;
     }
 
@@ -59,11 +53,11 @@ class ProductService implements IProduct{
   public function delete(int $id){
     $product = $this->model->find($id);
     if($product != null){
-      $product->estado = 0;
+      $product->is_active = 0;
       $product->save();
       $result = $product->delete();
       if($result){
-        $product->fecha_eliminado = Carbon::parse($product->deleted_at)->format('d-m-Y H:i:s');
+        $product->deleted_st = Carbon::parse($product->deleted_at)->format('Y-m-d H:i:s');
         return $product;
       }
     }
@@ -74,7 +68,7 @@ class ProductService implements IProduct{
   public function restore(int $id){
     $product = $this->model->withTrashed()->find($id);
     if($product != null && $product->trashed()){
-      $product->estado = 1;
+      $product->is_active = 1;
       $product->save();
       $result = $product->restore();
       if($result){

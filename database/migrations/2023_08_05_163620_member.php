@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('grupos_id');
             $table->foreignId('usuarios_id');
-            $table->boolean('estado')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->unique(['grupos_id', 'usuarios_id']);
             $table->timestamps();
             $table->softDeletes();

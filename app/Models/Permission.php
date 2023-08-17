@@ -22,5 +22,5 @@ class Permission extends Model implements AuthorizableContract, AuthenticatableC
         'deleted_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

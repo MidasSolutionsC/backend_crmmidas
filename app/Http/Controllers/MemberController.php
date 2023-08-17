@@ -67,7 +67,7 @@ class MemberController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->memberValidator->validate('update');
+      $validator = $this->memberValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

@@ -18,12 +18,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tipo_servicios_id');
             $table->string('nombre', 80);
-            $table->mediumText('descripcion')->nullable();
+            $table->text('descripcion')->nullable();
             $table->float('precio', 8, 2)->nullable();
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
-            $table->boolean('estado')->default(true);
+            $table->boolean('is_active')->default(true);
             $table->unique(['tipo_servicios_id', 'nombre']);
             $table->timestamps();
             $table->softDeletes();

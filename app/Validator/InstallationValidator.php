@@ -8,67 +8,37 @@ use Illuminate\Support\Facades\Validator;
 class InstallationValidator {
   
   private $request;
+  private $id;
 
   public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
-    return [
-      'ventas_id' => 'required',
-      'tipo' => 'required',
-      'direccion' => 'required',
-      'numero' => 'required',
-      'escalera' => 'required',
-      'portal' => 'required',
-      'planta' => 'required',
-      'puerta' => 'required',
-      'codigo_postal' => 'required',
-      'localidad' => 'required',
-      'provincia' => 'required',
-    ];
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
   }
 
-  private function rulesUpdate(){
+  private function rules(){
     return [
-      'ventas_id' => 'required',
-      'tipo' => 'required',
-      'direccion' => 'required',
-      'numero' => 'required',
-      'escalera' => 'required',
-      'portal' => 'required',
-      'planta' => 'required',
-      'puerta' => 'required',
-      'codigo_postal' => 'required',
-      'localidad' => 'required',
-      'provincia' => 'required',
+      'ventas_id' => 'required|integer',
+      'tipo' => 'required|string|max:20',
+      'direccion' => 'required|string|max:200',
+      'numero' => 'nullable|string|max:20',
+      'escalera' => 'nullable|string|max:70',
+      'portal' => 'nullable|string|max:70',
+      'planta' => 'nullable|string|max:70',
+      'puerta' => 'nullable|string|max:20',
+      'codigo_postal' => 'required|string|max:20',
+      'localidad' => 'nullable|string|max:70',
+      'provincia' => 'required|string|max:70',
+      'is_active' => 'nullable|boolean',
+      'user_create_id' => 'required|integer',
+      'user_update_id' => 'nullable|integer',
+      'user_delete_id' => 'nullable|integer',
     ];
-  }
-  
-  private function messages(){
-    return [
-      'ventas_id.required' => 'El atributo :attribute es requerido.',
-      'tipo.required' => 'El atributo :attribute es requerido.',
-      'direccion.required' => 'El atributo :attribute es requerido.',
-      'numero.required' => 'El atributo :attribute es requerido.',
-      'escalera.required' => 'El atributo :attribute es requerido.',
-      'portal.required' => 'El atributo :attribute es requerido.',
-      'planta.required' => 'El atributo :attribute es requerido.',
-      'puerta.required' => 'El atributo :attribute es requerido.',
-      'codigo_postal.required' => 'El atributo :attribute es requerido.',
-      'localidad.required' => 'El atributo :attribute es requerido.',
-      'provincia.required' => 'El atributo :attribute es requerido.',
-    ];
-
   }
 }
 

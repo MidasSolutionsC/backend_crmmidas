@@ -79,7 +79,7 @@ class TypeUserController extends Controller{
 
   public function update($id){
     try {
-      $validator = $this->typeUserValidator->validate('update');
+      $validator = $this->typeUserValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

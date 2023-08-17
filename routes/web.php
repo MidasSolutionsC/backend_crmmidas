@@ -77,18 +77,37 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'CampusController@restore');
   });
 
-  // SEDES USUARIOS
-  $router->group(['prefix' => '/campusUser'], function () use ($router) {
-    $router->get('/', 'CampusUserController@listAll');
-    $router->get('/filterCampus/{campusId}', 'CampusUserController@getFilterByCampus');
-    $router->get('/{id}', 'CampusUserController@get');
-    $router->post('/', 'CampusUserController@create');
-    $router->put('/{id}', 'CampusUserController@update');
-    $router->delete('/{id}', 'CampusUserController@delete');
-    $router->get('/restore/{id}', 'CampusUserController@restore');
+  // TIPO DE ESTADOS
+  $router->group(['prefix' => '/typeStatus'], function () use ($router) {
+    $router->get('/', 'TypeStatusController@listAll');
+    $router->get('/{id}', 'TypeStatusController@get');
+    $router->post('/', 'TypeStatusController@create');
+    $router->put('/{id}', 'TypeStatusController@update');
+    $router->delete('/{id}', 'TypeStatusController@delete');
+    $router->get('/restore/{id}', 'TypeStatusController@restore');
+  });
+  
+  // TIPO DE DOCUMENTOS
+  $router->group(['prefix' => '/typeDocument'], function () use ($router) {
+    $router->get('/', 'TypeDocumentController@listAll');
+    $router->get('/{id}', 'TypeDocumentController@get');
+    $router->post('/', 'TypeDocumentController@create');
+    $router->put('/{id}', 'TypeDocumentController@update');
+    $router->delete('/{id}', 'TypeDocumentController@delete');
+    $router->get('/restore/{id}', 'TypeDocumentController@restore');
   });
 
-  // SEDES USUARIOS
+  // TIPO DE USUARIO
+  $router->group(['prefix' => '/typeUser'], function () use ($router) {
+    $router->get('/', 'TypeUserController@listAll');
+    $router->get('/{id}', 'TypeUserController@get');
+    $router->post('/', 'TypeUserController@create');
+    $router->put('/{id}', 'TypeUserController@update');
+    $router->delete('/{id}', 'TypeUserController@delete');
+    $router->get('/restore/{id}', 'TypeUserController@restore');
+  });
+
+  // PERMISOS DE USUARIOS
   $router->group(['prefix' => '/permission'], function () use ($router) {
     $router->get('/', 'PermissionController@listAll');
     $router->get('/{id}', 'PermissionController@get');
@@ -98,7 +117,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'PermissionController@restore');
   });
 
-  // SEDES USUARIOS
+  // PERMISOS TIPO USUARIOS
   $router->group(['prefix' => '/typeUserPermission'], function () use ($router) {
     $router->get('/', 'TypeUserPermissionController@listAll');
     $router->get('/filterTypeUser/{typeUserId}', 'TypeUserPermissionController@getFilterByTypeUser');
@@ -141,25 +160,76 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'ContactController@restore');
   });
 
-
-  // TIPO DE USUARIO
-  $router->group(['prefix' => '/typeUser'], function () use ($router) {
-    $router->get('/', 'TypeUserController@listAll');
-    $router->get('/{id}', 'TypeUserController@get');
-    $router->post('/', 'TypeUserController@create');
-    $router->put('/{id}', 'TypeUserController@update');
-    $router->delete('/{id}', 'TypeUserController@delete');
-    $router->get('/restore/{id}', 'TypeUserController@restore');
+  // DIRECCIONES
+  $router->group(['prefix' => '/address'], function () use ($router) {
+    $router->get('/', 'AddressController@listAll');
+    $router->get('/filterCompany/{companyId}', 'AddressController@getFilterByCompany');
+    $router->get('/filterPerson/{personId}', 'AddressController@getFilterByPerson');
+    $router->get('/{id}', 'AddressController@get');
+    $router->post('/', 'AddressController@create');
+    $router->put('/{id}', 'AddressController@update');
+    $router->delete('/{id}', 'AddressController@delete');
+    $router->get('/restore/{id}', 'AddressController@restore');
   });
 
-  // TIPO DE DOCUMENTOS
-  $router->group(['prefix' => '/typeDocument'], function () use ($router) {
-    $router->get('/', 'TypeDocumentController@listAll');
-    $router->get('/{id}', 'TypeDocumentController@get');
-    $router->post('/', 'TypeDocumentController@create');
-    $router->put('/{id}', 'TypeDocumentController@update');
-    $router->delete('/{id}', 'TypeDocumentController@delete');
-    $router->get('/restore/{id}', 'TypeDocumentController@restore');
+  // USUARIOS
+  $router->group(['prefix' => '/user'], function () use ($router) {
+    $router->post('/login', 'AuthController@login');
+    $router->get('/logout/{id}', 'AuthController@logout');
+    $router->post('/', 'UserController@create');
+    $router->post('/register', 'UserController@createComplete');
+    
+    $router->get('/', 'UserController@listAll');
+    $router->get('/{id}', 'UserController@get');
+    $router->put('/{id}', 'UserController@update');
+    $router->delete('/{id}', 'UserController@delete');
+    $router->get('/restore/{id}', 'UserController@restore');
+    // $router->group(['middleware' => 'auth'], function () use ($router) {
+    // });
+  });
+
+  // HISTORIAL DE SESIONES
+  $router->group(['prefix' => '/sessionHistory'], function () use ($router) {
+    $router->get('/', 'SessionHistoryController@listAll');
+    $router->get('/filterUser/{userId}', 'SessionHistoryController@getFilterByUser');
+    $router->get('/{id}', 'SessionHistoryController@get');
+    $router->post('/', 'SessionHistoryController@create');
+    $router->put('/{id}', 'SessionHistoryController@update');
+    $router->delete('/{id}', 'SessionHistoryController@delete');
+    $router->get('/restore/{id}', 'SessionHistoryController@restore');
+  });
+
+  // SEDES USUARIOS
+  $router->group(['prefix' => '/campusUser'], function () use ($router) {
+    $router->get('/', 'CampusUserController@listAll');
+    $router->get('/filterCampus/{campusId}', 'CampusUserController@getFilterByCampus');
+    $router->get('/{id}', 'CampusUserController@get');
+    $router->post('/', 'CampusUserController@create');
+    $router->put('/{id}', 'CampusUserController@update');
+    $router->delete('/{id}', 'CampusUserController@delete');
+    $router->get('/restore/{id}', 'CampusUserController@restore');
+  });
+
+  // LLAMADAS
+  $router->group(['prefix' => '/call'], function () use ($router) {
+    $router->get('/', 'CallController@listAll');
+    $router->get('/filterCUser/{userId}', 'CallController@getFilterByUser');
+    $router->get('/{id}', 'CallController@get');
+    $router->post('/', 'CallController@create');
+    $router->put('/{id}', 'CallController@update');
+    $router->delete('/{id}', 'CallController@delete');
+    $router->get('/restore/{id}', 'CallController@restore');
+  });
+
+  // CALENDARIOS
+  $router->group(['prefix' => '/calendar'], function () use ($router) {
+    $router->get('/', 'CalendarController@listAll');
+    $router->get('/filterCUser/{userId}', 'CalendarController@getFilterByUser');
+    $router->get('/{id}', 'CalendarController@get');
+    $router->post('/', 'CalendarController@create');
+    $router->put('/{id}', 'CalendarController@update');
+    $router->delete('/{id}', 'CalendarController@delete');
+    $router->get('/restore/{id}', 'CalendarController@restore');
   });
 
   // GRUPOS
@@ -192,6 +262,27 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'ClientController@restore');
   });
 
+  // TIPO DE CUENTAS BANCARIAS
+  $router->group(['prefix' => '/typeBankAccount'], function () use ($router) {
+    $router->get('/', 'TypeBankAccountController@listAll');
+    $router->get('/{id}', 'TypeBankAccountController@get');
+    $router->post('/', 'TypeBankAccountController@create');
+    $router->put('/{id}', 'TypeBankAccountController@update');
+    $router->delete('/{id}', 'TypeBankAccountController@delete');
+    $router->get('/restore/{id}', 'TypeBankAccountController@restore');
+  });
+
+  // CUENTAS BANCARIAS
+  $router->group(['prefix' => '/bankAccount'], function () use ($router) {
+    $router->get('/', 'BankAccountController@listAll');
+    $router->get('/filterClient/{clientId}', 'BankAccountController@getFilterByClient');
+    $router->get('/{id}', 'BankAccountController@get');
+    $router->post('/', 'BankAccountController@create');
+    $router->put('/{id}', 'BankAccountController@update');
+    $router->delete('/{id}', 'BankAccountController@delete');
+    $router->get('/restore/{id}', 'BankAccountController@restore');
+  });
+
   // TPO DE SERVICIOS
   $router->group(['prefix' => '/typeService'], function () use ($router) {
     $router->get('/', 'TypeServiceController@listAll');
@@ -210,6 +301,17 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->put('/{id}', 'ProductController@update');
     $router->delete('/{id}', 'ProductController@delete');
     $router->get('/restore/{id}', 'ProductController@restore');
+  });
+
+  // PRODUCTOS PRECIOS
+  $router->group(['prefix' => '/productPrice'], function () use ($router) {
+    $router->get('/', 'ProductPriceController@listAll');
+    $router->get('/{id}', 'ProductPriceController@get');
+    $router->get('/filterProduct/{productId}', 'ProductPriceController@getFilterByProduct');
+    $router->post('/', 'ProductPriceController@create');
+    $router->put('/{id}', 'ProductPriceController@update');
+    $router->delete('/{id}', 'ProductPriceController@delete');
+    $router->get('/restore/{id}', 'ProductPriceController@restore');
   });
 
   // PROMOCIONES
@@ -242,6 +344,17 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'SaleDocumentController@restore');
   });
 
+  // VENTAS DETALLES
+  $router->group(['prefix' => '/saleDetail'], function () use ($router) {
+    $router->get('/', 'SaleDetailController@listAll');
+    $router->get('/{id}', 'SaleDetailController@get');
+    $router->get('/filterSale/{saleId}', 'SaleDetailController@getFilterBySale');
+    $router->post('/', 'SaleDetailController@create');
+    $router->put('/{id}', 'SaleDetailController@update');
+    $router->delete('/{id}', 'SaleDetailController@delete');
+    $router->get('/restore/{id}', 'SaleDetailController@restore');
+  });
+
   // VENTAS HISTORIAL
   $router->group(['prefix' => '/saleHistory'], function () use ($router) {
     $router->get('/', 'SaleHistoryController@listAll');
@@ -272,19 +385,46 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'ServiceController@restore');
   });
 
-
-  // UserS
-  $router->group(['prefix' => '/user'], function () use ($router) {
-    $router->post('/login', 'AuthController@login');
-    $router->get('/logout/{id}', 'AuthController@logout');
-    $router->post('/', 'UserController@create');
-    
-    $router->get('/', 'UserController@listAll');
-    $router->get('/{id}', 'UserController@get');
-    $router->put('/{id}', 'UserController@update');
-    $router->delete('/{id}', 'UserController@delete');
-    $router->get('/restore/{id}', 'UserController@restore');
-    // $router->group(['middleware' => 'auth'], function () use ($router) {
-    // });
+  // SERVICIOS COMENTARIOS
+  $router->group(['prefix' => '/serviceComment'], function () use ($router) {
+    $router->get('/', 'ServiceCommentController@listAll');
+    $router->get('/filterService/{serviceId}', 'ServiceCommentController@getFilterByService');
+    $router->get('/{id}', 'ServiceCommentController@get');
+    $router->post('/', 'ServiceCommentController@create');
+    $router->put('/{id}', 'ServiceCommentController@update');
+    $router->delete('/{id}', 'ServiceCommentController@delete');
+    $router->get('/restore/{id}', 'ServiceCommentController@restore');
   });
+
+  // SERVICIOS HISTORIALES
+  $router->group(['prefix' => '/serviceHistory'], function () use ($router) {
+    $router->get('/', 'ServiceHistoryController@listAll');
+    $router->get('/filterService/{serviceId}', 'ServiceHistoryController@getFilterByService');
+    $router->get('/{id}', 'ServiceHistoryController@get');
+    $router->post('/', 'ServiceHistoryController@create');
+    $router->put('/{id}', 'ServiceHistoryController@update');
+    $router->delete('/{id}', 'ServiceHistoryController@delete');
+    $router->get('/restore/{id}', 'ServiceHistoryController@restore');
+  });
+
+  // MANUALES
+  $router->group(['prefix' => '/manual'], function () use ($router) {
+    $router->get('/', 'ManualController@listAll');
+    $router->get('/{id}', 'ManualController@get');
+    $router->post('/', 'ManualController@create');
+    $router->put('/{id}', 'ManualController@update');
+    $router->delete('/{id}', 'ManualController@delete');
+    $router->get('/restore/{id}', 'ManualController@restore');
+  });
+
+  // ANUNCIOS
+  $router->group(['prefix' => '/advertisement'], function () use ($router) {
+    $router->get('/', 'AdvertisementController@listAll');
+    $router->get('/{id}', 'AdvertisementController@get');
+    $router->post('/', 'AdvertisementController@create');
+    $router->put('/{id}', 'AdvertisementController@update');
+    $router->delete('/{id}', 'AdvertisementController@delete');
+    $router->get('/restore/{id}', 'AdvertisementController@restore');
+  });
+ 
 });

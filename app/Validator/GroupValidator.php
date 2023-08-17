@@ -7,43 +7,28 @@ use Illuminate\Support\Facades\Validator;
 
 class GroupValidator{
   
-
-  /**
-   * @var Request
-   */
   private $request;
+  private $id;
 
-  public function __construct(Request $request)
-  {
+  public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
-    return [
-      'nombre' => 'required|unique:tipo_usuarios,nombre,id,' . $this->request->input('id'),
-    ];
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
   }
 
-  private function rulesUpdate(){
+  private function rules(){
     return [
-      'nombre' => 'required',
-    ];
-  }
-
-  private function messages(){
-    return [
-      'nombre.required' => 'El :attribute es requerido.',
-      'nombre.unique' => 'El :attribute ya existe en la base de datos.',
-      'descripcion.required' => 'La :attribute es requerido.',
+      'nombre' => 'required|string|max:70',
+      'descripcion' => 'nullable|string',
+      'user_create_id' => 'required|integer',
+      'user_update_id' => 'nullable|integer',
+      'user_delete_id' => 'nullable|integer',
+      'is_active' => 'nullable|boolean',
     ];
   }
 }

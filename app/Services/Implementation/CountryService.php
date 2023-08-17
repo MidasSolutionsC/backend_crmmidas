@@ -16,40 +16,34 @@ class CountryService implements ICountry{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $country = $this->model->find($id);
-    if($country){
-      $country->fecha_creado = Carbon::parse($country->created_at)->format('d-m-Y H:i:s');
-      $country->fecha_modificado = Carbon::parse($country->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $country;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $country = $this->model->create($data);
     if($country){
-      $country->fecha_creado = Carbon::parse($country->created_at)->format('d-m-Y H:i:s');
+      $country->created_at = Carbon::parse($country->created_at)->format('Y-m-d H:i:s');
     }
 
     return $country;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $country = $this->model->find($id);
     if($country){
       $country->fill($data);
       $country->save();
-      $country->fecha_modificado = Carbon::parse($country->updated_at)->format('d-m-Y H:i:s');
+      $country->updated_at = Carbon::parse($country->updated_at)->format('Y-m-d H:i:s');
       return $country;
     }
 
@@ -62,7 +56,7 @@ class CountryService implements ICountry{
       $country->save();
       $result = $country->delete();
       if($result){
-        $country->fecha_eliminado = Carbon::parse($country->deleted_at)->format('d-m-Y H:i:s');
+        $country->deleted_st = Carbon::parse($country->deleted_at)->format('Y-m-d H:i:s');
         return $country;
       }
     }

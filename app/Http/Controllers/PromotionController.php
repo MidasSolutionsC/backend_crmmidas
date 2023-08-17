@@ -67,7 +67,7 @@ class PromotionController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->promotionValidator->validate('update');
+      $validator = $this->promotionValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

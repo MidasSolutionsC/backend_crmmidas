@@ -7,49 +7,32 @@ use Illuminate\Support\Facades\Validator;
 
 class SaleDocumentValidator{
   
-
-  /**
-   * @var Request
-   */
   private $request;
+  private $id;
 
-  public function __construct(Request $request)
-  {
+  public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
+  }
+
+  private function rules(){
     return [
-      'ventas_id' => 'required',
-      'nombre' => 'required',
-      'archivo' => 'required',
+      'ventas_id' => 'required|integer',
+      'nombre' => 'required|string|max:70',
+      'archivo' => 'required|string|max:100',
+      'user_create_id' => 'required|integer',
+      'user_update_id' => 'integer',
+      'user_delete_id' => 'integer',
+      'is_active' => 'boolean',
     ];
   }
 
-  private function rulesUpdate(){
-    return [
-      'ventas_id' => 'required',
-      'nombre' => 'required',
-      'archivo' => 'required',
-    ];
-  }
-
-  private function messages(){
-    return [
-      'ventas_id.required' => 'El :attribute es requerido.',
-      'nombre.required' => 'El :attribute es requerido.',
-      'archivo.required' => 'La :attribute es requerido.',
-    ];
-  }
 }
 
 

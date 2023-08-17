@@ -82,7 +82,7 @@ class TypeUserPermissionController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->typeUserPermissionValidator->validate('update');
+      $validator = $this->typeUserPermissionValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

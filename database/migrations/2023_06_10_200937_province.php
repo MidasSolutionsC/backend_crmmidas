@@ -17,7 +17,7 @@ return new class extends Migration
             $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('departamentos_id');
-            $table->char('ubigeo_codigo', 4);
+            $table->char('ubigeo_codigo', 4)->unique();
             $table->string('nombre', 100);
             $table->char('departamentos_codigo', 2);
             $table->timestamps();

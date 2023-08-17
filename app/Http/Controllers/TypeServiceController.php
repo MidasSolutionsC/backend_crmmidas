@@ -68,7 +68,7 @@ class TypeServiceController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->typeServiceValidator->validate('update');
+      $validator = $this->typeServiceValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

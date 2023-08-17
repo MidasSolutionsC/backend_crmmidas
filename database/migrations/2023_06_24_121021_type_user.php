@@ -9,11 +9,10 @@ return new class extends Migration{
     public function up(){
         Schema::create('tipo_usuarios', function (Blueprint $table) {
             $table->engine= 'InnoDB';
-
             $table->id();
             $table->string('nombre')->unique();
-            $table->mediumText('descripcion')->nullable();
-            $table->boolean('estado')->default(true);
+            $table->text('descripcion')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
         });

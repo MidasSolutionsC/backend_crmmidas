@@ -17,11 +17,11 @@ class TypeUserPermission extends Model implements AuthenticatableContract, Autho
     protected $fillable = [
         'permisos_id',
         'tipo_usuarios_id',
-        'estado',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

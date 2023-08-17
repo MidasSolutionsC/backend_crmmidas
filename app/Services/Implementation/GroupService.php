@@ -16,40 +16,34 @@ class GroupService implements IGroup{
   }
 
   public function getAll(){
-    $result = $this->model->select('id', 'nombre', 'descripcion', 'estado')->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select('id', 'nombre', 'descripcion', 'estado');
+    $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
-    $group = $this->model->find($id);
-    if($group){
-      $group->fecha_creado = Carbon::parse($group->created_at)->format('d-m-Y H:i:s');
-      $group->fecha_modificado = Carbon::parse($group->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $group;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $group = $this->model->create($data);
     if($group){
-      $group->fecha_creado = Carbon::parse($group->created_at)->format('d-m-Y H:i:s');
+      $group->created_at = Carbon::parse($group->created_at)->format('Y-m-d H:i:s');
     }
 
     return $group;
   }
 
   public function update(array $data, int $id){
+    $data['updated_at'] = Carbon::now(); 
     $group = $this->model->find($id);
     if($group){
       $group->fill($data);
       $group->save();
-      $group->fecha_modificado = Carbon::parse($group->updated_at)->format('d-m-Y H:i:s');
+      $group->updated_at = Carbon::parse($group->updated_at)->format('Y-m-d H:i:s');
       return $group;
     }
 
@@ -59,11 +53,11 @@ class GroupService implements IGroup{
   public function delete(int $id){
     $group = $this->model->find($id);
     if($group != null){
-      $group->estado = 0;
+      $group->is_active = 0;
       $group->save();
       $result = $group->delete();
       if($result){
-        $group->fecha_eliminado = Carbon::parse($group->deleted_at)->format('d-m-Y H:i:s');
+        $group->deleted_st = Carbon::parse($group->deleted_at)->format('Y-m-d H:i:s');
         return $group;
       }
     }
@@ -74,7 +68,7 @@ class GroupService implements IGroup{
   public function restore(int $id){
     $group = $this->model->withTrashed()->find($id);
     if($group != null && $group->trashed()){
-      $group->estado = 1;
+      $group->is_active = 1;
       $group->save();
       $result = $group->restore();
       if($result){

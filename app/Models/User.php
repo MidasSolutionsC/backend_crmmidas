@@ -20,7 +20,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'clave',
         'session_activa',
         'foto_perfil',
-        'estado',
+        'is_active',
         'ultima_conexion',
         'api_token',
         'expires_at',
@@ -40,5 +40,5 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'expires_at',
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

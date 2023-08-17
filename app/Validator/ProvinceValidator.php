@@ -8,60 +8,26 @@ use Illuminate\Support\Facades\Validator;
 class ProvinceValidator {
   
   private $request;
+  private $id;
 
   public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
+  }
+
+  private function rules(){
     return [
       'departamentos_id' => 'required|integer',
       'ubigeo_codigo' => 'required|string|size:4',
       'departamentos_codigo' => 'required|string|size:2',
-      'nombre' => 'required|unique:provincias,nombre,'. $this->request->input('id'),
+      'nombre' => 'required|string|max:100|unique:provincias,nombre,'. $this->id, ',id,departamentos_id,' . $this->request->input('departamentos_id'),
     ];
-  }
-
-  private function rulesUpdate(){
-    return [
-      'departamentos_id' => 'required|integer',
-      'ubigeo_codigo' => 'required|string|size:4',
-      'departamentos_codigo' => 'required|string|size:2',
-      'nombre' => 'required'
-    ];
-  }
-  
-  private function messages(){
-    return [
-      'departamentos_id' => [
-        'required' => 'El :attribute es requerido.',
-        'integer' => 'El :attribute no es un numero valido.',
-      ],
-      'ubigeo_codigo' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un string valido.',
-        'size' => 'El :attribute debe ser de 4 caracteres.',
-      ],
-      'departamentos_codigo' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un string valido.',
-        'size' => 'El :attribute debe ser de 2 caracteres.',
-      ],
-      'nombre' => [
-        'required' => 'El :attribute es requerido.',
-        'unique' => 'El :attribute ya existe en la base de datos.',
-      ],
-    ];
-
   }
 }
 

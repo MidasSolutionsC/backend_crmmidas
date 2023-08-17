@@ -27,8 +27,8 @@ return new class extends Migration
             $table->string('codigo_postal', 20);
             $table->string('localidad', 70);
             $table->string('provincia', 70);
-            $table->boolean('estado')->default(true);
-            $table->foreignId('user_create_id')->nullable();            
+            $table->boolean('is_active')->default(true);
+            $table->foreignId('user_create_id');            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
             $table->timestamps();

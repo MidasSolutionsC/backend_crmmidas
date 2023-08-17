@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('sedes_usuarios', function (Blueprint $table) {
+        Schema::create('tipo_estados', function (Blueprint $table) {
             $table->engine = 'InnoDB';
             $table->id();
-            $table->foreignId('sedes_id');
-            $table->foreignId('usuarios_id');
-            $table->boolean('estado')->default(true);
+            $table->string('nombre', 50)->unique();
+            $table->text('descripcion')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
-            $table->unique(['sedes_id', 'usuarios_id']);
         });
     }
 
@@ -32,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sedes_usuarios');
+        Schema::dropIfExists('tipo_estados');
     }
 };

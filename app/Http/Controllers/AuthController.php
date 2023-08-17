@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\Implementation\AuthService;
-use App\Validator\UserValidator;
+use App\Validator\AuthValidator;
 use Illuminate\Http\Request;
 
 
@@ -11,23 +11,23 @@ class AuthController extends Controller {
 
     private $request;
     private $authService;
-    private $userValidator;
+    private $authValidator;
   
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(Request $request, AuthService $authService, UserValidator $userValidator) {
+    public function __construct(Request $request, AuthService $authService, AuthValidator $authValidator) {
         $this->request = $request;
         $this->authService = $authService;
-        $this->userValidator = $userValidator;
+        $this->authValidator = $authValidator;
     }
 
 
     public function login(){
         try{
-            $validator = $this->userValidator->validate('auth');
+            $validator = $this->authValidator->validate();
             if($validator->fails()){
             $response = $this->responseError($validator->errors(), 422);
             } else {

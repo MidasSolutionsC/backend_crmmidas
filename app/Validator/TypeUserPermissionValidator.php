@@ -8,40 +8,24 @@ use Illuminate\Support\Facades\Validator;
 class TypeUserPermissionValidator {
 
   private $request;
+  private $id;
 
-  public function __construct(Request $request) {
+  public function __construct(Request $request = null) {
     $this->request = $request;
+    if ($request) {
+      $this->id = $request->route('id');
+    }
   }
 
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
-    }
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
   }
   
-  private function rulesCreate(){
+  private function rules(){
     return [
       'permisos_id' => 'required|integer',
       'tipo_usuarios_id' => 'required|integer',
-    ];
-  }
-  
-  private function rulesUpdate(){
-    return [
-      'permisos_id' => 'required|integer',
-      'tipo_usuarios_id' => 'required|integer',
-    ];
-  }
-
-  private function messages(){
-    return [
-      'permisos_id.required' => 'El :attribute es requerido.',
-      'permisos_id.integer' => 'El :attribute debe ser un número entero.',
-      'tipo_usuarios_id.required' => 'El :attribute es requerido.',
-      'tipo_usuarios_id.integer' => 'El :attribute debe ser un número entero.',
+      'is_active' => 'nullable|boolean',
     ];
   }
 }

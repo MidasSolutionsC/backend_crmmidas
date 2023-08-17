@@ -16,12 +16,8 @@ class TypeUserPermissionService implements ITypeUserPermission{
   }
 
   public function getAll(){
-    $result = $this->model->select()->get();
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
+    $query = $this->model->select();
+    $result = $query->get();
     return $result;
   }
 
@@ -30,43 +26,35 @@ class TypeUserPermissionService implements ITypeUserPermission{
     if($typeUserId){
       $query->where('tipo_usuarios_id', $typeUserId);
     }
-    
+
     $result = $query->get();
-
-    foreach($result as $row){
-      $row->fecha_creado = Carbon::parse($row->created_at)->format('d-m-Y H:i:s');
-      $row->fecha_modificado = Carbon::parse($row->updated_at)->format('d-m-Y H:i:s');
-    }
-
     return $result;
   }
 
 
   public function getById(int $id){
-    $typeUserPermission = $this->model->find($id);
-    if($typeUserPermission){
-      $typeUserPermission->fecha_creado = Carbon::parse($typeUserPermission->created_at)->format('d-m-Y H:i:s');
-      $typeUserPermission->fecha_modificado = Carbon::parse($typeUserPermission->updated_at)->format('d-m-Y H:i:s');
-    }
-
-    return $typeUserPermission;
+    $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
   }
 
   public function create(array $data){
+    $data['created_at'] = Carbon::now(); 
     $typeUserPermission = $this->model->create($data);
     if($typeUserPermission){
-      $typeUserPermission->fecha_creado = Carbon::parse($typeUserPermission->created_at)->format('d-m-Y H:i:s');
+      $typeUserPermission->created_at = Carbon::parse($typeUserPermission->created_at)->format('Y-m-d H:i:s');
     }
 
     return $typeUserPermission;
   }
 
   public function update(array $data, int $id){
+    $data['created_at'] = Carbon::now(); 
     $typeUserPermission = $this->model->find($id);
     if($typeUserPermission){
       $typeUserPermission->fill($data);
       $typeUserPermission->save();
-      $typeUserPermission->fecha_modificado = Carbon::parse($typeUserPermission->updated_at)->format('d-m-Y H:i:s');
+      $typeUserPermission->updated_at = Carbon::parse($typeUserPermission->updated_at)->format('Y-m-d H:i:s');
       return $typeUserPermission;
     }
 
@@ -76,11 +64,11 @@ class TypeUserPermissionService implements ITypeUserPermission{
   public function delete(int $id){
     $typeUserPermission = $this->model->find($id);
     if($typeUserPermission != null){
-      $typeUserPermission->estado = 0;
+      $typeUserPermission->is_active = 0;
       $typeUserPermission->save();
       $result = $typeUserPermission->delete();
       if($result){
-        $typeUserPermission->fecha_eliminado = Carbon::parse($typeUserPermission->deleted_at)->format('d-m-Y H:i:s');
+        $typeUserPermission->deleted_st = Carbon::parse($typeUserPermission->deleted_at)->format('Y-m-d H:i:s');
         return $typeUserPermission;
       }
     }
@@ -91,7 +79,7 @@ class TypeUserPermissionService implements ITypeUserPermission{
   public function restore(int $id){
     $typeUserPermission = $this->model->withTrashed()->find($id);
     if($typeUserPermission != null && $typeUserPermission->trashed()){
-      $typeUserPermission->estado = 1;
+      $typeUserPermission->is_active = 1;
       $typeUserPermission->save();
       $result = $typeUserPermission->restore();
       if($result){

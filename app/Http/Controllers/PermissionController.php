@@ -67,7 +67,7 @@ class PermissionController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->permissionValidator->validate('update');
+      $validator = $this->permissionValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

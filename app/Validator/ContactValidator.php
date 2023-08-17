@@ -4,57 +4,43 @@ namespace App\Validator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ContactValidator{
   
-
-  /**
-   * @var Request
-   */
   private $request;
+  private $id;
 
-  public function __construct(Request $request)
-  {
+  public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
-    return [
-      'tipo' => 'required|string|size:3',
-      'contacto' => 'required|string|max:60',
-    ];
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
   }
 
-  private function rulesUpdate(){
+  private function rules(){
     return [
+      'empresas_id' => 'nullable|integer',
+      'personas_id' => 'nullable|integer',
       'tipo' => 'required|string|size:3',
-      'contacto' => 'required|string:60',
-    ];
-  }
-
-  private function messages(){
-    return [
-      'tipo' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un texto valido.',
-        'size' => 'El :attribute debe tener :size caracteres.',
-        'max' => 'El :attribute debe tener como máximo :max caracteres.',
-      ],
       'contacto' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un texto valido.',
-        'size' => 'El :attribute debe tener :size caracteres.',
-        'max' => 'El :attribute debe tener como máximo :max caracteres.',
+        'required',
+        'string',
+        'max:60',
+          Rule::unique('contactos', 'contacto')
+              ->ignore($this->id, 'id')
+              ->where(function ($query) {
+                  $query->where('empresas_id', $this->request->input('empresas_id'))
+                        ->orWhere('personas_id', $this->request->input('personas_id'));
+              }),
       ],
+      // 'contacto' => 'required|string|max:60|unique:contactos,contacto,' . $this->id . ',id,empresas_id,' . $this->request->input('empresas_id') . ','. $this->id . ',id,personas_id,' . $this->request->input('personas_id'),
+      'is_primary' => 'nullable|boolean',
+      'is_active' => 'nullable|boolean',
     ];
   }
 }

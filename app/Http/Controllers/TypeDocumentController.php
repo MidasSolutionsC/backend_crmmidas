@@ -67,7 +67,7 @@ class TypeDocumentController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->typeDocumentValidator->validate('update');
+      $validator = $this->typeDocumentValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

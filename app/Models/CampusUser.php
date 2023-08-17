@@ -17,11 +17,11 @@ class CampusUser extends Model implements AuthenticatableContract, AuthorizableC
     protected $fillable = [
         'sedes_id',
         'usuarios_id',
-        'estado',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',   
     ];
 
-    // public $timestamps = false;
+    public $timestamps = false;
 }

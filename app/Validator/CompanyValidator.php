@@ -8,70 +8,38 @@ use Illuminate\Support\Facades\Validator;
 class CompanyValidator {
   
   private $request;
+  private $id;
 
   public function __construct(Request $request = null) {
     $this->request = $request;
-  }
-
-  public function validate(string $process = 'create'){
-    if($process == 'create'){
-      return Validator::make($this->request->all(), $this->rulesCreate(), $this->messages());
-    }
-    if($process == 'update'){
-      return Validator::make($this->request->all(), $this->rulesUpdate(), $this->messages());
+    if ($request) {
+      $this->id = $request->route('id');
     }
   }
 
-  private function rulesCreate(){
+  public function validate(){
+    return Validator::make($this->request->all(), $this->rules());
+  }
+
+  private function rules(){    
     return [
       'paises_id' => 'required|integer',
+      'distritos_id' => 'nullable|integer',
       'razon_social' => 'required|string|max:80',
+      'nombre_comercial' => 'nullable|string|max:80',
+      'descripcion' => 'nullable|string',
       'tipo_documentos_id' => 'required|integer',
-      'documento' => 'required|string|max:11|unique:empresas,documento,tipo_documentos_id,' . $this->request->input('id'),
-      'correo' => 'required|email|unique:empresas,correo,'. $this->request->input('id'),
+      'documento' => 'required|string|max:11|unique:empresas,documento,'. $this->id . ',id,tipo_documentos_id,'. $this->request->input('tipo_documentos_id'),
+      'tipo_empresa' => 'nullable|string|max:30',
+      'direccion' => 'nullable|string|max:250',
+      'ciudad' => 'nullable|string|max:60',
+      'telefono' => 'nullable|string|max:11',
+      'correo' => 'required|max:100|email|unique:empresas,correo,' . $this->id . ',id',
+      'is_active' => 'nullable|is_active',
+      'user_create_id' => 'nullable|integer',
+      'user_update_id' => 'nullable|integer',
+      'user_delete_id' => 'nullable|integer',
     ];
-  }
-
-  private function rulesUpdate(){
-    return [
-      'paises_id' => 'required',
-      'razon_social' => 'required|string|max:80',
-      'tipo_documentos_id' => 'required',
-      'documento' => 'required|string',
-      'correo' => 'required|email'
-    ];
-  }
-
-  
-  private function messages(){
-    return [
-      'paises_id' => [
-        'required' => 'El :attribute es requerido.',  
-        'integer' => 'El :attribute no es un numero valido.',
-      ],
-      'razon_social' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un texto valido.',
-        'size' => 'El :attribute debe ser de 6 caracteres.',
-      ],
-      'tipo_documentos_id' => [
-        'required' => 'El :attribute es requerido.',
-        'unique' => 'El :attribute ya existe en la base de datos.',
-        'integer' => 'El :attribute no es un numero valido.',
-      ],
-      'documento' => [
-        'required' => 'El :attribute es requerido.',
-        'string' => 'El :attribute no es un texto valido.',
-        'unique' => 'El :attribute ya existe en la base de datos.',
-        'max' => 'El :attribute debe ser de 11 caracteres como máximo.',
-      ],
-      'correo' => [
-        'required' => 'El :attribute es requerido.',
-        'unique' => 'El :attribute ya existe en la base de datos.',
-        'email' => 'El :attribute no es un email valido.',
-      ],
-    ];
-
   }
 }
 

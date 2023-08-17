@@ -66,7 +66,7 @@ class ClientController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->clientValidator->validate('update');
+      $validator = $this->clientValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

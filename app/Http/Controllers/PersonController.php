@@ -67,7 +67,7 @@ class PersonController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->personValidator->validate('update');
+      $validator = $this->personValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

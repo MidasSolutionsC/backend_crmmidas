@@ -68,7 +68,7 @@ class ProductController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->productValidator->validate('update');
+      $validator = $this->productValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

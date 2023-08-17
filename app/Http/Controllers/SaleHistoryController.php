@@ -67,7 +67,7 @@ class SaleHistoryController extends Controller{
 
   public function update($id){
     try{
-      $validator = $this->saleHistoryValidator->validate('update');
+      $validator = $this->saleHistoryValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);

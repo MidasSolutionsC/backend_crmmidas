@@ -4,6 +4,7 @@ namespace App\Validator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class TypeDocumentValidator {
 
@@ -23,7 +24,17 @@ class TypeDocumentValidator {
   
   private function rules(){
     return [
-      'nombre' => 'required|string|max:40|unique:tipo_documentos,nombre,' . $this->id,
+      'nombre' => 'required|string|max:40|unique:tipo_documentos,nombre,' . $this->id . ',id,deleted_at,NULL',
+      // 'nombre' => [
+      //   'required',
+      //   'string',
+      //   'max:40',
+      //   Rule::unique('tipo_documentos', 'nombre')
+      //       ->where(function ($query) {
+      //           return $query->where('id', '<>', $this->id)
+      //                        ->whereNull('deleted_at');
+      //       }),
+      // ],
       'abreviacion' => 'required|string|max:15',
       'is_active' => 'nullable|boolean',
     ];

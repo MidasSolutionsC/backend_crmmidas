@@ -33,7 +33,7 @@ class Controller extends BaseController
             'status' => 'Error',
             'message' => 'Ocurrió un error inesperado!', 
             'errors' => $errors
-        ], $codeStatus);
+        ]);
     }
 
     // RESPUESTA DE MODIFICACIÓN 

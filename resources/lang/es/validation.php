@@ -2,6 +2,7 @@
 
 return [
   'required' => 'El campo :attribute es obligatorio.',
+  'confirmed' => 'La confirmación de :attribute no coincide.',
   'boolean' => 'El campo :attribute debe ser verdadero o falso.',
   'unique' => 'El valor del campo :attribute ya está registrado en la base de datos.',
   'email' => 'El campo :attribute debe ser una dirección de correo electrónico válida.',
@@ -28,6 +29,9 @@ return [
   ],
   'json' => 'El campo :attribute debe ser una cadena JSON válida.',
   'array' => 'El campo :attribute debe ser un arreglo.',
+  'file' => 'El campo :attribute debe ser un File.',
+  'mimes' => 'El campo :attribute debe ser un archivo de tipo: :values.', // Mensaje para la regla 'file'
+
   // Agrega más mensajes personalizados aquí
 ];
 

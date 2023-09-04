@@ -35,4 +35,26 @@ class Promotion extends Model implements AuthorizableContract, AuthenticatableCo
     ];
 
     public $timestamps = false;
+
+
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
+    // Mutador para el campo fecha_fin
+    public function setFechaFinAttribute($value) {
+        // Verifica si el valor es una cadena vacía y establece null en su lugar
+        $this->attributes['fecha_fin'] = empty($value) ? null : $value;
+    }
+
+    // En el modelo Promotion
+    public function typeService()
+    {
+        return $this->belongsTo(TypeService::class, 'tipo_servicios_id');
+    }
+
 }

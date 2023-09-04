@@ -19,7 +19,7 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
         'apellido_paterno',
         'apellido_materno',
         'paises_id',
-        'distritos_id',
+        'codigo_ubigeo',
         'tipo_documentos_id',
         'documento',
         'reverso_documento',
@@ -33,4 +33,25 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
     ];
 
     public $timestamps = false;
+
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
+    public function country(){
+        return $this->belongsTo(Country::class, 'paises_id');
+    }
+
+    public function ubigeo(){
+        return $this->belongsTo(Ubigeo::class, 'codigo_ubigeo');
+    }
+
+    public function typeDocument(){
+        return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
+    }
+
 }

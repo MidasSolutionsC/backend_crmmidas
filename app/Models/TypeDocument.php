@@ -24,4 +24,13 @@ class TypeDocument extends Model implements AuthenticatableContract, Authorizabl
     ];
 
     public $timestamps = false;
+
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
 }

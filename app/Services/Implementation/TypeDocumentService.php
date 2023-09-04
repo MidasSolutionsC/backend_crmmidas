@@ -27,22 +27,28 @@ class TypeDocumentService implements ITypeDocument{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
     $existingRecord = $this->model->withTrashed()->where('nombre', $data['nombre'])->whereNotNull('deleted_at')->first();
+    $tipoDocumento = null;
 
     if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      $existingRecord->updated_at = Carbon::now(); 
       $existingRecord->is_active = 1;
       $existingRecord->save();
-      $tipoDocumento = $existingRecord->restore();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $tipoDocumento = $existingRecord;
+      }
     } else {
       // No existe un registro con el mismo valor, puedes crear uno nuevo
+      $data['created_at'] = Carbon::now(); 
       $tipoDocumento = $this->model->create($data);
       if($tipoDocumento){
         $tipoDocumento->created_at = Carbon::parse($tipoDocumento->created_at)->format('Y-m-d H:i:s');
       }
     }
     
-    return $existingRecord;
+    return $tipoDocumento;
   }
 
   public function update(array $data, int $id){

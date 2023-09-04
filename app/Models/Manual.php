@@ -28,4 +28,13 @@ class Manual extends Model implements AuthenticatableContract, AuthorizableContr
     ];
 
     public $timestamps = false;
+
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
 }

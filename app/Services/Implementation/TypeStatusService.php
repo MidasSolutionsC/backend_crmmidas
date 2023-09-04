@@ -27,12 +27,27 @@ class TypeStatusService implements ITypeStatus{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    $typeStatus = $this->model->create($data);
-    if($typeStatus){
-      $typeStatus->created_at = Carbon::parse($typeStatus->created_at)->format('Y-m-d H:i:s');
-    }
+    $existingRecord = $this->model->withTrashed()->where('nombre', $data['nombre'])->whereNotNull('deleted_at')->first();
+    $typeStatus = null;
 
+    if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      $existingRecord->updated_at = Carbon::now(); 
+      $existingRecord->is_active = 1;
+      $existingRecord->save();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $typeStatus = $existingRecord;
+      }
+    } else {
+      // No existe un registro con el mismo valor, puedes crear uno nuevo
+      $data['created_at'] = Carbon::now(); 
+      $typeStatus = $this->model->create($data);
+      if($typeStatus){
+        $typeStatus->created_at = Carbon::parse($typeStatus->created_at)->format('Y-m-d H:i:s');
+      }
+    }
+    
     return $typeStatus;
   }
 

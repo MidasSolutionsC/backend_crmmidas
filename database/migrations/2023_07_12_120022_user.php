@@ -15,7 +15,7 @@ return new class extends Migration{
             $table->string('nombre_usuario', 20)->unique();
             $table->string('clave', 100);
             $table->string('foto_perfil', 100)->nullable();
-            $table->string('api_token', 250)->nullable();
+            $table->text('api_token')->nullable();
             $table->timestamp('expires_at')->nullable();
             $table->boolean('session_activa')->default(false);
             $table->boolean('is_active')->default(true);

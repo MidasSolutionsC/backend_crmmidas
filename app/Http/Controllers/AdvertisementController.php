@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\Implementation\AdvertisementService;
 use App\Validator\AdvertisementValidator;
+use App\Utilities\FileUploader;
 
 class AdvertisementController extends Controller{
 
@@ -55,6 +56,12 @@ class AdvertisementController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
+        if($this->request->has('file')){
+          $file = $this->request->file('file');
+          $fileName = FileUploader::upload($file, 'files/advertisement/', []);
+          $this->request['imagen'] = $fileName;
+        }
+        
         $result = $this->advertisementService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
@@ -72,6 +79,12 @@ class AdvertisementController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
+        if($this->request->has('file')){
+          $file = $this->request->file('file');
+          $fileName = FileUploader::upload($file, 'files/advertisement/', []);
+          $this->request['imagen'] = $fileName;
+        }        
+
         $result = $this->advertisementService->update($this->request->all(), $id);
         if($result != null){
           $response = $this->responseUpdate([$result]);

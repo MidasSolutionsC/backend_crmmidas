@@ -16,7 +16,14 @@ class CampusService implements ICampus{
   }
 
   public function getAll(){
-    $query = $this->model->select();
+    $query = $this->model->select(
+      'sedes.*',
+      'PS.nombre as paises_nombre',
+    );
+
+    $query->selectRaw("CONCAT(UB.dpto, ', ', UB.prov, ', ', UB.distrito) as ubigeos_ciudad");
+    $query->join('paises as PS', 'sedes.paises_id', '=', 'PS.id');
+    $query->leftJoin('ubigeos as UB', 'sedes.codigo_ubigeo', '=', 'UB.ubigeo');
     $result = $query->get();
     return $result;
   }
@@ -31,7 +38,11 @@ class CampusService implements ICampus{
     $data['created_at'] = Carbon::now(); 
     $campus = $this->model->create($data);
     if($campus){
-      $campus->created_at = Carbon::parse($campus->created_at)->format('Y-m-d H:i:s');
+      $country = $campus->country;
+      $ubigeo = $campus->ubigeo;
+
+      $campus->paises_nombre = $country->nombre;
+      $campus->ubigeos_ciudad = $ubigeo->dpto . " " . $ubigeo->prov . " " . $ubigeo->distrito;
     }
 
     return $campus;
@@ -43,7 +54,11 @@ class CampusService implements ICampus{
     if($campus){
       $campus->fill($data);
       $campus->save();
-      $campus->updated_at = Carbon::parse($campus->updated_at)->format('Y-m-d H:i:s');
+      $country = $campus->country;
+      $ubigeo = $campus->ubigeo;
+      
+      $campus->paises_nombre = $country->nombre;
+      $campus->ubigeos_ciudad = $ubigeo->dpto . ", " . $ubigeo->prov . ", " . $ubigeo->distrito;
       return $campus;
     }
 

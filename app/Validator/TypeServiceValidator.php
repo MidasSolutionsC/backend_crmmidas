@@ -23,7 +23,7 @@ class TypeServiceValidator{
 
   private function rules(){
     return [
-      'nombre' => 'required|unique:tipo_servicios,nombre,' . $this->id,
+      'nombre' => 'required|unique:tipo_servicios,nombre,' . $this->id . ',id,deleted_at,NULL',
       'descripcion' => 'nullable|string',
       'is_active' => 'nullable|boolean',
     ];

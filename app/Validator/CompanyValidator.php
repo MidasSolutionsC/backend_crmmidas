@@ -24,7 +24,7 @@ class CompanyValidator {
   private function rules(){    
     return [
       'paises_id' => 'required|integer',
-      'distritos_id' => 'nullable|integer',
+      'codigo_ubigeo' => 'nullable|string',
       'razon_social' => 'required|string|max:80',
       'nombre_comercial' => 'nullable|string|max:80',
       'descripcion' => 'nullable|string',

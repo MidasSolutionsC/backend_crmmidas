@@ -16,7 +16,7 @@ class Company extends Model implements AuthenticatableContract, AuthorizableCont
 
     protected $fillable = [
         'paises_id',
-        'distritos_id',
+        'codigo_ubigeo',
         'razon_social',
         'nombre_comercial',
         'descripcion',
@@ -37,4 +37,13 @@ class Company extends Model implements AuthenticatableContract, AuthorizableCont
     ];
 
     public $timestamps = false;
+
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
 }

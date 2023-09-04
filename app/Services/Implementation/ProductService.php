@@ -5,6 +5,7 @@ namespace App\Services\Implementation;
 use App\Models\Product;
 use App\Services\Interfaces\IProduct;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class ProductService implements IProduct{
 
@@ -16,7 +17,17 @@ class ProductService implements IProduct{
   }
 
   public function getAll(){
-    $query = $this->model->select();
+    // $query = $this->model->select();
+    $query = $this->model->select('productos.*', 'tipo_servicios.nombre as tipo_servicios_nombre', 'pp.precio as precio')
+      ->join('tipo_servicios', 'productos.tipo_servicios_id', '=', 'tipo_servicios.id')
+      ->leftJoin('productos_precios as pp', function ($join) {
+          $join->on('productos.id', '=', 'pp.productos_id')
+              ->where('pp.created_at', '=', function ($subquery) {
+                  $subquery->select(DB::raw('MAX(created_at)'))
+                      ->from('productos_precios')
+                      ->whereColumn('productos_id', 'productos.id');
+              });
+      });
     $result = $query->get();
     return $result;
   }

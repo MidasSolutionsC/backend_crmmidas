@@ -24,11 +24,12 @@ class AdvertisementValidator {
   private function rules(){
     return [
       'titulo' => 'required|string|max:50',
-      'descripcion' => 'required|string|max:50',
+      'descripcion' => 'nullable|string|max:550',
       'tipo' => 'required|string|in:I,E',
-      'imagen' => 'required|string|max:100',
+      'imagen' => 'nullable|string|max:100',
+      'file' => 'nullable|file|max:10240', // 10 megabytes.
       'is_active' => 'nullable|boolean',
-      'user_create_id' => 'required|integer',
+      'user_create_id' => 'nullable|integer',
       'user_update_id' => 'integer',
       'user_delete_id' => 'integer',
     ];

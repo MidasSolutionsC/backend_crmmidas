@@ -23,7 +23,7 @@ return new class extends Migration
             $table->enum('tipo_descuento', ['C', 'P'])->default('C');
             $table->double('descuento', 8, 2)->default(0);
             $table->date('fecha_inicio')->default(DB::raw('CURRENT_DATE'));
-            $table->date('fecha_fin');
+            $table->date('fecha_fin')->nullable();
             $table->string('codigo', 30)->nullable();
             $table->tinyInteger('cantidad_minima')->nullable();
             $table->integer('cantidad_maxima')->nullable();

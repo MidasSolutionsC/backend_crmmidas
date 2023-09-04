@@ -24,12 +24,13 @@ class ManualValidator {
   private function rules(){
     return [
       'nombre' => 'required|string|max:50',
-      'tipo' => 'required|string|size:1',
-      'archivo' => 'required|string|max:100',
+      'tipo' => 'required|string|size:1|in:S,B,M,R,O',
+      'archivo' => 'nullable|string|max:100',
       'is_active' => 'nullable|boolean',
-      'user_create_id' => 'required|integer',
+      'user_create_id' => 'nullable|integer',
       'user_update_id' => 'integer',
       'user_delete_id' => 'integer',
+      'file' => 'nullable|file|max:10240', // 10 megabytes.
     ];
   }
 }

@@ -4,6 +4,7 @@ namespace App\Validator;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PersonValidator {
   
@@ -27,9 +28,10 @@ class PersonValidator {
       'apellido_paterno' => 'required|string|max:60',
       'apellido_materno' => 'required|string|max:60',
       'paises_id' => 'required|integer',
-      'distritos_id' => 'nullable|integer',
+      'codigo_ubigeo' => 'nullable|string',
       'tipo_documentos_id' => 'required|integer',
-      'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,tipo_documentos_id,' . $this->request->input('tipo_documentos_id'),
+      // 'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,deleted_at,NULL',
+      'documento' => 'required|string|max:11|unique:personas,documento,' . $this->request->input('personas_id') . ',id,tipo_documentos_id,' . $this->request->input('tipo_documentos_id'),    
       'reverso_documento' => 'nullable|string|max:250',
       'fecha_nacimiento' => 'nullable|date:Y-m-d',
       'telefono' => 'nullable|string|max:11',

@@ -19,7 +19,6 @@ return new class extends Migration
             $table->foreignId('tipo_servicios_id');
             $table->string('nombre', 80);
             $table->text('descripcion')->nullable();
-            $table->float('precio', 8, 2)->nullable();
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 

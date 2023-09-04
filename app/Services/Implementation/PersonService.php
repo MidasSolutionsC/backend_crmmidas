@@ -32,6 +32,8 @@ class PersonService implements IPerson{
     $person = $this->model->create($data);
     if($person){
       $person->created_at = Carbon::parse($person->created_at)->format('Y-m-d H:i:s');
+      $person->paises_nombre = $person->country->nombre;
+      $person->tipo_documentos_abreviacion = $person->typeDocument->abreviacion;
     }
 
     return $person;
@@ -44,6 +46,8 @@ class PersonService implements IPerson{
       $person->fill($data);
       $person->save();
       $person->updated_at = Carbon::parse($person->updated_at)->format('Y-m-d H:i:s');
+      $person->paises_nombre = $person->country->nombre;
+      $person->tipo_documentos_abreviacion = $person->typeDocument->abreviacion;
       return $person;
     }
 

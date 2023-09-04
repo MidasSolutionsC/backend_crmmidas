@@ -27,12 +27,27 @@ class TypeBankAccountService implements ITypeBankAccount{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    $typeBankAccount = $this->model->create($data);
-    if($typeBankAccount){
-      $typeBankAccount->created_at = Carbon::parse($typeBankAccount->created_at)->format('Y-m-d H:i:s');
-    }
+    $existingRecord = $this->model->withTrashed()->where('nombre', $data['nombre'])->whereNotNull('deleted_at')->first();
+    $typeBankAccount = null;
 
+    if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      $existingRecord->updated_at = Carbon::now(); 
+      $existingRecord->is_active = 1;
+      $existingRecord->save();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $typeBankAccount = $existingRecord;
+      }
+    } else {
+      // No existe un registro con el mismo valor, puedes crear uno nuevo
+      $data['created_at'] = Carbon::now(); 
+      $typeBankAccount = $this->model->create($data);
+      if($typeBankAccount){
+        $typeBankAccount->created_at = Carbon::parse($typeBankAccount->created_at)->format('Y-m-d H:i:s');
+      }
+    }
+    
     return $typeBankAccount;
   }
 

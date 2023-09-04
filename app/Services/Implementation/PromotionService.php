@@ -16,7 +16,8 @@ class PromotionService implements IPromotion{
   }
 
   public function getAll(){
-    $query = $this->model->select();
+    // $query = $this->model->select();
+    $query = $this->model->select('promociones.*', 'tipo_servicios.nombre as tipo_servicios_nombre')->join('tipo_servicios', 'promociones.tipo_servicios_id', '=', 'tipo_servicios.id');
     $result = $query->get();
     return $result;
   }
@@ -28,22 +29,45 @@ class PromotionService implements IPromotion{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    $promotion = $this->model->create($data);
-    if($promotion){
-      $promotion->created_at = Carbon::parse($promotion->created_at)->format('Y-m-d H:i:s');
+    $existingRecord = $this->model->withTrashed()->where('nombre', $data['nombre'])->whereNotNull('deleted_at')->first();
+    $promotion = null;
+
+    if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      $existingRecord->updated_at = Carbon::now(); 
+      $existingRecord->is_active = 1;
+      $existingRecord->save();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $promotion = $existingRecord;
+      }
+    } else {
+      $data['created_at'] = Carbon::now(); 
+      unset($data['user_update_id']);
+      unset($data['user_delete_id']);
+      $promotion = $this->model->create($data);
+      if($promotion){
+        $promotion->created_at = Carbon::parse($promotion->created_at)->format('Y-m-d H:i:s');
+      }
+      
     }
+    
+    // Obtener el nombre del tipo de servicio relacionado
+    $promotion->tipo_servicios_nombre = $promotion->typeService->nombre;
 
     return $promotion;
   }
 
   public function update(array $data, int $id){
-    $data['created_at'] = Carbon::now(); 
+    $data['updated_at'] = Carbon::now(); 
+    unset($data['user_create_id']);
     $promotion = $this->model->find($id);
     if($promotion){
       $promotion->fill($data);
       $promotion->save();
       $promotion->updated_at = Carbon::parse($promotion->updated_at)->format('Y-m-d H:i:s');
+      // Obtener el nombre del tipo de servicio relacionado
+      $promotion->tipo_servicios_nombre = $promotion->typeService->nombre;
       return $promotion;
     }
 

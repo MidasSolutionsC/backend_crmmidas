@@ -23,7 +23,7 @@ class ProductPriceValidator{
 
   private function rules(){
     return [
-      'productos_id' => 'required|integer',
+      'productos_id' => 'nullable|integer',
       'precio' => 'required|numeric|max:9999999999.99|regex:/^\d+(\.\d{1,2})?$/',
       'fecha_inicio' => 'nullable|date:Y-m-d',
       'fecha_fin' => 'nullable|date:Y-m-d',

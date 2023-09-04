@@ -26,7 +26,7 @@ class ProductValidator{
       'tipo_servicios_id' => 'required|integer',
       'nombre' => 'required|string|max:80|unique:productos,nombre,' . $this->id . ',id,tipo_servicios_id,' . $this->request->input('tipo_servicios_id'),
       'descripcion' => 'nullable|string' ,
-      'precio' => 'nullable|numeric' ,
+      // 'precio' => 'nullable|numeric' ,
       'user_create_id' => 'nullable|integer' ,
       'user_update_id' => 'nullable|integer' ,
       'user_delete_id' => 'nullable|integer' ,

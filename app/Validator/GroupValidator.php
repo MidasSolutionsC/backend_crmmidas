@@ -25,6 +25,7 @@ class GroupValidator{
     return [
       'nombre' => 'required|string|max:70',
       'descripcion' => 'nullable|string',
+      'sedes_id' => 'required|integer',
       'user_create_id' => 'required|integer',
       'user_update_id' => 'nullable|integer',
       'user_delete_id' => 'nullable|integer',

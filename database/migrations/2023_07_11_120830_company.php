@@ -17,7 +17,7 @@ return new class extends Migration
             $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('paises_id');
-            $table->foreignId('distritos_id')->nullable();
+            $table->char('codigo_ubigeo', 6)->nullable();
             $table->string('razon_social', 80);
             $table->string('nombre_comercial', 80)->nullable();
             $table->text('descripcion')->nullable();
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('paises_id')->references('id')->on('paises');
-            $table->foreign('distritos_id')->references('id')->on('distritos');
+            $table->foreign('codigo_ubigeo')->references('ubigeo')->on('ubigeos');
             $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
         });
     }

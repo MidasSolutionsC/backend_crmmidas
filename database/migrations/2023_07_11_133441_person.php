@@ -14,13 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('personas', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->string('nombres', 60);
             $table->string('apellido_paterno', 60);
             $table->string('apellido_materno', 60);
             $table->foreignId('paises_id');
-            $table->foreignId('distritos_id')->nullable();
+            $table->char('codigo_ubigeo', 6)->nullable();
             $table->foreignId('tipo_documentos_id');
             $table->string('documento', 11);
             $table->string('reverso_documento', 250)->nullable();
@@ -32,8 +31,9 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('paises_id')->references('id')->on('paises');
-            $table->foreign('distritos_id')->references('id')->on('distritos');
+            $table->foreign('codigo_ubigeo')->references('ubigeo')->on('ubigeos');
             $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
+            $table->engine = 'InnoDB';
         });
     }
 

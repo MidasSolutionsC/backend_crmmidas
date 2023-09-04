@@ -15,15 +15,31 @@ class AdvertisementService implements IAdvertisement{
   }
 
   public function getAll(){
-    $query = $this->model->select();
+    $query = $this->model->selectRaw('*, 
+      CASE 
+        WHEN tipo = "I" THEN "Interno" 
+        WHEN tipo = "E" THEN "Externo" 
+      ELSE "" END AS tipo_text'
+    );
     $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
     $query = $this->model->select();
-    $result = $query->find($id);
-    return $result;
+    $advertisement = $query->find($id);
+    switch ($advertisement->tipo) {
+      case 'I':
+        $advertisement->tipo_text = 'Interno';
+        break;
+      case 'E':
+        $advertisement->tipo_text = 'Externo';
+        break;
+      default:
+        $advertisement->tipo_text = '';
+        break;
+    }
+    return $advertisement;
   }
 
   public function create(array $data){
@@ -31,6 +47,17 @@ class AdvertisementService implements IAdvertisement{
     $advertisement = $this->model->create($data);
     if($advertisement){
       $advertisement->created_at = Carbon::parse($advertisement->created_at)->format('Y-m-d H:i:s');
+      switch ($advertisement->tipo) {
+        case 'I':
+          $advertisement->tipo_text = 'Interno';
+          break;
+        case 'E':
+          $advertisement->tipo_text = 'Externo';
+          break;
+        default:
+          $advertisement->tipo_text = '';
+          break;
+      }
     }
 
     return $advertisement;
@@ -43,6 +70,17 @@ class AdvertisementService implements IAdvertisement{
       $advertisement->fill($data);
       $advertisement->save();
       $advertisement->updated_at = Carbon::parse($advertisement->updated_at)->format('Y-m-d H:i:s');
+      switch ($advertisement->tipo) {
+        case 'I':
+          $advertisement->tipo_text = 'Interno';
+          break;
+        case 'E':
+          $advertisement->tipo_text = 'Externo';
+          break;
+        default:
+          $advertisement->tipo_text = '';
+          break;
+      }
       return $advertisement;
     }
 
@@ -69,6 +107,17 @@ class AdvertisementService implements IAdvertisement{
       $advertisement->save();
       $result = $advertisement->restore();
       if($result){
+        switch ($advertisement->tipo) {
+          case 'I':
+            $advertisement->tipo_text = 'Interno';
+            break;
+          case 'E':
+            $advertisement->tipo_text = 'Externo';
+            break;
+          default:
+            $advertisement->tipo_text = '';
+            break;
+        }
         return $advertisement;
       }
     }

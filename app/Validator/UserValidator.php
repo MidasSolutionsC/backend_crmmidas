@@ -22,8 +22,8 @@ class UserValidator {
     return Validator::make($this->request->all(), $this->rules());
   }
 
-  public function validateNoPersonId(){
-    return Validator::make($this->request->all(), $this->rulesNoPersonId());
+  public function validateNotPersonId(){
+    return Validator::make($this->request->all(), $this->rulesNotPersonId());
   }
 
   private function rules(){
@@ -31,9 +31,9 @@ class UserValidator {
       'personas_id' => 'required|integer',
       'tipo_usuarios_id' => 'required|integer',
       'nombre_usuario' => 'required|string|max:20|unique:usuarios,nombre_usuario,'. $this->id,
-      'clave' => 'nullable|string|max:100',
+      'clave' => 'required|string|max:100|confirmed',
       'foto_perfil' => 'nullable|string|max:100',
-      'api_token' => 'nullable|string|max:250',
+      'api_token' => 'nullable|string|max:450',
       'expires_at' => 'nullable|integer',
       'session_activa' => 'nullable|boolean',
       'is_active' => 'nullable|boolean',
@@ -41,12 +41,12 @@ class UserValidator {
     ];
   }
 
-  private function rulesNoPersonId(){
+  private function rulesNotPersonId(){
     return [
       'personas_id' => 'nullable|integer',
-      'tipo_usuarios_id' => 'required|integer',
+      'tipo_usuarios_id' => 'nullable|integer',
       'nombre_usuario' => 'required|string|max:20|unique:usuarios,nombre_usuario,'. $this->id,
-      'clave' => 'nullable|string|max:100',
+      'clave' => 'required|string|max:100|confirmed',
       'foto_perfil' => 'nullable|string|max:100',
       'api_token' => 'nullable|string|max:250',
       'expires_at' => 'nullable|integer',

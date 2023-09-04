@@ -9,7 +9,9 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract{
+use Tymon\JWTAuth\Contracts\JWTSubject;
+
+class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
     protected $table = "usuarios";
 
@@ -40,5 +42,46 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'expires_at',
     ];
 
+
     public $timestamps = false;
+    
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+    
+
+    /**
+     * Retrieve the identifier for the JWT key.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+    
+
+    // Enlaces a tablas foráneas
+    public function person(){
+        return $this->belongsTo(Person::class, 'personas_id');
+    }
+
+    // Enlaces a tablas foráneas
+    public function typeUser(){
+        return $this->belongsTo(TypeUser::class, 'tipo_usuarios_id');
+    }
 }

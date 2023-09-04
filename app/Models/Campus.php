@@ -16,7 +16,7 @@ class Campus extends Model implements AuthenticatableContract, AuthorizableContr
 
     protected $fillable = [
         'paises_id',
-        'distritos_id',
+        'codigo_ubigeo',
         'nombre',
         'ciudad',
         'direccion',
@@ -40,4 +40,23 @@ class Campus extends Model implements AuthenticatableContract, AuthorizableContr
 
     // Evitar ocultar campos al retornar el objeto
     protected $hidden = [];
+
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
+    // Enlaces a la tabla países
+    public function country(){
+        return $this->belongsTo(Country::class, 'paises_id');
+    }
+
+    // Enlaces a la tabla países
+    public function ubigeo(){
+        return $this->belongsTo(Ubigeo::class, 'codigo_ubigeo', 'ubigeo');
+    }
+
 }

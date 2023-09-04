@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\Implementation\CampusService;
 use App\Validator\CampusValidator;
+use App\Utilities\FileUploader;
 
 class CampusController extends Controller{
 
@@ -11,7 +12,7 @@ class CampusController extends Controller{
   private $campusService;
   private $campusValidator;
 
-  public function __construct(Request $request, CampusService $campusService, campusValidator $campusValidator)
+  public function __construct(Request $request, CampusService $campusService, CampusValidator $campusValidator)
   {
     $this->request = $request;
     $this->campusService = $campusService;
@@ -55,6 +56,12 @@ class CampusController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
+        if($this->request->has('file')){
+          $file = $this->request->file('file');
+          $fileName = FileUploader::upload($file, 'files/campus/', []);
+          $this->request['logo'] = $fileName;
+        }
+
         $result = $this->campusService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
@@ -72,6 +79,12 @@ class CampusController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
+        if($this->request->has('file')){
+          $file = $this->request->file('file');
+          $fileName = FileUploader::upload($file, 'files/campus/', []);
+          $this->request['logo'] = $fileName;
+        }
+
         $result = $this->campusService->update($this->request->all(), $id);
         if($result != null){
           $response = $this->responseUpdate([$result]);

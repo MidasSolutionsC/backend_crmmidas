@@ -23,7 +23,7 @@ class TypeBankAccountValidator {
   
   private function rules(){
     return [
-      'nombre' => 'required|string|max:50|unique:tipo_cuentas_bancarias,nombre,' . $this->id,
+      'nombre' => 'required|string|max:50|unique:tipo_cuentas_bancarias,nombre,' . $this->id . ',id,deleted_at,NULL',
       'abreviacion' => 'required|string|max:15',
       'is_active' => 'nullable|boolean',
       'descripcion' => 'nullable|string',

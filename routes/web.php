@@ -17,12 +17,21 @@ $router->get('/', function () use ($router) {
   return $router->app->version();
 });
 
-$router->get('/api/info', function () use ($router) {
-  return $router->app->version();
-});
+// Mostrar archivos
+$router->get('/files/{fileName}', 'FileController@showFile');
 
-
+// API V1
 $router->group(['prefix' => '/api/v1'], function () use ($router) {
+
+  /**
+   * NO PROTEGIDAS
+   */
+
+   
+
+  /**
+   * PROTEGIDAS POR AUTHENTICATION
+   */
 
   // PAISES
   $router->group(['prefix' => '/country'], function () use ($router) {
@@ -32,6 +41,17 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->put('/{id}', 'CountryController@update');
     $router->delete('/{id}', 'CountryController@delete');
     $router->get('/restore/{id}', 'CountryController@restore');
+  });
+
+  // UBIGEOS - PERU
+  $router->group(['prefix' => '/ubigeo'], function () use ($router) {
+    $router->get('/', 'UbigeoController@listAll');
+    $router->post('/search', 'UbigeoController@search');
+    $router->get('/{ubigeo}', 'UbigeoController@get');
+    $router->post('/', 'UbigeoController@create');
+    $router->put('/{ubigeo}', 'UbigeoController@update');
+    $router->delete('/{ubigeo}', 'UbigeoController@delete');
+    $router->get('/restore/{id}', 'UbigeoController@restore');
   });
 
   // DEPARTAMENTOS
@@ -72,7 +92,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/', 'CampusController@listAll');
     $router->get('/{id}', 'CampusController@get');
     $router->post('/', 'CampusController@create');
-    $router->put('/{id}', 'CampusController@update');
+    $router->post('/{id}', 'CampusController@update');
     $router->delete('/{id}', 'CampusController@delete');
     $router->get('/restore/{id}', 'CampusController@restore');
   });
@@ -172,20 +192,32 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'AddressController@restore');
   });
 
-  // USUARIOS
-  $router->group(['prefix' => '/user'], function () use ($router) {
+
+  // PROCESO DE LOGIN
+  $router->group(['prefix' => '/auth'], function () use ($router) {
     $router->post('/login', 'AuthController@login');
     $router->get('/logout/{id}', 'AuthController@logout');
-    $router->post('/', 'UserController@create');
+    // $router->post('/register', 'UserController@createComplete');
+  });
+
+  // USUARIOS
+  $router->group(['prefix' => '/user'], function () use ($router) {
+    // $router->post('/login', 'AuthController@login');
+    // $router->get('/logout/{id}', 'AuthController@logout');
+    // $router->post('/', 'UserController@create');
     $router->post('/register', 'UserController@createComplete');
+    $router->get('/index', 'UserController@index');
+    $router->get('/serverSide', 'UserController@getAllServerSide');
     
-    $router->get('/', 'UserController@listAll');
     $router->get('/{id}', 'UserController@get');
     $router->put('/{id}', 'UserController@update');
+    $router->put('/update/{id}', 'UserController@updateComplete');
     $router->delete('/{id}', 'UserController@delete');
     $router->get('/restore/{id}', 'UserController@restore');
-    // $router->group(['middleware' => 'auth'], function () use ($router) {
-    // });
+    
+    $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
+      $router->get('/', 'UserController@listAll');
+    });
   });
 
   // HISTORIAL DE SESIONES
@@ -237,6 +269,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/', 'GroupController@listAll');
     $router->get('/{id}', 'GroupController@get');
     $router->post('/', 'GroupController@create');
+    $router->post('/register', 'GroupController@createComplete');
     $router->put('/{id}', 'GroupController@update');
     $router->delete('/{id}', 'GroupController@delete');
     $router->get('/restore/{id}', 'GroupController@restore');
@@ -298,6 +331,8 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/', 'ProductController@listAll');
     $router->get('/{id}', 'ProductController@get');
     $router->post('/', 'ProductController@create');
+    $router->post('/register', 'ProductController@createComplete');
+    $router->put('/update/{id}', 'ProductController@updateComplete');
     $router->put('/{id}', 'ProductController@update');
     $router->delete('/{id}', 'ProductController@delete');
     $router->get('/restore/{id}', 'ProductController@restore');
@@ -408,21 +443,21 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   });
 
   // MANUALES
-  $router->group(['prefix' => '/manual'], function () use ($router) {
+  $router->group(['prefix' => '/manual', 'middleware' => 'jwt.auth'], function () use ($router) {
     $router->get('/', 'ManualController@listAll');
     $router->get('/{id}', 'ManualController@get');
     $router->post('/', 'ManualController@create');
-    $router->put('/{id}', 'ManualController@update');
+    $router->post('/update/{id}', 'ManualController@update');
     $router->delete('/{id}', 'ManualController@delete');
     $router->get('/restore/{id}', 'ManualController@restore');
   });
 
   // ANUNCIOS
-  $router->group(['prefix' => '/advertisement'], function () use ($router) {
+  $router->group(['prefix' => '/advertisement', 'middleware' => 'jwt.auth'], function () use ($router) {
     $router->get('/', 'AdvertisementController@listAll');
     $router->get('/{id}', 'AdvertisementController@get');
     $router->post('/', 'AdvertisementController@create');
-    $router->put('/{id}', 'AdvertisementController@update');
+    $router->post('/update/{id}', 'AdvertisementController@update');
     $router->delete('/{id}', 'AdvertisementController@delete');
     $router->get('/restore/{id}', 'AdvertisementController@restore');
   });

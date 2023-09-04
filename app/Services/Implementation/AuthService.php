@@ -6,7 +6,10 @@ use App\Models\Person;
 use App\Models\User;
 use App\Services\Interfaces\IAuth;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthService implements IAuth{
 
@@ -24,11 +27,13 @@ class AuthService implements IAuth{
     ];
 
     if(!is_null($usuario)){
-      if(password_verify($data['clave'], $usuario->clave)){
-        $apiToken = Str::random(250);
+      
+      if(Hash::check($data['clave'], $usuario->clave)){
+        
+        $tokenAuth = JWTAuth::fromUser($usuario);
         $expiresAt  = Carbon::now()->addHours(12);
   
-        $usuario->api_token = $apiToken;
+        // $usuario->api_token = $apiToken;
         $usuario->expires_at = $expiresAt;
         $usuario->session_activa = 1;
         $usuario->ultima_conexion = Carbon::now();
@@ -37,7 +42,7 @@ class AuthService implements IAuth{
         $result = [
           'login' => true,
           'message' => 'Bienvenido al sistema',
-          'api_token' => $apiToken,
+          'token_auth' => $tokenAuth,
           'usuario' => $usuario
         ];
 
@@ -51,6 +56,16 @@ class AuthService implements IAuth{
     } 
 
     return $result;
+
+    // try{
+    //   if(!$token = JWTAuth::attempt($data)){
+    //     return ['error' => 'invalid credentials'];
+    //   }
+    // } catch(JWTException $e){
+    //   return ['error' => 'not created token'];
+    // }
+
+    // return compact('token');
   }
 
   public function logout(int $id){
@@ -61,7 +76,7 @@ class AuthService implements IAuth{
     ];
 
     if(!is_null($usuario)){
-
+      // auth()->logout();
       $usuario->api_token = NULL;
       $usuario->expires_at = NULL;
       $usuario->session_activa = 0;

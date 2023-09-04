@@ -34,7 +34,10 @@ class Service extends Model implements AuthorizableContract, AuthenticatableCont
 
     protected $casts = [
         'datos_json' => 'json',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
     public $timestamps = false;
+
 }

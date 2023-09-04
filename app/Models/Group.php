@@ -17,6 +17,7 @@ class Group extends Model implements AuthorizableContract, AuthenticatableContra
     protected $fillable = [
         'nombre',
         'descripcion',       
+        'sedes_id',
         'user_create_id',
         'user_update_id',
         'user_delete_id',
@@ -27,4 +28,24 @@ class Group extends Model implements AuthorizableContract, AuthenticatableContra
     ];
 
     public $timestamps = false;
+
+
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
+    // Enlaces a tablas foráneas
+    public function campus(){
+        return $this->belongsTo(Campus::class, 'sedes_id');
+    }
+
+    public function member()
+    {
+        return $this->hasMany(Member::class, 'grupos_id');
+    }
+
 }

@@ -60,6 +60,7 @@ $app->singleton(
 */
 
 $app->configure('app');
+$app->configure('jwt');
 $app->configure('cors');
 $app->setLocale('es');
 
@@ -81,8 +82,9 @@ $app->middleware([
 ]);
 
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class, 
-    'access' => App\Http\Middleware\AccessMiddleware::class,
+    // 'auth' => App\Http\Middleware\Authenticate::class, 
+    // 'access' => App\Http\Middleware\AccessMiddleware::class,
+    'jwt.auth' => App\Http\Middleware\JwtMiddleware::class
 ]);
 
 
@@ -102,8 +104,14 @@ $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(App\Providers\AccessServiceProvider::class);
 $app->register(App\Providers\EventServiceProvider::class);
 
+// Generador de algunos comandos de LARAVEL
 $app->register(Flipbox\LumenGenerator\LumenGeneratorServiceProvider::class);
+
+// CONFIGURACIÓN DE CORS
 $app->register(Fruitcake\Cors\CorsServiceProvider::class);
+
+// JWT
+$app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

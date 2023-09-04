@@ -6,6 +6,7 @@ namespace App\Services\Interfaces;
 interface ITypeUser{
   function getAll();
   function getById(int $id);
+  function getByName(string $nombre);
   function create(array $data);
   function update(array $data, int $id);
   function delete(int $id);

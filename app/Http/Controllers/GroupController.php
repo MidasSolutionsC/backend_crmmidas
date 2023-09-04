@@ -4,18 +4,32 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Services\Implementation\GroupService;
+use App\Services\Implementation\MemberService;
 use App\Validator\GroupValidator;
+use App\Validator\MemberValidator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class GroupController extends Controller{
   private $request;
   private $groupService;
   private $groupValidator;
 
-  public function __construct(Request $request, GroupService $groupService, GroupValidator $groupValidator)
-  {
+  private $memberService;
+  private $memberValidator;
+
+  public function __construct(
+    Request $request, 
+    GroupService $groupService, 
+    GroupValidator $groupValidator,
+    MemberService $memberService,
+    MemberValidator $memberValidator
+  ) {
     $this->request = $request;
     $this->groupService = $groupService;
     $this->groupValidator = $groupValidator;
+    $this->memberService = $memberService;
+    $this->memberValidator = $memberValidator;
     
   }
 
@@ -62,6 +76,57 @@ class GroupController extends Controller{
   
       return $response;
     } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al crear el grupo', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function createComplete(){
+    try{
+      // Iniciar una transacción
+      DB::beginTransaction();
+
+      $validatorGroup = $this->groupValidator->validate();
+      $validatorMember = $this->memberValidator->validate();
+
+      $combinedErrors = [];
+        
+      if ($validatorGroup->fails()) {
+        $combinedErrors['group_errors'] = $validatorGroup->errors();
+      }
+      
+      if ($validatorMember->fails()) {
+        $combinedErrors['member_errors'] = $validatorMember->errors();
+      }
+
+      if(!empty($combinedErrors)){
+        $response = $this->responseError($combinedErrors, 422);
+      } else {
+        $resGroup = $this->groupService->create($this->request->all());
+        if($resGroup){
+          $this->request['grupos_id'] = $resGroup->id;
+        }
+
+        $integrantes = $this->request->input('integrantes');
+        $resMember = [];
+        foreach($integrantes as $memberId){
+          $resMember[] = $this->memberService->create(["grupos_id" => $resGroup->id, "usuarios_id" => $memberId]);
+        }
+
+
+        $response = $this->responseCreated(['group' => $resGroup,  'member' => $resMember]);
+
+      }
+  
+      // Si todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch(\Exception $e){
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
       return $this->responseError(['message' => 'Error al crear el grupo', 'error' => $e->getMessage()], 500);
     }
   }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\Implementation\ManualService;
 use App\Validator\ManualValidator;
+use App\Utilities\FileUploader;
 
 class ManualController extends Controller{
 
@@ -55,6 +56,13 @@ class ManualController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
+        
+        if($this->request->has('file')){
+          $file = $this->request->file('file');
+          $fileName = FileUploader::upload($file, 'files/manual/', []);
+          $this->request['archivo'] = $fileName;
+        }
+                
         $result = $this->manualService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
@@ -72,6 +80,12 @@ class ManualController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
+        if($this->request->has('file')){
+          $file = $this->request->file('file');
+          $fileName = FileUploader::upload($file, 'files/manual/', []);
+          $this->request['archivo'] = $fileName;
+        }
+        
         $result = $this->manualService->update($this->request->all(), $id);
         if($result != null){
           $response = $this->responseUpdate([$result]);

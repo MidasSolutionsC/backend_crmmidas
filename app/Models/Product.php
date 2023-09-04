@@ -18,7 +18,6 @@ class Product extends Model implements AuthorizableContract, AuthenticatableCont
         'tipo_servicios_id',
         'nombre',
         'descripcion',
-        'precio',
         'user_create_id',
         'user_update_id',
         'user_delete_id',
@@ -30,4 +29,28 @@ class Product extends Model implements AuthorizableContract, AuthenticatableCont
     
 
     public $timestamps = false;
+
+    /**
+     * TRANSFORMACIÓN DE VALORES
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
+    // En el modelo Promotion
+    public function typeService(){
+        return $this->belongsTo(TypeService::class, 'tipo_servicios_id');
+    }
+
+    public function precios()
+    {
+        return $this->hasMany(ProductPrice::class, 'productos_id');
+    }
+
+    public function getLastPrice(){
+        $ultimoPrecio = $this->precios()->latest('created_at')->first();
+        return $ultimoPrecio ? $ultimoPrecio->precio : null;
+    }
+
 }

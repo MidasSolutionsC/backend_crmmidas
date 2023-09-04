@@ -23,8 +23,8 @@ class MemberValidator {
 
   private function rules(){
     return [
-      'grupos_id' => 'required|integer',
-      'usuarios_id' => 'required|integer|unique:integrantes,usuarios_id,'. $this->id . ',id,grupos_id,' . $this->request->input('grupos_id'),
+      'grupos_id' => 'nullable|integer',
+      'usuarios_id' => 'nullable|integer|unique:integrantes,usuarios_id,'. $this->id . ',id,grupos_id,' . $this->request->input('grupos_id'),
       'is_active' => 'nullable|boolean',
     ];
   }

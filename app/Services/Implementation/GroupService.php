@@ -16,7 +16,11 @@ class GroupService implements IGroup{
   }
 
   public function getAll(){
-    $query = $this->model->select('id', 'nombre', 'descripcion', 'estado');
+    $query = $this->model->select(
+      'grupos.*',
+      'SD.nombre as sedes_nombre'
+    )->join('sedes as SD', 'grupos.sedes_id', 'SD.id');
+
     $result = $query->get();
     return $result;
   }
@@ -32,6 +36,7 @@ class GroupService implements IGroup{
     $group = $this->model->create($data);
     if($group){
       $group->created_at = Carbon::parse($group->created_at)->format('Y-m-d H:i:s');
+      $group->sedes_nombre = $group->campus->nombre;
     }
 
     return $group;
@@ -44,6 +49,7 @@ class GroupService implements IGroup{
       $group->fill($data);
       $group->save();
       $group->updated_at = Carbon::parse($group->updated_at)->format('Y-m-d H:i:s');
+      $group->sedes_nombre = $group->campus->nombre;
       return $group;
     }
 

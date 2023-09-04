@@ -15,15 +15,44 @@ class ManualService implements IManual{
   }
 
   public function getAll(){
-    $query = $this->model->select();
+    $query = $this->model->selectRaw('*, 
+      CASE 
+        WHEN tipo = "S" THEN "Manual de Software" 
+        WHEN tipo = "B" THEN "Gestión de Backlog" 
+        WHEN tipo = "M" THEN "Vodafone Micropyme"
+        WHEN tipo = "R" THEN "Vodafone Residencial"
+        WHEN tipo = "O" THEN "Otro"
+      ELSE "" END AS tipo_text'
+    );
+
     $result = $query->get();
     return $result;
   }
 
   public function getById(int $id){
     $query = $this->model->select();
-    $result = $query->find($id);
-    return $result;
+    $manual = $query->find($id);
+    switch ($manual->tipo) {
+      case 'S':
+        $manual->tipo_text = 'Manual de Software';
+        break;
+      case 'B':
+        $manual->tipo_text = 'Gestión de Backlog';
+        break;
+      case 'M':
+        $manual->tipo_text = 'Vodafone Micropyme';
+        break;
+      case 'R':
+        $manual->tipo_text = 'Vodafone Residencial';
+        break;
+      case 'O':
+        $manual->tipo_text = 'Otro';
+        break;
+      default:
+        $manual->tipo_text = '';
+        break;
+    }
+    return $manual;
   }
 
   public function create(array $data){
@@ -31,6 +60,26 @@ class ManualService implements IManual{
     $manual = $this->model->create($data);
     if($manual){
       $manual->created_at = Carbon::parse($manual->created_at)->format('Y-m-d H:i:s');
+      switch ($manual->tipo) {
+        case 'S':
+          $manual->tipo_text = 'Manual de Software';
+          break;
+        case 'B':
+          $manual->tipo_text = 'Gestión de Backlog';
+          break;
+        case 'M':
+          $manual->tipo_text = 'Vodafone Micropyme';
+          break;
+        case 'R':
+          $manual->tipo_text = 'Vodafone Residencial';
+          break;
+        case 'O':
+          $manual->tipo_text = 'Otro';
+          break;
+        default:
+          $manual->tipo_text = '';
+          break;
+      }
     }
 
     return $manual;
@@ -43,6 +92,26 @@ class ManualService implements IManual{
       $manual->fill($data);
       $manual->save();
       $manual->updated_at = Carbon::parse($manual->updated_at)->format('Y-m-d H:i:s');
+      switch ($manual->tipo) {
+        case 'S':
+          $manual->tipo_text = 'Manual de Software';
+          break;
+        case 'B':
+          $manual->tipo_text = 'Gestión de Backlog';
+          break;
+        case 'M':
+          $manual->tipo_text = 'Vodafone Micropyme';
+          break;
+        case 'R':
+          $manual->tipo_text = 'Vodafone Residencial';
+          break;
+        case 'O':
+          $manual->tipo_text = 'Otro';
+          break;
+        default:
+          $manual->tipo_text = '';
+          break;
+      }
       return $manual;
     }
 
@@ -69,6 +138,26 @@ class ManualService implements IManual{
       $manual->save();
       $result = $manual->restore();
       if($result){
+        switch ($manual->tipo) {
+          case 'S':
+            $manual->tipo_text = 'Manual de Software';
+            break;
+          case 'B':
+            $manual->tipo_text = 'Gestión de Backlog';
+            break;
+          case 'M':
+            $manual->tipo_text = 'Vodafone Micropyme';
+            break;
+          case 'R':
+            $manual->tipo_text = 'Vodafone Residencial';
+            break;
+          case 'O':
+            $manual->tipo_text = 'Otro';
+            break;
+          default:
+            $manual->tipo_text = '';
+            break;
+        }
         return $manual;
       }
     }

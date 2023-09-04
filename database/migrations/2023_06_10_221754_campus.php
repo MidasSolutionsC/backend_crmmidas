@@ -14,14 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('sedes', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('paises_id');
-            $table->foreignId('distritos_id')->nullable();
+            $table->char('codigo_ubigeo', 6)->nullable();
             $table->string('nombre', 100);
             $table->string('ciudad', 50)->nullable();
             $table->string('direccion', 250)->nullable();
-            $table->string('codigo_postal', 6);
+            $table->string('codigo_postal', 6)->nullable();
             $table->string('telefono', 11)->nullable();
             $table->string('correo', 100)->nullable();
             $table->string('responsable', 100)->nullable();
@@ -35,7 +34,8 @@ return new class extends Migration
             $table->softDeletes();
             $table->unique(['paises_id', 'nombre']);
             $table->foreign('paises_id')->references('id')->on('paises');
-            $table->foreign('distritos_id')->references('id')->on('distritos');
+            $table->foreign('codigo_ubigeo')->references('ubigeo')->on('ubigeos');
+            $table->engine = 'InnoDB';
         });
     }
 

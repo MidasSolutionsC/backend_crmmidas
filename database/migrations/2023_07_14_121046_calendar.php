@@ -18,9 +18,13 @@ return new class extends Migration
             $table->id();
             $table->string('titulo', 50);
             $table->text('descripcion')->nullable();
-            $table->date('fecha');
-            $table->time('hora');
+            $table->string('color', 25);
+            $table->date('fecha_inicio');
+            $table->time('hora_inicio');
+            $table->date('fecha_final');
+            $table->time('hora_final');
             $table->boolean('is_active')->default(true);
+            $table->boolean('is_seen')->default(false);
             $table->foreignId('user_create_id');            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 

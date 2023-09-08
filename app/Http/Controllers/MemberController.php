@@ -33,6 +33,21 @@ class MemberController extends Controller{
     }
   }
 
+  public function getByGroup($groupId){
+    try{
+      $result = $this->memberService->getByGroup($groupId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos del integrante', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->memberService->getById($id);

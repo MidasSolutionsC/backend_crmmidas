@@ -18,6 +18,24 @@ class CallController extends Controller{
     $this->callValidator = $callValidator;
   }
 
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->callService->index($data);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar las llamadas', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->callService->getAll();

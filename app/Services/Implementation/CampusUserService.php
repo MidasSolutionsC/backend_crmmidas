@@ -45,6 +45,7 @@ class CampusUserService implements ICampusUser{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
+    $data['user_create_id'] = $data['user_auth_id'];
     $campusUser = $this->model->create($data);
     if($campusUser){
       $campusUser->created_at = Carbon::parse($campusUser->created_at)->format('Y-m-d H:i:s');
@@ -55,6 +56,7 @@ class CampusUserService implements ICampusUser{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
+    $data['user_update_id'] = $data['user_auth_id'];
     $campusUser = $this->model->find($id);
     if($campusUser){
       $campusUser->fill($data);

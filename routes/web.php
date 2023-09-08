@@ -245,7 +245,8 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // LLAMADAS
   $router->group(['prefix' => '/call'], function () use ($router) {
     $router->get('/', 'CallController@listAll');
-    $router->get('/filterCUser/{userId}', 'CallController@getFilterByUser');
+    $router->get('/index', 'CallController@index');
+    $router->get('/filterUser/{userId}', 'CallController@getFilterByUser');
     $router->get('/{id}', 'CallController@get');
     $router->post('/', 'CallController@create');
     $router->put('/{id}', 'CallController@update');
@@ -267,10 +268,12 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // GRUPOS
   $router->group(['prefix' => '/group'], function () use ($router) {
     $router->get('/', 'GroupController@listAll');
+    $router->get('/index', 'GroupController@index');
     $router->get('/{id}', 'GroupController@get');
     $router->post('/', 'GroupController@create');
     $router->post('/register', 'GroupController@createComplete');
     $router->put('/{id}', 'GroupController@update');
+    $router->put('/update/{id}', 'GroupController@updateComplete');
     $router->delete('/{id}', 'GroupController@delete');
     $router->get('/restore/{id}', 'GroupController@restore');
   });
@@ -278,6 +281,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // INTEGRANTES
   $router->group(['prefix' => '/member'], function () use ($router) {
     $router->get('/', 'MemberController@listAll');
+    $router->get('/filterGroup/{groupId}', 'MemberController@getByGroup');
     $router->get('/{id}', 'MemberController@get');
     $router->post('/', 'MemberController@create');
     $router->put('/{id}', 'MemberController@update');
@@ -329,6 +333,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // PRODUCTOS
   $router->group(['prefix' => '/product'], function () use ($router) {
     $router->get('/', 'ProductController@listAll');
+    $router->get('/index', 'ProductController@index');
     $router->get('/{id}', 'ProductController@get');
     $router->post('/', 'ProductController@create');
     $router->post('/register', 'ProductController@createComplete');
@@ -352,6 +357,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // PROMOCIONES
   $router->group(['prefix' => '/promotion'], function () use ($router) {
     $router->get('/', 'PromotionController@listAll');
+    $router->get('/index', 'PromotionController@index');
     $router->get('/{id}', 'PromotionController@get');
     $router->post('/', 'PromotionController@create');
     $router->put('/{id}', 'PromotionController@update');
@@ -445,6 +451,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // MANUALES
   $router->group(['prefix' => '/manual', 'middleware' => 'jwt.auth'], function () use ($router) {
     $router->get('/', 'ManualController@listAll');
+    $router->get('/index', 'ManualController@index');
     $router->get('/{id}', 'ManualController@get');
     $router->post('/', 'ManualController@create');
     $router->post('/update/{id}', 'ManualController@update');
@@ -455,6 +462,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // ANUNCIOS
   $router->group(['prefix' => '/advertisement', 'middleware' => 'jwt.auth'], function () use ($router) {
     $router->get('/', 'AdvertisementController@listAll');
+    $router->get('/index', 'AdvertisementController@index');
     $router->get('/{id}', 'AdvertisementController@get');
     $router->post('/', 'AdvertisementController@create');
     $router->post('/update/{id}', 'AdvertisementController@update');

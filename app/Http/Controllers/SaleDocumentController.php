@@ -11,7 +11,7 @@ class SaleDocumentController extends Controller{
   private $saleDocumentService;
   private $saleDocumentValidator;
 
-  public function __construct(Request $request, saleDocumentService $saleDocumentService, SaleDocumentValidator $saleDocumentValidator)
+  public function __construct(Request $request, SaleDocumentService $saleDocumentService, SaleDocumentValidator $saleDocumentValidator)
   {
     $this->request = $request;
     $this->saleDocumentService = $saleDocumentService;

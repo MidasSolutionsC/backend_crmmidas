@@ -41,6 +41,7 @@ class BankAccountService implements IBankAccount{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
+    $data['user_create_id'] = $data['user_auth_id'];
     $bankAccount = $this->model->create($data);
     if($bankAccount){
       $bankAccount->created_at = Carbon::parse($bankAccount->created_at)->format('Y-m-d H:i:s');
@@ -51,6 +52,7 @@ class BankAccountService implements IBankAccount{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
+    $data['user_update_id'] = $data['user_auth_id'];
     $bankAccount = $this->model->find($id);
     if($bankAccount){
       $bankAccount->fill($data);

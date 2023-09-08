@@ -5,6 +5,9 @@ namespace App\Services\Implementation;
 use App\Models\Promotion;
 use App\Services\Interfaces\IPromotion;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class PromotionService implements IPromotion{
 
@@ -15,9 +18,53 @@ class PromotionService implements IPromotion{
     $this->model = new Promotion();
   }
 
+  public function index(array $data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+
+    $query = Promotion::query();
+    $query->select(
+      'promociones.*', 
+      'TS.nombre as tipo_servicios_nombre'
+    );
+    
+    $query->join('tipo_servicios as TS', 'promociones.tipo_servicios_id', '=', 'TS.id');
+
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    if (!empty($search)) {
+        $query->where('promociones.nombre', 'LIKE', "%$search%")
+              ->orWhere('promociones.descripcion', 'LIKE', "%$search%")
+              ->orWhere('promociones.descuento', 'LIKE', "%$search%")
+              ->orWhere('TS.nombre', 'LIKE', "%$search%");
+    }
+
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
+  }
+
   public function getAll(){
     // $query = $this->model->select();
-    $query = $this->model->select('promociones.*', 'tipo_servicios.nombre as tipo_servicios_nombre')->join('tipo_servicios', 'promociones.tipo_servicios_id', '=', 'tipo_servicios.id');
+    $query = $this->model->select(
+      'promociones.*', 
+      'tipo_servicios.nombre as tipo_servicios_nombre'
+      )->join('tipo_servicios', 'promociones.tipo_servicios_id', '=', 'tipo_servicios.id');
     $result = $query->get();
     return $result;
   }
@@ -43,8 +90,7 @@ class PromotionService implements IPromotion{
       }
     } else {
       $data['created_at'] = Carbon::now(); 
-      unset($data['user_update_id']);
-      unset($data['user_delete_id']);
+      $data['user_create_id'] = $data['user_auth_id'];
       $promotion = $this->model->create($data);
       if($promotion){
         $promotion->created_at = Carbon::parse($promotion->created_at)->format('Y-m-d H:i:s');
@@ -60,7 +106,7 @@ class PromotionService implements IPromotion{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    unset($data['user_create_id']);
+    $data['user_update_id'] = $data['user_auth_id'];
     $promotion = $this->model->find($id);
     if($promotion){
       $promotion->fill($data);

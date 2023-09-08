@@ -4,6 +4,7 @@ namespace App\Services\Interfaces;
 
 
 interface IPromotion{
+  function index(array $data);
   function getAll();
   function getById(int $id);
   function create(array $data);

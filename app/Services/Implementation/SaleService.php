@@ -29,6 +29,7 @@ class SaleService implements ISale{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
+    $data['user_create_id'] = $data['user_auth_id'];
     $sale = $this->model->create($data);
     if($sale){
       $sale->created_at = Carbon::parse($sale->created_at)->format('Y-m-d H:i:s');
@@ -39,6 +40,7 @@ class SaleService implements ISale{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
+    $data['user_update_id'] = $data['user_auth_id'];
     $sale = $this->model->find($id);
     if($sale){
       $sale->fill($data);

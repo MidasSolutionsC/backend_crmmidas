@@ -36,6 +36,7 @@ class CampusService implements ICampus{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
+    $data['user_create_id'] = $data['user_auth_id'];
     $campus = $this->model->create($data);
     if($campus){
       $country = $campus->country;
@@ -50,6 +51,7 @@ class CampusService implements ICampus{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
+    $data['user_update_id'] = $data['user_auth_id'];
     $campus = $this->model->find($id);
     if($campus){
       $campus->fill($data);

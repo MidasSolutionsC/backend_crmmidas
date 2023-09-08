@@ -18,6 +18,24 @@ class PromotionController extends Controller{
     $this->promotionValidator = $promotionValidator;
   }
 
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->promotionService->index($data);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los promociones', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->promotionService->getAll();

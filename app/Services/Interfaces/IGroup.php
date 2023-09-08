@@ -3,6 +3,7 @@
 namespace App\Services\Interfaces;
 
 interface IGroup {
+  function index($data);
   function getAll();
   function getById(int $id);
   function create(array $data);

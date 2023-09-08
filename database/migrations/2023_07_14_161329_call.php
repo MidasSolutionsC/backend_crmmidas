@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('apellido_paterno', 60)->nullable();
             $table->string('apellido_materno', 60)->nullable();
             $table->string('direccion', 250)->nullable();
-            $table->string('permanencia', 150)->nullable();
+            $table->boolean('permanencia')->default(false);
             $table->string('permanencia_tiempo', 150)->nullable();
             $table->date('fecha')->default(DB::raw('CURRENT_DATE'));
             $table->time('hora')->default(DB::raw('CURRENT_TIME'));

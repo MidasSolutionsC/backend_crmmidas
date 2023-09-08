@@ -11,7 +11,7 @@ class SaleHistoryController extends Controller{
   private $saleHistoryService;
   private $saleHistoryValidator;
 
-  public function __construct(Request $request, saleHistoryService $saleHistoryService, SaleHistoryValidator $saleHistoryValidator)
+  public function __construct(Request $request, SaleHistoryService $saleHistoryService, SaleHistoryValidator $saleHistoryValidator)
   {
     $this->request = $request;
     $this->saleHistoryService = $saleHistoryService;

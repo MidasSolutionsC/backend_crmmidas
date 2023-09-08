@@ -49,6 +49,7 @@ class ContactService implements IContact{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
+    $data['user_create_id'] = $data['user_auth_id'];
     $contact = $this->model->create($data);
     if($contact){
       $contact->created_at = Carbon::parse($contact->created_at)->format('Y-m-d H:i:s');
@@ -59,6 +60,7 @@ class ContactService implements IContact{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
+    $data['user_update_id'] = $data['user_auth_id'];
     $contact = $this->model->find($id);
     if($contact){
       $contact->fill($data);

@@ -37,4 +37,11 @@ class SaleDocument extends Model implements AuthorizableContract, Authenticatabl
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    /**
+     * Relación de pertenencia entre modulo externo
+     */
+    public function sale(){
+        return $this->belongsTo(Sale::class, 'ventas_id');
+    }
+
 }

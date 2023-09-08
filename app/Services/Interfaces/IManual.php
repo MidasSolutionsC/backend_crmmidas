@@ -3,6 +3,7 @@
 namespace App\Services\Interfaces;
 
 interface IManual{
+  function index(array $data);
   function getAll();
   function getById(int $id);
   function create(array $data);

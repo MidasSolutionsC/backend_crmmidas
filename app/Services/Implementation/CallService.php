@@ -6,6 +6,9 @@ use App\Models\Call;
 use App\Services\Interfaces\ICall;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 
 class CallService implements ICall{
@@ -15,6 +18,56 @@ class CallService implements ICall{
   public function __construct()
   {
     $this->model = new Call();
+  }
+
+  
+  public function index(array $data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+
+    $query = Call::query();
+    $query->select(
+      'llamadas.*', 
+      'TE.nombre as tipo_estados_nombre'
+    );
+    
+    $query->join('tipo_estados as TE', 'llamadas.tipo_estados_id', '=', 'TE.id');
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    if (!empty($search)) {
+        $query->where('numero', 'LIKE', "%$search%")
+              ->orWhere('operador', 'LIKE', "%$search%")
+              ->orWhere('operador_llamo', 'LIKE', "%$search%")
+              ->orWhere('tipificacion', 'LIKE', "%$search%")
+              ->orWhere('nombres', 'LIKE', "%$search%")
+              ->orWhere('apellido_paterno', 'LIKE', "%$search%")
+              ->orWhere('apellido_materno', 'LIKE', "%$search%")
+              ->orWhere('direccion', 'LIKE', "%$search%")
+              ->orWhere('permanencia', 'LIKE', "%$search%")
+              ->orWhere('permanencia_tiempo', 'LIKE', "%$search%")
+              ->orWhere('fecha', 'LIKE', "%$search%")
+              ->orWhere('hora', 'LIKE', "%$search%")
+              ->orWhere('TE.nombre', 'LIKE', "%$search%");
+    }
+
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
   }
 
   public function getAll(){
@@ -41,6 +94,7 @@ class CallService implements ICall{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
+    $data['user_create_id'] = $data['user_auth_id'];
     $call = $this->model->create($data);
     if($call){
       $call->created_at = Carbon::parse($call->created_at)->format('Y-m-d H:i:s');
@@ -51,6 +105,7 @@ class CallService implements ICall{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
+    $data['user_update_id'] = $data['user_auth_id'];
     $call = $this->model->find($id);
     if($call){
       $call->fill($data);

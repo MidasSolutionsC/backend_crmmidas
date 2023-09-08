@@ -40,6 +40,7 @@ class TypeUserPermissionService implements ITypeUserPermission{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
+    $data['user_create_id'] = $data['user_auth_id'];
     $typeUserPermission = $this->model->create($data);
     if($typeUserPermission){
       $typeUserPermission->created_at = Carbon::parse($typeUserPermission->created_at)->format('Y-m-d H:i:s');
@@ -50,6 +51,7 @@ class TypeUserPermissionService implements ITypeUserPermission{
 
   public function update(array $data, int $id){
     $data['created_at'] = Carbon::now(); 
+    $data['user_update_id'] = $data['user_auth_id'];
     $typeUserPermission = $this->model->find($id);
     if($typeUserPermission){
       $typeUserPermission->fill($data);

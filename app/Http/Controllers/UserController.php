@@ -39,7 +39,6 @@ class UserController extends Controller{
 
   public function index(){
     try{
-      // $data = json_decode($data);
       $data = $this->request->input('data');
       $data = json_decode($data, true);
 
@@ -149,7 +148,7 @@ class UserController extends Controller{
           $response = $this->responseError(['message' => 'Erro al obtener el registro como persona'], 422);
         }
         
-        $typeUser = $this->typeUserService->getByName('Invitado');
+        $typeUser = $this->typeUserService->getByName('invitado');
         if(!is_null($typeUser)){
           $this->request['tipo_usuarios_id'] = $typeUser->id;
         }

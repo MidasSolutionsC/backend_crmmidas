@@ -28,7 +28,7 @@ class ProductPriceValidator{
       'fecha_inicio' => 'nullable|date:Y-m-d',
       'fecha_fin' => 'nullable|date:Y-m-d',
       'is_active' => 'nullable|boolean',
-      'user_create_id' => 'required|integer',
+      'user_create_id' => 'nullable|integer',
       'user_update_id' => 'nullable|integer',
       'user_delete_id' => 'nullable|integer',
     ];

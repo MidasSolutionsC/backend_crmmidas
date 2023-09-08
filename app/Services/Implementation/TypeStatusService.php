@@ -42,6 +42,7 @@ class TypeStatusService implements ITypeStatus{
     } else {
       // No existe un registro con el mismo valor, puedes crear uno nuevo
       $data['created_at'] = Carbon::now(); 
+      $data['user_create_id'] = $data['user_auth_id'];
       $typeStatus = $this->model->create($data);
       if($typeStatus){
         $typeStatus->created_at = Carbon::parse($typeStatus->created_at)->format('Y-m-d H:i:s');
@@ -53,6 +54,7 @@ class TypeStatusService implements ITypeStatus{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
+    $data['user_update_id'] = $data['user_auth_id'];
     $typeStatus = $this->model->find($id);
     if($typeStatus){
       $typeStatus->fill($data);

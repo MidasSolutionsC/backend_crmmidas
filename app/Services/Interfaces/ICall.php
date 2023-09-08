@@ -3,6 +3,7 @@
 namespace App\Services\Interfaces;
 
 interface ICall{
+  function index(array $data);
   function getAll();
   function getFilterByUser(int $userId);
   function getById(int $id);

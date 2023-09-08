@@ -38,7 +38,7 @@ class CountryService implements ICountry{
   }
 
   public function update(array $data, int $id){
-    $data['updated_at'] = Carbon::now(); 
+    $data['updated_at'] = Carbon::now();
     $country = $this->model->find($id);
     if($country){
       $country->fill($data);

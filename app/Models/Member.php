@@ -33,4 +33,11 @@ class Member extends Model implements AuthorizableContract, AuthenticatableContr
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function group(){
+        return $this->belongsTo(Group::class, 'grupos_id');
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class, 'usuarios_id');
+    }
 }

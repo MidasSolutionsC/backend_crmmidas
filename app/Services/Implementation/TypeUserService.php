@@ -29,7 +29,7 @@ class TypeUserService implements ITypeUser{
   
   public function getByName(string $nombre){
     $query = $this->model->select();
-    $result = $query->where('nombre', $nombre)->first();;
+    $result = $query->whereRaw('LOWER(nombre) = ?', [strtolower($nombre)])->first();
     return $result;
   }
 

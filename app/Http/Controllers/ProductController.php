@@ -28,6 +28,24 @@ class ProductController extends Controller{
     $this->productPriceValidator = $productPriceValidator;
   }
 
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->productService->index($data);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los productos', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->productService->getAll();
@@ -75,6 +93,27 @@ class ProductController extends Controller{
     }
   }
   
+  public function update($id){
+    try{
+      $validator = $this->productValidator->validate();
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
+      } else {
+        $result = $this->productService->update($this->request->all(), $id);
+        if($result != null){
+          $response = $this->responseUpdate([$result]);
+        } else {
+          $response = $this->responseError(['message' => 'Error al actualizar los datos del producto', 'error' => $result]);
+        }
+      }
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al actualizar los datos del producto', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function createComplete(){
     try{
       // Iniciar una transacción
@@ -128,33 +167,12 @@ class ProductController extends Controller{
       return $this->responseError(['message' => 'Error al crear el producto', 'error' => $e->getMessage()], 500);
     }
   }
-  
-  public function update($id){
-    try{
-      $validator = $this->productValidator->validate();
-  
-      if($validator->fails()){
-        $response = $this->responseError($validator->errors(), 422);
-      } else {
-        $result = $this->productService->update($this->request->all(), $id);
-        if($result != null){
-          $response = $this->responseUpdate([$result]);
-        } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos del producto', 'error' => $result]);
-        }
-      }
-  
-      return $response;
-    } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al actualizar los datos del producto', 'error' => $e->getMessage()], 500);
-    }
-  }
 
   public function updateComplete($id){
     try{
       // Iniciar una transacción
       DB::beginTransaction();
-
+      
       $validatorProduct = $this->productValidator->validate();
       $validatorPrice = $this->productPriceValidator->validate();
 

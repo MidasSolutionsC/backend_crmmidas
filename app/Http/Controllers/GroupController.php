@@ -33,12 +33,30 @@ class GroupController extends Controller{
     
   }
 
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->groupService->index($data);
+      $response = $this->response();
+  
+      if(!is_null($result)){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los grupos', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->groupService->getAll();
       $response = $this->response();
   
-      if($result != null){
+      if(!is_null($result)){
         $response = $this->response($result);
       } 
   
@@ -101,6 +119,8 @@ class GroupController extends Controller{
       if(!empty($combinedErrors)){
         $response = $this->responseError($combinedErrors, 422);
       } else {
+        $this->request['user_create_id'] = $this->request->input('user_auth_id');
+
         $resGroup = $this->groupService->create($this->request->all());
         if($resGroup){
           $this->request['grupos_id'] = $resGroup->id;
@@ -108,8 +128,8 @@ class GroupController extends Controller{
 
         $integrantes = $this->request->input('integrantes');
         $resMember = [];
-        foreach($integrantes as $memberId){
-          $resMember[] = $this->memberService->create(["grupos_id" => $resGroup->id, "usuarios_id" => $memberId]);
+        foreach($integrantes as $userId){
+          $resMember[] = $this->memberService->create(["grupos_id" => $resGroup->id, "usuarios_id" => $userId]);
         }
 
 
@@ -128,6 +148,65 @@ class GroupController extends Controller{
       // Si hay un error inesperado, revertir la transacción
       DB::rollBack();
       return $this->responseError(['message' => 'Error al crear el grupo', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function updateComplete($id){
+    try{
+      // Iniciar una transacción
+      DB::beginTransaction();
+
+      $validatorGroup = $this->groupValidator->validate();
+      $validatorMember = $this->memberValidator->validate();
+
+      $combinedErrors = [];
+        
+      if ($validatorGroup->fails()) {
+        $combinedErrors['group_errors'] = $validatorGroup->errors();
+      }
+      
+      if ($validatorMember->fails()) {
+        $combinedErrors['member_errors'] = $validatorMember->errors();
+      }
+
+      if(!empty($combinedErrors)){
+        $response = $this->responseError($combinedErrors, 422);
+      } else {
+        $resGroup = $this->groupService->update($this->request->all(), $id);
+        if($resGroup){
+          $this->request['grupos_id'] = $resGroup->id;
+        }
+
+        $integrantesEliminados = $this->request->input('integrantesEliminados');
+        $integrantes = $this->request->input('integrantes');
+
+        $resMemberDeleted = [];
+        foreach($integrantesEliminados as $memberId){
+          $resMemberDeleted[] = $this->memberService->delete($memberId);
+        }
+        
+        $resMember = [];
+        foreach($integrantes as $userId){
+          $resMember[] = $this->memberService->create(["grupos_id" => $resGroup->id, "usuarios_id" => $userId]);
+        }
+
+
+        // $response = $this->responseCreated(['group' => $integrantesEliminados]);
+        $response = $this->responseUpdate(['group' => $resGroup,  'memberCreate' => $resMember, 'memberDeleted' => $resMemberDeleted]);
+
+      }
+  
+      // Si todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch(\Exception $e){
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al actualizar el grupo', 'error' => $e->getMessage()], 500);
     }
   }
 

@@ -14,7 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('productos', function (Blueprint $table) {
-            $table->engine = 'InnoDB';  
             $table->id();
             $table->foreignId('tipo_servicios_id');
             $table->string('nombre', 80);
@@ -30,6 +29,7 @@ return new class extends Migration
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
+            $table->engine = 'InnoDB';  
         });
     }
 

@@ -14,12 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('paises', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->string('iso_code', 2)->unique();
             $table->string('nombre', 255)->unique();
             $table->timestamps();
             $table->softDeletes();
+            $table->engine = 'InnoDB';
         });
     }
 

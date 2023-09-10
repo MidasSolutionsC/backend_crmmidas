@@ -2,9 +2,10 @@
 
 namespace App\Services\Interfaces;
 
-interface IDistrict{
+
+interface IOperator{
+  function index(array $data);
   function getAll();
-  function getFilterByProvince(int $provinceId);
   function getById(int $id);
   function create(array $data);
   function update(array $data, int $id);

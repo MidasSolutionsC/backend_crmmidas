@@ -14,7 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('servicios', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('tipo_servicios_id');
             $table->foreignId('productos_id');
@@ -28,8 +27,6 @@ return new class extends Migration
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
-            $table->timestamps();
-            $table->softDeletes();
             $table->foreign('tipo_servicios_id')->references('id')->on('tipo_servicios');
             $table->foreign('productos_id')->references('id')->on('productos');
             $table->foreign('promociones_id')->references('id')->on('promociones');
@@ -38,6 +35,9 @@ return new class extends Migration
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
+            $table->timestamps();
+            $table->softDeletes();
+            $table->engine = 'InnoDB';
         });
     }
 

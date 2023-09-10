@@ -15,7 +15,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('sesiones_historiales', function (Blueprint $table) {
-            $table->engine  = 'InnoDB';
             $table->id();
             $table->foreignId('usuarios_id');
             $table->string('dispositivo', 50);
@@ -30,6 +29,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('usuarios_id')->references('id')->on('usuarios');
+            $table->engine  = 'InnoDB';
         });
     }
 

@@ -9,27 +9,18 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class Promotion extends Model implements AuthorizableContract, AuthenticatableContract{
+class CategoryBrand extends Model implements AuthenticatableContract, AuthorizableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
-    protected $table = "promociones";
+    protected $table = "categorias_marcas";
 
     protected $fillable = [
-        'tipo_servicios_id',
         'nombre',
         'descripcion',
-        'tipo_descuento',
-        'descuento',
-        'fecha_inicio',
-        'fecha_fin',
-        'codigo',
-        'cantidad_minima',
-        'cantidad_maxima',
+        'is_active',
         'user_create_id',
         'user_update_id',
         'user_delete_id',
-        'is_private',
-        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -37,7 +28,7 @@ class Promotion extends Model implements AuthorizableContract, AuthenticatableCo
 
     public $timestamps = false;
 
-
+    
     /**
      * TRANSFORMACIÓN DE VALORES
      */
@@ -45,17 +36,4 @@ class Promotion extends Model implements AuthorizableContract, AuthenticatableCo
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
-
-    // Mutador para el campo fecha_fin
-    public function setFechaFinAttribute($value) {
-        // Verifica si el valor es una cadena vacía y establece null en su lugar
-        $this->attributes['fecha_fin'] = empty($value) ? null : $value;
-    }
-
-    // En el modelo Promotion
-    public function typeService()
-    {
-        return $this->belongsTo(TypeService::class, 'tipo_servicios_id');
-    }
-
 }

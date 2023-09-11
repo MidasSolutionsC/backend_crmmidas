@@ -36,6 +36,7 @@ class PromotionValidator{
       'user_create_id' => 'nullable|integer',
       'user_update_id' => 'nullable|integer',
       'user_delete_id' => 'nullable|integer',
+      'is_private' => 'nullable|boolean',
       'is_active' => 'nullable|boolean',
     ];
   }

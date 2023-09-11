@@ -14,7 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('empresas', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('paises_id');
             $table->char('codigo_ubigeo', 6)->nullable();
@@ -38,6 +37,7 @@ return new class extends Migration
             $table->foreign('paises_id')->references('id')->on('paises');
             $table->foreign('codigo_ubigeo')->references('ubigeo')->on('ubigeos');
             $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
+            $table->engine = 'InnoDB';
         });
     }
 

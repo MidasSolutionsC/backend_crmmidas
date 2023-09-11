@@ -87,7 +87,9 @@ class MemberService implements IMember{
     $member = null;
 
     if (!is_null($existingRecord) && $existingRecord->trashed()) {
-      $existingRecord->user_update_id = $data['user_auth_id'];
+      if(isset($data['user_auth_id'])){
+        $existingRecord->user_update_id = $data['user_auth_id'];
+      }
       $existingRecord->updated_at = Carbon::now(); 
       $existingRecord->is_active = 1;
       $existingRecord->save();
@@ -98,7 +100,9 @@ class MemberService implements IMember{
       }
     } else {
       $data['created_at'] = Carbon::now(); 
-      $data['user_create_id'] = $data['user_auth_id'];
+      if(isset($data['user_auth_id'])){
+        $data['user_create_id'] = $data['user_auth_id'];
+      }
       $member = $this->model->create($data);
     }
     
@@ -107,7 +111,9 @@ class MemberService implements IMember{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
     $member = $this->model->find($id);
     if($member){
       $member->fill($data);

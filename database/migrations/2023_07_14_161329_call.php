@@ -15,12 +15,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('llamadas', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->string('numero', 11);
-            $table->string('operador', 30);
-            $table->string('operador_llamo', 30)->nullable();
-            $table->string('tipificacion', 30)->nullable();
+            $table->foreignId('operadores_id');
+            $table->foreignId('operadores_llamo_id')->nullable();
+            $table->foreignId('tipificaciones_llamadas_id')->nullable();
             $table->string('nombres', 60)->nullable();
             $table->string('apellido_paterno', 60)->nullable();
             $table->string('apellido_materno', 60)->nullable();
@@ -36,10 +35,14 @@ return new class extends Migration
             $table->boolean('is_active')->default(true); 
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('operadores_id')->references('id')->on('operadores');
+            $table->foreign('operadores_llamo_id')->references('id')->on('operadores');
+            $table->foreign('tipificaciones_llamadas_id')->references('id')->on('tipificaciones_llamadas');
             $table->foreign('tipo_estados_id')->references('id')->on('tipo_estados');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
+            $table->engine = 'InnoDB';
         });
     }
 

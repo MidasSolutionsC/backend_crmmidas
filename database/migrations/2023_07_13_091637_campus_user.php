@@ -14,7 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('sedes_usuarios', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('sedes_id');
             $table->foreignId('usuarios_id');
@@ -22,6 +21,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->unique(['sedes_id', 'usuarios_id']);
+            $table->engine = 'InnoDB';
         });
     }
 

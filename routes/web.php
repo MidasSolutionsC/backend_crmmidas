@@ -54,39 +54,6 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'UbigeoController@restore');
   });
 
-  // DEPARTAMENTOS
-  $router->group(['prefix' => '/department'], function () use ($router) {
-    $router->get('/', 'DepartmentController@listAll');
-    $router->get('/filterCountry/{countryId}', 'DepartmentController@getFilterByCountry');
-    $router->get('/{id}', 'DepartmentController@get');
-    $router->post('/', 'DepartmentController@create');
-    $router->put('/{id}', 'DepartmentController@update');
-    $router->delete('/{id}', 'DepartmentController@delete');
-    $router->get('/restore/{id}', 'DepartmentController@restore');
-  });
-
-  // PROVINCIAS
-  $router->group(['prefix' => '/province'], function () use ($router) {
-    $router->get('/', 'ProvinceController@listAll');
-    $router->get('/filterDepartment/{departmentId}', 'ProvinceController@getFilterByDepartment');
-    $router->get('/{id}', 'ProvinceController@get');
-    $router->post('/', 'ProvinceController@create');
-    $router->put('/{id}', 'ProvinceController@update');
-    $router->delete('/{id}', 'ProvinceController@delete');
-    $router->get('/restore/{id}', 'ProvinceController@restore');
-  });
-
-  // DISTRITOS
-  $router->group(['prefix' => '/district'], function () use ($router) {
-    $router->get('/', 'DistrictController@listAll');
-    $router->get('/filterProvince/{provinceId}', 'DistrictController@getFilterByProvince');
-    $router->get('/{id}', 'DistrictController@get');
-    $router->post('/', 'DistrictController@create');
-    $router->put('/{id}', 'DistrictController@update');
-    $router->delete('/{id}', 'ProvinceController@delete');
-    $router->get('/restore/{id}', 'DistrictController@restore');
-  });
-
   // SEDES
   $router->group(['prefix' => '/campus'], function () use ($router) {
     $router->get('/', 'CampusController@listAll');
@@ -242,6 +209,28 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'CampusUserController@restore');
   });
 
+  // OPERADORES
+  $router->group(['prefix' => '/operator'], function () use ($router) {
+    $router->get('/', 'OperatorController@listAll');
+    $router->get('/index', 'OperatorController@index');
+    $router->get('/{id}', 'OperatorController@get');
+    $router->post('/', 'OperatorController@create');
+    $router->put('/{id}', 'OperatorController@update');
+    $router->delete('/{id}', 'OperatorController@delete');
+    $router->get('/restore/{id}', 'OperatorController@restore');
+  });
+
+  // TIPIFICACIONES
+  $router->group(['prefix' => '/typificationCall'], function () use ($router) {
+    $router->get('/', 'TypificationCallController@listAll');
+    $router->get('/index', 'TypificationCallController@index');
+    $router->get('/{id}', 'TypificationCallController@get');
+    $router->post('/', 'TypificationCallController@create');
+    $router->put('/{id}', 'TypificationCallController@update');
+    $router->delete('/{id}', 'TypificationCallController@delete');
+    $router->get('/restore/{id}', 'TypificationCallController@restore');
+  });
+
   // LLAMADAS
   $router->group(['prefix' => '/call'], function () use ($router) {
     $router->get('/', 'CallController@listAll');
@@ -328,6 +317,39 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->put('/{id}', 'TypeServiceController@update');
     $router->delete('/{id}', 'TypeServiceController@delete');
     $router->get('/restore/{id}', 'TypeServiceController@restore');
+  });
+
+  // PRODUCTOS
+  $router->group(['prefix' => '/currency'], function () use ($router) {
+    $router->get('/', 'CurrencyController@listAll');
+    $router->get('/index', 'CurrencyController@index');
+    $router->get('/{id}', 'CurrencyController@get');
+    $router->post('/', 'CurrencyController@create');
+    $router->put('/{id}', 'CurrencyController@update');
+    $router->delete('/{id}', 'CurrencyController@delete');
+    $router->get('/restore/{id}', 'CurrencyController@restore');
+  });
+
+  // PRODUCTOS
+  $router->group(['prefix' => '/category'], function () use ($router) {
+    $router->get('/', 'CategoryController@listAll');
+    $router->get('/index', 'CategoryController@index');
+    $router->get('/{id}', 'CategoryController@get');
+    $router->post('/', 'CategoryController@create');
+    $router->put('/{id}', 'CategoryController@update');
+    $router->delete('/{id}', 'CategoryController@delete');
+    $router->get('/restore/{id}', 'CategoryController@restore');
+  });
+
+  // MARCAS
+  $router->group(['prefix' => '/brand'], function () use ($router) {
+    $router->get('/', 'BrandController@listAll');
+    $router->get('/index', 'BrandController@index');
+    $router->get('/{id}', 'BrandController@get');
+    $router->post('/', 'BrandController@create');
+    $router->put('/{id}', 'BrandController@update');
+    $router->delete('/{id}', 'BrandController@delete');
+    $router->get('/restore/{id}', 'BrandController@restore');
   });
 
   // PRODUCTOS

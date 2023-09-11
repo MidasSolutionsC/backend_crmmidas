@@ -14,7 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('integrantes', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->foreignId('grupos_id');
             $table->foreignId('usuarios_id');
@@ -24,6 +23,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->foreign('grupos_id')->references('id')->on('grupos');
             $table->foreign('usuarios_id')->references('id')->on('usuarios');
+            $table->engine = 'InnoDB';
         });
     }
 

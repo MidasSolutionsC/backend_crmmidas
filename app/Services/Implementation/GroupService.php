@@ -88,7 +88,9 @@ class GroupService implements IGroup{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
     $group = $this->model->create($data);
     if($group){
       $group->created_at = Carbon::parse($group->created_at)->format('Y-m-d H:i:s');
@@ -100,7 +102,9 @@ class GroupService implements IGroup{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
     $group = $this->model->find($id);
     if($group){
       $group->fill($data);

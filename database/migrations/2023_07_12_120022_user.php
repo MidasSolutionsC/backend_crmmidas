@@ -8,7 +8,6 @@ return new class extends Migration{
     
     public function up(){
         Schema::create('usuarios', function (Blueprint $table) {
-            $table->engine = 'InnoDB';  
             $table->id();
             $table->foreignId('personas_id');
             $table->foreignId('tipo_usuarios_id');
@@ -24,6 +23,7 @@ return new class extends Migration{
             $table->softDeletes();
             $table->foreign('personas_id')->references('id')->on('personas');
             $table->foreign('tipo_usuarios_id')->references('id')->on('tipo_usuarios');
+            $table->engine = 'InnoDB';  
         });
     }
 

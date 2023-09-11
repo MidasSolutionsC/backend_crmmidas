@@ -14,13 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tipo_documentos', function (Blueprint $table) {
-            $table->engine= 'InnoDB';
             $table->id();
             $table->string('nombre', 40)->unique();
             $table->string('abreviacion', 15);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
+            $table->engine= 'InnoDB';
         });
     }
 

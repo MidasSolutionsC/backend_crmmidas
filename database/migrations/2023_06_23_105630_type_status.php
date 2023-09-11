@@ -14,13 +14,13 @@ return new class extends Migration
     public function up()
     {
         Schema::create('tipo_estados', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->string('nombre', 50)->unique();
             $table->text('descripcion')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
+            $table->engine = 'InnoDB';
         });
     }
 

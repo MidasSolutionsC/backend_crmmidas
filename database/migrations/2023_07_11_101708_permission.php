@@ -14,12 +14,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('permisos', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->string('nombre', 35)->unique();
             $table->text('descripcion')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->engine = 'InnoDB';
         });
     }
 

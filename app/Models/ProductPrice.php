@@ -16,6 +16,7 @@ class ProductPrice extends Model implements AuthorizableContract, Authenticatabl
 
     protected $fillable = [
         'productos_id',
+        'divisas_id',
         'precio',
         'fecha_inicio',
         'fecha_fin',

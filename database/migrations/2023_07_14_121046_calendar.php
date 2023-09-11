@@ -14,7 +14,6 @@ return new class extends Migration
     public function up()
     {
         Schema::create('calendarios', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
             $table->id();
             $table->string('titulo', 50);
             $table->text('descripcion')->nullable();
@@ -33,6 +32,7 @@ return new class extends Migration
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
+            $table->engine = 'InnoDB';
         });
     }
 

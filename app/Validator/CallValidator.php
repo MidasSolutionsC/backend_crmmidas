@@ -24,9 +24,9 @@ class CallValidator {
   private function rules(){
     return [
       'numero' => 'required|string|max:11',
-      'operador' => 'required|string|max:30',
-      'operador_llamo' => 'string|max:30',
-      'tipificacion' => 'string|max:30',
+      'operadores_id' => 'required|integer',
+      'operadores_llamo_id' => 'integer',
+      'tipificaciones_llamadas_id' => 'integer',
       'nombres' => 'string|max:60',
       'apellido_paterno' => 'string|max:60',
       'apellido_materno' => 'string|max:60',

@@ -23,48 +23,11 @@ class ServiceValidator{
 
   private function rules() {
     return [
+      'nombre' => 'required|string|max:60|unique:operadores,nombre,' . $this->id . ',id',
+      'descripcion' => 'nullable|string' ,
       'tipo_servicios_id' => 'required|integer',
       'productos_id' => 'required|integer',
-      'instalaciones_id' => 'required|integer',
       'promociones_id' => 'nullable|integer',
-      'observacion' => 'nullable|string',
-      'fecha_cierre' => 'nullable|date:Y-m-d',
-      // 'datos_json' => 'required',
-      'datos_json' => [
-        'required',
-        // function ($attribute, $value, $fail) {
-        //   // Validar la estructura interna del JSON
-        //   // if (!isset($value->ubicacion)) {
-        //   //   $fail("El campo 'ubicacion' es requerido en el JSON.");
-        //   // }
-
-        //   // if (!isset($value->puerta)) {
-        //   //   $fail("El campo 'puerta' es requerido en el JSON.");
-        //   // }
-
-        //   if (!isset($value->tipo)) {
-        //     $fail("El campo 'tipo' es requerido en el JSON.");
-        //   }
-
-        //   if (isset($value->tipo)){
-        //     $tvRules = [
-        //       'tipo' => 'required|in:tv',
-        //       'canal' => 'required|string',
-        //       'duracion' => 'required|integer',
-        //     ];
-
-        //     $tvMessages = [
-        //       'canal.required' => 'El canal es requerido.',
-        //     ];
-
-        //     $validator = Validator::make((array) $value, $tvRules, $tvMessages);
-  
-        //     if (isset($validator) && $validator->fails()) {
-        //       $fail($validator);
-        //     }
-        //   }
-        // },      
-      ],
       'tipo_estados_id' => 'nullable|integer',
       'is_active' => 'nullable|boolean',
       'user_create_id' => 'required|integer',

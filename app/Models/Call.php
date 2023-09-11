@@ -16,9 +16,9 @@ class Call extends Model implements AuthenticatableContract, AuthorizableContrac
 
     protected $fillable = [
         'numero',
-        'operador',
-        'operador_llamo',
-        'tipificacion',
+        'operadores_id',
+        'operadores_llamo_id',
+        'tipificaciones_llamadas_id',
         'nombres',
         'apellido_paterno',
         'apellido_materno',
@@ -47,4 +47,9 @@ class Call extends Model implements AuthenticatableContract, AuthorizableContrac
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    // En el modelo Promotion
+    public function typificationCall(){
+        return $this->belongsTo(TypificationCall::class, 'tipificaciones_llamadas_id');
+    }
+    
 }

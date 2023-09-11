@@ -9,23 +9,26 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class District extends Model implements AuthenticatableContract, AuthorizableContract{
+class Operator extends Model implements AuthenticatableContract, AuthorizableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
-    protected $table = "distritos";
+    protected $table = "operadores";
 
     protected $fillable = [
-        'provincias_id',
-        'ubigeo_codigo',
         'nombre',
-        'provincias_codigo',
+        'descripcion',
+        'is_active',
+        'user_create_id',
+        'user_update_id',
+        'user_delete_id',
         'created_at',
         'updated_at',
-        'deleted_at',   
+        'deleted_at',
     ];
 
     public $timestamps = false;
 
+        
     /**
      * TRANSFORMACIÓN DE VALORES
      */
@@ -33,5 +36,4 @@ class District extends Model implements AuthenticatableContract, AuthorizableCon
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
-
 }

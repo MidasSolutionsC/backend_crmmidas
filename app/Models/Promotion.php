@@ -28,6 +28,7 @@ class Promotion extends Model implements AuthorizableContract, AuthenticatableCo
         'user_create_id',
         'user_update_id',
         'user_delete_id',
+        'is_private',
         'is_active',
         'created_at',
         'updated_at',

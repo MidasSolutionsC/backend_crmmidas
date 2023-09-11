@@ -27,18 +27,21 @@ class ProductService implements IProduct{
     $query->select(
       'productos.*', 
       'TS.nombre as tipo_servicios_nombre', 
-      'PP.precio as precio'
+      'PP.precio as precio',
+      'DV.id as divisas_id',
+      'DV.nombre as divisas_nombre',
     );
     
     $query->join('tipo_servicios as TS', 'productos.tipo_servicios_id', '=', 'TS.id');
     $query->leftJoin('productos_precios as PP', function ($join) {
       $join->on('productos.id', '=', 'PP.productos_id')
-        ->where('PP.created_at', '=', function ($subQuery) {
-            $subQuery->select(DB::raw('MAX(created_at)'))
-                ->from('productos_precios')
-                ->whereColumn('productos_id', 'productos.id');
-        });
+      ->where('PP.created_at', '=', function ($subQuery) {
+        $subQuery->select(DB::raw('MAX(created_at)'))
+        ->from('productos_precios')
+        ->whereColumn('productos_id', 'productos.id');
+      });
     });
+    $query->join('divisas as DV', 'PP.divisas_id', '=', 'DV.id');
 
     // Aplicar filtro de búsqueda si se proporciona un término
     if (!empty($search)) {
@@ -95,7 +98,10 @@ class ProductService implements IProduct{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id']; 
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id']; 
+    }
+    
     $product = $this->model->create($data);
     if($product){
       $product->created_at = Carbon::parse($product->created_at)->format('Y-m-d H:i:s');
@@ -106,7 +112,10 @@ class ProductService implements IProduct{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id']; 
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id']; 
+    }
+
     $product = $this->model->find($id);
     if($product){
       $product->fill($data);

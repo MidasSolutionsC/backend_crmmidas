@@ -17,6 +17,7 @@ return new class extends Migration
         Schema::create('productos_precios', function (Blueprint $table) {
             $table->id();
             $table->foreignId('productos_id');
+            $table->foreignId('divisas_id');
             $table->double('precio', 10, 2);
             $table->date('fecha_inicio')->default(DB::raw('CURRENT_DATE'));            
             $table->date('fecha_fin')->nullable();
@@ -27,6 +28,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('productos_id')->references('id')->on('productos');
+            $table->foreign('divisas_id')->references('id')->on('divisas');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');

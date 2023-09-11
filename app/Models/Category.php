@@ -9,10 +9,10 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class CategoryBrand extends Model implements AuthenticatableContract, AuthorizableContract{
+class Category extends Model implements AuthenticatableContract, AuthorizableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
-    protected $table = "categorias_marcas";
+    protected $table = "categorias";
 
     protected $fillable = [
         'nombre',

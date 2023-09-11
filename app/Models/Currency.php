@@ -9,17 +9,20 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductPrice extends Model implements AuthorizableContract, AuthenticatableContract{
+class Currency extends Model implements AuthorizableContract, AuthenticatableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
-    protected $table = "productos_precios";
+    protected $table = "divisas";
 
     protected $fillable = [
-        'productos_id',
-        'divisas_id',
-        'precio',
-        'fecha_inicio',
-        'fecha_fin',
+        'paises_id',
+        'nombre',
+        'descripcion',
+        'iso_code',
+        'simbolo',
+        'tasa_cambio',
+        'formato_moneda',
+        'fecha_actualizado',
         'is_active',
         'user_create_id',
         'user_update_id',
@@ -38,5 +41,4 @@ class ProductPrice extends Model implements AuthorizableContract, Authenticatabl
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
-
 }

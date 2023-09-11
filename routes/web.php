@@ -320,21 +320,31 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   });
 
   // PRODUCTOS
-  $router->group(['prefix' => '/categoryBrand'], function () use ($router) {
-    $router->get('/', 'CategoryBrandController@listAll');
-    $router->get('/index', 'CategoryBrandController@index');
-    $router->get('/{id}', 'CategoryBrandController@get');
-    $router->post('/', 'CategoryBrandController@create');
-    $router->put('/{id}', 'CategoryBrandController@update');
-    $router->delete('/{id}', 'CategoryBrandController@delete');
-    $router->get('/restore/{id}', 'CategoryBrandController@restore');
+  $router->group(['prefix' => '/currency'], function () use ($router) {
+    $router->get('/', 'CurrencyController@listAll');
+    $router->get('/index', 'CurrencyController@index');
+    $router->get('/{id}', 'CurrencyController@get');
+    $router->post('/', 'CurrencyController@create');
+    $router->put('/{id}', 'CurrencyController@update');
+    $router->delete('/{id}', 'CurrencyController@delete');
+    $router->get('/restore/{id}', 'CurrencyController@restore');
+  });
+
+  // PRODUCTOS
+  $router->group(['prefix' => '/category'], function () use ($router) {
+    $router->get('/', 'CategoryController@listAll');
+    $router->get('/index', 'CategoryController@index');
+    $router->get('/{id}', 'CategoryController@get');
+    $router->post('/', 'CategoryController@create');
+    $router->put('/{id}', 'CategoryController@update');
+    $router->delete('/{id}', 'CategoryController@delete');
+    $router->get('/restore/{id}', 'CategoryController@restore');
   });
 
   // MARCAS
   $router->group(['prefix' => '/brand'], function () use ($router) {
     $router->get('/', 'BrandController@listAll');
     $router->get('/index', 'BrandController@index');
-    $router->get('/filterCategory/{categoryId}', 'BrandController@getFilterByCategory');
     $router->get('/{id}', 'BrandController@get');
     $router->post('/', 'BrandController@create');
     $router->put('/{id}', 'BrandController@update');

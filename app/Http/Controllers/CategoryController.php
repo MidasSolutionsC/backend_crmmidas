@@ -2,20 +2,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Brand;
-use App\Services\Implementation\BrandService;
-use App\Validator\BrandValidator;
+use App\Services\Implementation\CategoryService;
+use App\Validator\CategoryValidator;
 
-class BrandController extends Controller{
+class CategoryController extends Controller{
   private $request;
-  private $brandService;
-  private $brandValidator;
+  private $categoryService;
+  private $categoryValidator;
 
-  public function __construct(Request $request, BrandService $brandService, BrandValidator $brandValidator)
+
+  public function __construct(Request $request, CategoryService $categoryService, CategoryValidator $categoryValidator)
   {
     $this->request = $request;
-    $this->brandService = $brandService;
-    $this->brandValidator = $brandValidator;
+    $this->categoryService = $categoryService;
+    $this->categoryValidator = $categoryValidator;
   }
 
   public function index(){
@@ -23,7 +23,7 @@ class BrandController extends Controller{
       $data = $this->request->input('data');
       $data = json_decode($data, true);
 
-      $result = $this->brandService->index($data);
+      $result = $this->categoryService->index($data);
       $response = $this->response();
   
       if($result != null){
@@ -32,13 +32,13 @@ class BrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al listar las marcas', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al listar las categorías', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function listAll(){
     try{
-      $result = $this->brandService->getAll();
+      $result = $this->categoryService->getAll();
       $response = $this->response();
   
       if($result != null){
@@ -47,14 +47,13 @@ class BrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al listar las marcas', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al listar las categorías', 'error' => $e->getMessage()], 500);
     }
   }
-  
 
   public function get($id){
     try{
-      $result = $this->brandService->getById($id);
+      $result = $this->categoryService->getById($id);
       $response = $this->response();
   
       if($result != null){
@@ -63,51 +62,51 @@ class BrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al obtener los datos de la marca', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al obtener los datos de la categoría', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function create(){
     try{
-      $validator = $this->brandValidator->validate();
+      $validator = $this->categoryValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $result = $this->brandService->create($this->request->all());
+        $result = $this->categoryService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al crear la marca', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al crear la categoría', 'error' => $e->getMessage()], 500);
     }
   }
-
+  
   public function update($id){
     try{
-      $validator = $this->brandValidator->validate();
+      $validator = $this->categoryValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $result = $this->brandService->update($this->request->all(), $id);
+        $result = $this->categoryService->update($this->request->all(), $id);
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos de la marca', 'error' => $result]);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos de la categoría', 'error' => $result]);
         }
       }
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al actualizar los datos de la marca', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al actualizar los datos de la categoría', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function delete($id){
     try{
-      $result = $this->brandService->delete($id);
+      $result = $this->categoryService->delete($id);
       if($result){
         $response = $this->responseDelete([$result]);
       } else {
@@ -116,13 +115,13 @@ class BrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al eliminar la marca', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al eliminar la categoría', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function restore($id){
     try{
-      $result = $this->brandService->restore($id);
+      $result = $this->categoryService->restore($id);
       if($result){
         $response = $this->responseRestore([$result]);
       } else {
@@ -131,7 +130,7 @@ class BrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al restaurar la marca', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al restaurar la categoría', 'error' => $e->getMessage()], 500);
     }
     
   }

@@ -2,20 +2,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\Implementation\CategoryBrandService;
-use App\Validator\CategoryBrandValidator;
+use App\Services\Implementation\CurrencyService;
+use App\Validator\CurrencyValidator;
 
-class CategoryBrandController extends Controller{
+class CurrencyController extends Controller{
+
   private $request;
-  private $categoryBrandService;
-  private $categoryBrandValidator;
+  private $currencyService;
+  private $currencyValidator;
 
 
-  public function __construct(Request $request, CategoryBrandService $categoryBrandService, CategoryBrandValidator $categoryBrandValidator)
+  public function __construct(Request $request, CurrencyService $currencyService, CurrencyValidator $currencyValidator)
   {
     $this->request = $request;
-    $this->categoryBrandService = $categoryBrandService;
-    $this->categoryBrandValidator = $categoryBrandValidator;
+    $this->currencyService = $currencyService;
+    $this->currencyValidator = $currencyValidator;
   }
 
   public function index(){
@@ -23,7 +24,7 @@ class CategoryBrandController extends Controller{
       $data = $this->request->input('data');
       $data = json_decode($data, true);
 
-      $result = $this->categoryBrandService->index($data);
+      $result = $this->currencyService->index($data);
       $response = $this->response();
   
       if($result != null){
@@ -32,13 +33,13 @@ class CategoryBrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al listar las categorías', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al listar las divisas', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function listAll(){
     try{
-      $result = $this->categoryBrandService->getAll();
+      $result = $this->currencyService->getAll();
       $response = $this->response();
   
       if($result != null){
@@ -47,13 +48,13 @@ class CategoryBrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al listar las categorías', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al listar las divisas', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function get($id){
     try{
-      $result = $this->categoryBrandService->getById($id);
+      $result = $this->currencyService->getById($id);
       $response = $this->response();
   
       if($result != null){
@@ -62,51 +63,51 @@ class CategoryBrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al obtener los datos de la categoría', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al obtener los datos de la divisa', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function create(){
     try{
-      $validator = $this->categoryBrandValidator->validate();
+      $validator = $this->currencyValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $result = $this->categoryBrandService->create($this->request->all());
+        $result = $this->currencyService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al crear la categoría', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al crear la divisa', 'error' => $e->getMessage()], 500);
     }
   }
   
   public function update($id){
     try{
-      $validator = $this->categoryBrandValidator->validate();
+      $validator = $this->currencyValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $result = $this->categoryBrandService->update($this->request->all(), $id);
+        $result = $this->currencyService->update($this->request->all(), $id);
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
-          $response = $this->responseError(['message' => 'Error al actualizar los datos de la categoría', 'error' => $result]);
+          $response = $this->responseError(['message' => 'Error al actualizar los datos de la divisa', 'error' => $result]);
         }
       }
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al actualizar los datos de la categoría', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al actualizar los datos de la divisa', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function delete($id){
     try{
-      $result = $this->categoryBrandService->delete($id);
+      $result = $this->currencyService->delete($id);
       if($result){
         $response = $this->responseDelete([$result]);
       } else {
@@ -115,13 +116,13 @@ class CategoryBrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al eliminar la categoría', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al eliminar la divisa', 'error' => $e->getMessage()], 500);
     }
   }
 
   public function restore($id){
     try{
-      $result = $this->categoryBrandService->restore($id);
+      $result = $this->currencyService->restore($id);
       if($result){
         $response = $this->responseRestore([$result]);
       } else {
@@ -130,7 +131,7 @@ class CategoryBrandController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al restaurar la categoría', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al restaurar la divisa', 'error' => $e->getMessage()], 500);
     }
     
   }

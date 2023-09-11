@@ -3,7 +3,7 @@
 namespace App\Services\Interfaces;
 
 
-interface ICategoryBrand{
+interface ICategory{
   function index(array $data);
   function getAll();
   function getById(int $id);

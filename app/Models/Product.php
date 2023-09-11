@@ -16,6 +16,8 @@ class Product extends Model implements AuthorizableContract, AuthenticatableCont
 
     protected $fillable = [
         'tipo_servicios_id',
+        'categorias_id',
+        'marcas_id',
         'nombre',
         'descripcion',
         'user_create_id',
@@ -41,6 +43,14 @@ class Product extends Model implements AuthorizableContract, AuthenticatableCont
     // En el modelo Promotion
     public function typeService(){
         return $this->belongsTo(TypeService::class, 'tipo_servicios_id');
+    }
+
+    public function category(){
+        return $this->belongsTo(Category::class, 'categorias_id');
+    }
+
+    public function brand(){
+        return $this->belongsTo(Brand::class, 'marcas_id');
     }
 
     public function precios()

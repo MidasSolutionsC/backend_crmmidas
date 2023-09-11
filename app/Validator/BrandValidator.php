@@ -23,8 +23,7 @@ class BrandValidator{
 
   private function rules(){
     return [
-      'categorias_marcas_id' => 'required|integer',
-      'nombre' => 'required|string|max:80|unique:marcas,nombre,' . $this->id . ',id,categorias_marcas_id,' . $this->request->input('categorias_marcas_id'),
+      'nombre' => 'required|string|max:80|unique:marcas,nombre,' . $this->id . ',id',
       'descripcion' => 'nullable|string' ,
       'user_create_id' => 'nullable|integer' ,
       'user_update_id' => 'nullable|integer' ,

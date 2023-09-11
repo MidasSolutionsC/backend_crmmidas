@@ -2,20 +2,19 @@
 
 namespace App\Services\Implementation;
 
-use App\Models\Brand;
-use App\Services\Interfaces\IBrand;
+use App\Models\Category;
+use App\Services\Interfaces\ICategory;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class BrandService implements IBrand{
+class CategoryService implements ICategory{
 
   private $model;
 
   public function __construct()
   {
-    $this->model = new Brand();
+    $this->model = new Category();
   }
 
   public function index(array $data){
@@ -23,14 +22,13 @@ class BrandService implements IBrand{
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
     $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
 
-    $query = Brand::query();
+    $query = Category::query();
     $query->select();
     
-
     // Aplicar filtro de búsqueda si se proporciona un término
     if (!empty($search)) {
-        $query->where('marcas.nombre', 'LIKE', "%$search%")
-              ->orWhere('marcas.descripcion', 'LIKE', "%$search%");
+        $query->where('nombre', 'LIKE', "%$search%")
+              ->orWhere('descripcion', 'LIKE', "%$search%");
     }
 
     // Handle sorting
@@ -54,7 +52,6 @@ class BrandService implements IBrand{
 
   public function getAll(){
     $query = $this->model->select();
-
     $result = $query->get();
     return $result;
   }
@@ -70,8 +67,8 @@ class BrandService implements IBrand{
     if(isset($data['user_auth_id'])){
       $data['user_create_id'] = $data['user_auth_id']; 
     }
-    $brand = $this->model->create($data);
-    return $brand;
+    $category = $this->model->create($data);
+    return $category;
   }
 
   public function update(array $data, int $id){
@@ -79,26 +76,25 @@ class BrandService implements IBrand{
     if(isset($data['user_auth_id'])){
       $data['user_update_id'] = $data['user_auth_id']; 
     }
-    $brand = $this->model->find($id);
-    if($brand){
-      $brand->fill($data);
-      $brand->save();
-      $brand->updated_at = Carbon::parse($brand->updated_at)->format('Y-m-d H:i:s');
-      return $brand;
+    $category = $this->model->find($id);
+    if($category){
+      $category->fill($data);
+      $category->save();
+      return $category;
     }
 
     return null;
   }
 
   public function delete(int $id){
-    $brand = $this->model->find($id);
-    if($brand != null){
-      $brand->is_active = 0;
-      $brand->save();
-      $result = $brand->delete();
+    $category = $this->model->find($id);
+    if($category != null){
+      $category->is_active = 0;
+      $category->save();
+      $result = $category->delete();
       if($result){
-        $brand->deleted_st = Carbon::parse($brand->deleted_at)->format('Y-m-d H:i:s');
-        return $brand;
+        $category->deleted_st = Carbon::parse($category->deleted_at)->format('Y-m-d H:i:s');
+        return $category;
       }
     }
 
@@ -106,13 +102,13 @@ class BrandService implements IBrand{
   }
 
   public function restore(int $id){
-    $brand = $this->model->withTrashed()->find($id);
-    if($brand != null && $brand->trashed()){
-      $brand->is_active = 1;
-      $brand->save();
-      $result = $brand->restore();
+    $category = $this->model->withTrashed()->find($id);
+    if($category != null && $category->trashed()){
+      $category->is_active = 1;
+      $category->save();
+      $result = $category->restore();
       if($result){
-        return $brand;
+        return $category;
       }
     }
 

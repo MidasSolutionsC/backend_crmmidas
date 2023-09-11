@@ -17,11 +17,12 @@ class Service extends Model implements AuthorizableContract, AuthenticatableCont
     protected $fillable = [
         'tipo_servicios_id',
         'productos_id',
-        'instalaciones_id',
+        // 'instalaciones_id',
+        // 'fecha_cierre',
+        // 'datos_json',
         'promociones_id',
-        'observacion',
-        'fecha_cierre',
-        'datos_json',
+        'nombre',
+        'descripcion',
         'tipo_estados_id',
         'is_active',
         'user_create_id',
@@ -33,7 +34,7 @@ class Service extends Model implements AuthorizableContract, AuthenticatableCont
     ];
 
     protected $casts = [
-        'datos_json' => 'json',
+        // 'datos_json' => 'json',
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];

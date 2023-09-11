@@ -2,9 +2,7 @@
 
 namespace App\Services\Interfaces;
 
-
-interface IBrand{
-  function index(array $data);
+interface ICurrency{
   function getAll();
   function getById(int $id);
   function create(array $data);

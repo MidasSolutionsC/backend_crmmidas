@@ -15,7 +15,6 @@ class Brand extends Model implements AuthorizableContract, AuthenticatableContra
     protected $table = "marcas";
 
     protected $fillable = [
-        'categorias_marcas_id',
         'nombre',
         'descripcion',
         'is_active',
@@ -36,10 +35,4 @@ class Brand extends Model implements AuthorizableContract, AuthenticatableContra
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
-
-    // Referencia con tabla foránea
-    public function categoryBrand(){
-        return $this->belongsTo(CategoryBrand::class, 'categorias_marcas_id');
-    }
-
 }

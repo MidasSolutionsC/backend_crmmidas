@@ -5,7 +5,7 @@ namespace App\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ProductPriceValidator{
+class CurrencyValidator{
 
   private $request;
   private $id;
@@ -23,11 +23,14 @@ class ProductPriceValidator{
 
   private function rules(){
     return [
-      'productos_id' => 'nullable|integer',
-      'divisas_id' => 'required|integer',
-      'precio' => 'required|numeric|max:9999999999.99|regex:/^\d+(\.\d{1,2})?$/',
-      'fecha_inicio' => 'nullable|date:Y-m-d',
-      'fecha_fin' => 'nullable|date:Y-m-d',
+      'paises_id' => 'nullable|integer',
+      'nombre' => 'nullable|string|unique:divisas,nombre,' . $this->id . ',id',
+      'descripcion' => 'nullable|string' ,
+      'tasa_cambio' => 'nullable|numeric|max:99999999.99|regex:/^\d+(\.\d{1,2})?$/',
+      'iso_code' => 'required|string|max:3' ,
+      'simbolo' => 'required|string|max:10' ,
+      'formato_moneda' => 'nullable|string|max:30' ,
+      'fecha_actualizado' => 'nullable|date:Y-m-d',
       'is_active' => 'nullable|boolean',
       'user_create_id' => 'nullable|integer',
       'user_update_id' => 'nullable|integer',

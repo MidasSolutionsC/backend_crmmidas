@@ -51,6 +51,21 @@ class PromotionController extends Controller{
     }
   }
 
+  public function search(){
+    try{
+      $result = $this->promotionService->search($this->request->all());
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los promociones', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->promotionService->getById($id);

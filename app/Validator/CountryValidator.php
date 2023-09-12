@@ -23,8 +23,8 @@ class CountryValidator {
 
   private function rules(){
     return [
-      'iso_code' => 'required|string|size:2|unique:paises,iso_code,'. $this->id,
-      'nombre' => 'required|string|max:255|unique:paises,nombre,'. $this->id,
+      'iso_code' => 'required|string|size:2|unique:paises,iso_code,'. $this->id . ',id,deleted_at,NULL',
+      'nombre' => 'required|string|max:255|unique:paises,nombre,'. $this->id . ',id,deleted_at,NULL',
     ];
   }
 }

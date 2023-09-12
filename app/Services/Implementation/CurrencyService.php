@@ -76,16 +76,38 @@ class CurrencyService implements ICurrency{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    if(isset($data['user_auth_id'])){
-      $data['user_create_id'] = $data['user_auth_id']; 
+    $existingRecord = $this->model->withTrashed()
+      ->where('nombre', $data['nombre'])
+      ->whereNotNull('deleted_at')->first();
+
+    $currency = null;
+
+    if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      if(isset($data['user_auth_id'])){
+        $existingRecord->user_update_id = $data['user_auth_id']; 
+      }
+      
+      $existingRecord->updated_at = Carbon::now(); 
+      $existingRecord->is_active = 1;
+      $existingRecord->save();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $currency = $existingRecord;
+      }
+    } else {
+      // No existe un registro con el mismo valor, puedes crear uno nuevo
+      $data['created_at'] = Carbon::now(); 
+      if(isset($data['user_auth_id'])){
+        $data['user_create_id'] = $data['user_auth_id']; 
+      }
+      
+      $currency = $this->model->create($data);
+      if($currency){
+        $currency->created_at = Carbon::parse($currency->created_at)->format('Y-m-d H:i:s');
+      }
     }
     
-    $currency = $this->model->create($data);
-    if($currency){
-      $currency->created_at = Carbon::parse($currency->created_at)->format('Y-m-d H:i:s');
-    }
-
     return $currency;
   }
 

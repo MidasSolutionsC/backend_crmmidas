@@ -5,6 +5,7 @@ namespace App\Services\Interfaces;
 
 interface IProduct{
   function index(array $data);
+  function search(array $data);
   function getAll();
   function getById(int $id);
   function create(array $data);

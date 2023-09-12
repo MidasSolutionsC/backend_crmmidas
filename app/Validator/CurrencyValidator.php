@@ -24,7 +24,7 @@ class CurrencyValidator{
   private function rules(){
     return [
       'paises_id' => 'nullable|integer',
-      'nombre' => 'nullable|string|unique:divisas,nombre,' . $this->id . ',id',
+      'nombre' => 'nullable|string|unique:divisas,nombre,' . $this->id . ',id,deleted_at,NULL',
       'descripcion' => 'nullable|string' ,
       'tasa_cambio' => 'nullable|numeric|max:99999999.99|regex:/^\d+(\.\d{1,2})?$/',
       'iso_code' => 'required|string|max:3' ,

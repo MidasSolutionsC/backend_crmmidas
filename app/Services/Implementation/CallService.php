@@ -29,17 +29,23 @@ class CallService implements ICall{
     $query = Call::query();
     $query->select(
       'llamadas.*', 
-      'TE.nombre as tipo_estados_nombre'
+      'TE.nombre as tipo_estados_nombre',
+      'OP.nombre as operadores_nombre',
+      'OL.nombre as operadores_llamo_nombre',
+      'TP.nombre as tipificaciones_llamadas_nombre',
     );
     
     $query->join('tipo_estados as TE', 'llamadas.tipo_estados_id', '=', 'TE.id');
+    $query->leftJoin('operadores as OP', 'llamadas.operadores_id', '=', 'OP.id');
+    $query->leftJoin('operadores as OL', 'llamadas.operadores_llamo_id', '=', 'OL.id');
+    $query->leftJoin('tipificaciones_llamadas as TP', 'llamadas.tipificaciones_llamadas_id', '=', 'TP.id');
 
     // Aplicar filtro de búsqueda si se proporciona un término
     if (!empty($search)) {
         $query->where('numero', 'LIKE', "%$search%")
-              ->orWhere('operador', 'LIKE', "%$search%")
-              ->orWhere('operador_llamo', 'LIKE', "%$search%")
-              ->orWhere('tipificacion', 'LIKE', "%$search%")
+              ->orWhere('OP.nombre', 'LIKE', "%$search%")
+              ->orWhere('OL.nombre', 'LIKE', "%$search%")
+              ->orWhere('TP.nombre', 'LIKE', "%$search%")
               ->orWhere('nombres', 'LIKE', "%$search%")
               ->orWhere('apellido_paterno', 'LIKE', "%$search%")
               ->orWhere('apellido_materno', 'LIKE', "%$search%")
@@ -71,7 +77,18 @@ class CallService implements ICall{
   }
 
   public function getAll(){
-    $query = $this->model->select();
+    $query = $this->model->select(
+      'llamadas.*', 
+      'TE.nombre as tipo_estados_nombre',
+      'OP.nombre as operadores_nombre',
+      'OL.nombre as operadores_llamo_nombre',
+      'TP.nombre as tipificaciones_llamadas_nombre',
+    );
+    
+    $query->join('tipo_estados as TE', 'llamadas.tipo_estados_id', '=', 'TE.id');
+    $query->leftJoin('operadores as OP', 'llamadas.operadores_id', '=', 'OP.id');
+    $query->leftJoin('operadores as OL', 'llamadas.operadores_llamo_id', '=', 'OL.id');
+    $query->leftJoin('tipificaciones_llamadas as TP', 'llamadas.tipificaciones_llamadas_id', '=', 'TP.id');
     $result = $query->get();
     return $result;
   }

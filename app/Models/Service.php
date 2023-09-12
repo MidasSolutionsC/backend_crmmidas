@@ -23,7 +23,6 @@ class Service extends Model implements AuthorizableContract, AuthenticatableCont
         'promociones_id',
         'nombre',
         'descripcion',
-        'tipo_estados_id',
         'is_active',
         'user_create_id',
         'user_update_id',

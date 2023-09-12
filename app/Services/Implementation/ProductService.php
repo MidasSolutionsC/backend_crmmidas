@@ -90,6 +90,16 @@ class ProductService implements IProduct{
     return $result;
   }
 
+  public function search(array $data){
+    $search = $data['search'];
+    $query = $this->model->select();
+    $query->whereRaw("nombre like ?", ['%' . $search . '%']);
+    $query->orderBy('id', 'desc');
+    $query->take(20);
+    $result = $query->get();
+    return $result;
+  }
+
   public function getById(int $id){
     $query = $this->model->select();
     $result = $query->find($id);
@@ -97,16 +107,37 @@ class ProductService implements IProduct{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    if(isset($data['user_auth_id'])){
-      $data['user_create_id'] = $data['user_auth_id']; 
+    $existingRecord = $this->model->withTrashed()
+    ->where('nombre', $data['nombre'])
+    ->whereNotNull('deleted_at')->first();
+    $product = null;
+
+    if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      if(isset($data['user_auth_id'])){
+        $existingRecord->user_update_id = $data['user_auth_id'];
+      }
+      $existingRecord->updated_at = Carbon::now(); 
+      $existingRecord->is_active = 1;
+      $existingRecord->save();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $product = $existingRecord;
+        $product->tipo_servicios_nombre = $product->typeService->nombre;
+        $product->precio = $product->getLastPrice(); 
+      }
+    } else {
+      $data['created_at'] = Carbon::now(); 
+      if(isset($data['user_auth_id'])){
+        $data['user_create_id'] = $data['user_auth_id'];
+      }
+      $product = $this->model->create($data);
+      if($product){
+        $product->tipo_servicios_nombre = $product->typeService->nombre;
+        $product->precio = $product->getLastPrice(); 
+      }
     }
     
-    $product = $this->model->create($data);
-    if($product){
-      $product->created_at = Carbon::parse($product->created_at)->format('Y-m-d H:i:s');
-    }
-
     return $product;
   }
 

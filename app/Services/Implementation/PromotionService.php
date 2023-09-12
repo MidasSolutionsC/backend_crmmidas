@@ -69,6 +69,16 @@ class PromotionService implements IPromotion{
     return $result;
   }
 
+  public function search(array $data){
+    $search = $data['search'];
+    $query = $this->model->select();
+    $query->whereRaw("nombre like ?", ['%' . $search . '%']);
+    $query->orderBy('id', 'desc');
+    $query->take(20); // Limite de resultados
+    $result = $query->get();
+    return $result;
+  }
+
   public function getById(int $id){
     $query = $this->model->select();
     $result = $query->find($id);

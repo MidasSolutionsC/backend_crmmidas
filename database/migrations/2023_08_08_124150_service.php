@@ -20,16 +20,14 @@ return new class extends Migration
             $table->foreignId('promociones_id')->nullable();
             $table->string('nombre', 80);
             $table->text('descripcion')->nullable();
-            $table->foreignId('tipo_estados_id')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->unique(['tipo_servicios_id', 'nombre']);
+            $table->unique(['tipo_servicios_id', 'productos_id', 'nombre']);
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
             $table->foreign('tipo_servicios_id')->references('id')->on('tipo_servicios');
             $table->foreign('productos_id')->references('id')->on('productos');
             $table->foreign('promociones_id')->references('id')->on('promociones');
-            $table->foreign('tipo_estados_id')->references('id')->on('tipo_estados');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');

@@ -35,17 +35,46 @@ class CampusService implements ICampus{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id'];
-    $campus = $this->model->create($data);
-    if($campus){
-      $country = $campus->country;
-      $ubigeo = $campus->ubigeo;
+    $existingRecord = $this->model->withTrashed()->where('nombre', $data['nombre'])->whereNotNull('deleted_at')->first();
+    $campus = null;
 
-      $campus->paises_nombre = $country->nombre;
-      $campus->ubigeos_ciudad = $ubigeo->dpto . " " . $ubigeo->prov . " " . $ubigeo->distrito;
+    if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      if(isset($data['user_auth_id'])){
+        $existingRecord->user_update_id = $data['user_auth_id'];
+      }
+      $existingRecord->updated_at = Carbon::now(); 
+      $existingRecord->is_active = 1;
+      $existingRecord->save();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $campus = $existingRecord;
+
+        $country = $campus->country;
+        $ubigeo = $campus->ubigeo;
+  
+        $campus->paises_nombre = $country->nombre;
+        $campus->ubigeos_ciudad = $ubigeo->dpto . " " . $ubigeo->prov . " " . $ubigeo->distrito;
+  
+      }
+    } else {
+      // No existe un registro con el mismo valor, puedes crear uno nuevo
+      $data['created_at'] = Carbon::now(); 
+      if(isset($data['user_auth_id'])){
+        $data['user_create_id'] = $data['user_auth_id'];
+      }
+      $campus = $this->model->create($data);
+      if($campus){
+        $campus->created_at = Carbon::parse($campus->created_at)->format('Y-m-d H:i:s');
+        $country = $campus->country;
+        $ubigeo = $campus->ubigeo;
+  
+        $campus->paises_nombre = $country->nombre;
+        $campus->ubigeos_ciudad = $ubigeo->dpto . " " . $ubigeo->prov . " " . $ubigeo->distrito;
+  
+      }
     }
-
+    
     return $campus;
   }
 
@@ -97,6 +126,4 @@ class CampusService implements ICampus{
   }
 
 }
-
-
 ?>

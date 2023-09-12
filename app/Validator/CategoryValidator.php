@@ -23,7 +23,7 @@ class CategoryValidator{
 
   private function rules(){
     return [
-      'nombre' => 'required|string|max:60|unique:categorias,nombre,' . $this->id . ',id',
+      'nombre' => 'required|string|max:60|unique:categorias,nombre,' . $this->id . ',id,deleted_at,NULL',
       'descripcion' => 'nullable|string' ,
       'user_create_id' => 'nullable|integer' ,
       'user_update_id' => 'nullable|integer' ,

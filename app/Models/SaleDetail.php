@@ -17,6 +17,11 @@ class SaleDetail extends Model implements AuthorizableContract, AuthenticatableC
     protected $fillable = [
         'ventas_id',
         'servicios_id',
+        'productos_id',
+        'tipo_estados_id',
+        // 'instalaciones_id',
+        // 'fecha_cierre',
+        // 'datos_json',
         'user_create_id',
         'user_update_id',
         'user_delete_id',

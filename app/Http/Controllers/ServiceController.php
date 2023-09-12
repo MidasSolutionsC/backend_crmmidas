@@ -18,6 +18,39 @@ class ServiceController extends Controller{
     $this->serviceValidator = $serviceValidator;
   }
 
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->serviceService->index($data);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los servicios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function search(){
+    try{
+      $result = $this->serviceService->index($this->request->all());
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los servicios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->serviceService->getAll();
@@ -30,6 +63,36 @@ class ServiceController extends Controller{
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al listar los servicios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function getByTypeService(int $typeServiceId){
+    try{
+      $result = $this->serviceService->getByTypeService($typeServiceId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response([$result]);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos del servicio', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function getByPromotion(int $promotionId){
+    try{
+      $result = $this->serviceService->getByPromotion($promotionId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response([$result]);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos del servicio', 'error' => $e->getMessage()], 500);
     }
   }
 

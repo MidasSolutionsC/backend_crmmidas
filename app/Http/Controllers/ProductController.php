@@ -61,6 +61,21 @@ class ProductController extends Controller{
     }
   }
 
+  public function search(){
+    try{
+      $result = $this->productService->search($this->request->all());
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los productos', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->productService->getById($id);
@@ -138,8 +153,6 @@ class ProductController extends Controller{
         $resProduct = $this->productService->create($this->request->all());
         if($resProduct){
           $this->request['productos_id'] = $resProduct->id;
-          // Obtener el nombre del tipo de servicio relacionado
-          $resProduct->tipo_servicios_nombre = $resProduct->typeService->nombre;
           // Ahora, obtén el precio más reciente del producto
         } else {
           $response = $this->responseError(['message' => 'Erro al obtener el id producto'], 422);
@@ -147,9 +160,11 @@ class ProductController extends Controller{
         
         // Registrar precio
         $resPrice = $this->productPriceService->create($this->request->all());
+        if($resPrice){
+          // Obtener el precio más reciente
+          $resProduct->precio = $resProduct->getLastPrice(); 
+        }
         
-        // Obtener el precio más reciente
-        $resProduct->precio = $resProduct->getLastPrice(); 
         $response = $this->responseCreated(['product' => $resProduct, 'productPrice' => $resPrice]);
       }
   

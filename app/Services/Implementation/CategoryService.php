@@ -63,11 +63,31 @@ class CategoryService implements ICategory{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    if(isset($data['user_auth_id'])){
-      $data['user_create_id'] = $data['user_auth_id']; 
+    $existingRecord = $this->model->withTrashed()
+    ->where('nombre', $data['nombre'])
+    ->whereNotNull('deleted_at')->first();
+    $category = null;
+
+    if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      if(isset($data['user_auth_id'])){
+        $existingRecord->user_update_id = $data['user_auth_id'];
+      }
+      $existingRecord->updated_at = Carbon::now(); 
+      $existingRecord->is_active = 1;
+      $existingRecord->save();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $category = $existingRecord;
+      }
+    } else {
+      $data['created_at'] = Carbon::now(); 
+      if(isset($data['user_auth_id'])){
+        $data['user_create_id'] = $data['user_auth_id'];
+      }
+      $category = $this->model->create($data);
     }
-    $category = $this->model->create($data);
+    
     return $category;
   }
 

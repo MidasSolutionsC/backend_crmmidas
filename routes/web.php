@@ -312,6 +312,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // TPO DE SERVICIOS
   $router->group(['prefix' => '/typeService'], function () use ($router) {
     $router->get('/', 'TypeServiceController@listAll');
+    $router->post('/search', 'TypeServiceController@search');
     $router->get('/{id}', 'TypeServiceController@get');
     $router->post('/', 'TypeServiceController@create');
     $router->put('/{id}', 'TypeServiceController@update');
@@ -356,6 +357,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   $router->group(['prefix' => '/product'], function () use ($router) {
     $router->get('/', 'ProductController@listAll');
     $router->get('/index', 'ProductController@index');
+    $router->post('/search', 'ProductController@search');
     $router->get('/{id}', 'ProductController@get');
     $router->post('/', 'ProductController@create');
     $router->post('/register', 'ProductController@createComplete');
@@ -380,6 +382,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   $router->group(['prefix' => '/promotion'], function () use ($router) {
     $router->get('/', 'PromotionController@listAll');
     $router->get('/index', 'PromotionController@index');
+    $router->post('/search', 'PromotionController@search');
     $router->get('/{id}', 'PromotionController@get');
     $router->post('/', 'PromotionController@create');
     $router->put('/{id}', 'PromotionController@update');
@@ -441,9 +444,13 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // SERVICIOS
   $router->group(['prefix' => '/service'], function () use ($router) {
     $router->get('/', 'ServiceController@listAll');
+    $router->get('/index', 'ServiceController@index');
+    $router->post('/search', 'ServiceController@search');
+    $router->get('/filterTypeService/{typeServiceId}', 'ServiceController@getByTypeService');
+    $router->get('/filterPromotion/{promotionId}', 'ServiceController@getByPromotion');
     $router->get('/{id}', 'ServiceController@get');
     $router->post('/', 'ServiceController@create');
-    $router->put('/{id}', 'ServiceController@update');
+    $router->post('/{id}', 'ServiceController@update');
     $router->delete('/{id}', 'ServiceController@delete');
     $router->get('/restore/{id}', 'ServiceController@restore');
   });

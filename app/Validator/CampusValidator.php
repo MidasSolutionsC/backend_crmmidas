@@ -25,7 +25,7 @@ class CampusValidator {
     return [
       'paises_id' => 'required|integer',
       'codigo_ubigeo' => 'nullable|string',
-      'nombre' => 'required|string|max:100|unique:sedes,nombre,'. $this->id,
+      'nombre' => 'required|string|max:100|unique:sedes,nombre,'. $this->id . ',id,deleted_at,NULL',
       'ciudad' => 'nullable|string|max:50',
       'direccion' => 'nullable|string|max:250',
       'codigo_postal' => 'nullable|string|max:6',

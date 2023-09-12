@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('tipo_cuentas_bancarias', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 50);
-            $table->string('abreviacion', 15);
+            $table->string('abreviacion', 5);
             $table->text('descripcion')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();

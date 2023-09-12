@@ -33,6 +33,21 @@ class TypeServiceController extends Controller{
     }
   }
 
+  public function search(){
+    try{
+      $result = $this->typeService->search($this->request->all());
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los tipos de servicios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->typeService->getById($id);

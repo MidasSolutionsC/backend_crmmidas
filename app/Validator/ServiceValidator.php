@@ -23,14 +23,13 @@ class ServiceValidator{
 
   private function rules() {
     return [
-      'nombre' => 'required|string|max:60|unique:operadores,nombre,' . $this->id . ',id',
+      'nombre' => 'required|string|max:60|unique:servicios,nombre,' . $this->id . ',id,deleted_at,NULL',
       'descripcion' => 'nullable|string' ,
       'tipo_servicios_id' => 'required|integer',
       'productos_id' => 'required|integer',
       'promociones_id' => 'nullable|integer',
-      'tipo_estados_id' => 'nullable|integer',
       'is_active' => 'nullable|boolean',
-      'user_create_id' => 'required|integer',
+      'user_create_id' => 'integer',
       'user_update_id' => 'integer',
       'user_delete_id' => 'integer',
     ];

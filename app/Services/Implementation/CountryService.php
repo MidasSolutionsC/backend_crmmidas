@@ -28,12 +28,30 @@ class CountryService implements ICountry{
   }
 
   public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    $country = $this->model->create($data);
-    if($country){
-      $country->created_at = Carbon::parse($country->created_at)->format('Y-m-d H:i:s');
-    }
+    $existingRecord = $this->model->withTrashed()
+      ->where('nombre', $data['nombre'])
+      ->where('iso_code', $data['iso_code'])
+      ->whereNotNull('deleted_at')->first();
+      
+    $country = null;
 
+    if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      $existingRecord->updated_at = Carbon::now(); 
+      $existingRecord->save();
+      $result = $existingRecord->restore();
+      if($result){
+        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
+        $country = $existingRecord;
+      }
+    } else {
+      // No existe un registro con el mismo valor, puedes crear uno nuevo
+      $data['created_at'] = Carbon::now(); 
+      $country = $this->model->create($data);
+      if($country){
+        $country->created_at = Carbon::parse($country->created_at)->format('Y-m-d H:i:s');
+      }
+    }
+    
     return $country;
   }
 

@@ -2,9 +2,8 @@
 
 namespace App\Services\Interfaces;
 
-interface IServiceComment{
+interface ISaleComment{
   function getAll();
-  function getFilterByService(int $serviceId);
   function getById(int $id);
   function create(array $data);
   function update(array $data, int $id);

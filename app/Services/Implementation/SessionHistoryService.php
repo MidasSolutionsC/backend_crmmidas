@@ -41,8 +41,9 @@ class SessionHistoryService implements ISessionHistory{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    // $data['ip_address'] = $data['ip'];
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
     $sessionHistory = $this->model->create($data);
     if($sessionHistory){
       $sessionHistory->created_at = Carbon::parse($sessionHistory->created_at)->format('Y-m-d H:i:s');
@@ -53,7 +54,9 @@ class SessionHistoryService implements ISessionHistory{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
     $sessionHistory = $this->model->find($id);
     if($sessionHistory){
       $sessionHistory->fill($data);

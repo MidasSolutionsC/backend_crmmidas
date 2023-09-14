@@ -5,7 +5,7 @@ namespace App\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ServiceCommentValidator{
+class SaleCommentValidator{
   private $request;
   private $id;
 
@@ -22,8 +22,9 @@ class ServiceCommentValidator{
 
   private function rules(){
     return [
-      'servicios_id' => 'required|integer',
-      'descripcion' => 'required|string',
+      'ventas_id' => 'required|integer',
+      'ventas_detalles_id' => 'nullable|integer',
+      'comentario' => 'required|string',
       'fecha' => 'nullable|date:Y-m-d',
       'hora' => ['nullable', 'regex:/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/'],
       'user_create_id' => 'required|integer',

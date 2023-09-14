@@ -2,33 +2,23 @@
 
 namespace App\Services\Implementation;
 
-use App\Models\ServiceComment;
-use App\Services\Interfaces\IServiceComment;
+use App\Models\SaleComment;
+use App\Services\Interfaces\ISaleComment;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
 
-class ServiceCommentService implements IServiceComment{
+class SaleCommentService implements ISaleComment{
 
   private $model;
 
   public function __construct()
   {
-    $this->model = new ServiceComment();
+    $this->model = new SaleComment();
   }
 
   public function getAll(){
     $query = $this->model->select();
-    $result = $query->get();
-    return $result;
-  }
-
-  public function getFilterByService(int $serviceId){
-    $query = $this->model->select();
-    if($serviceId){
-      $query->where('servicios_id', $serviceId);
-    }
-    
     $result = $query->get();
     return $result;
   }

@@ -14,11 +14,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('servicios_historiales', function (Blueprint $table) {
+        Schema::create('ventas_comentarios', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('servicios_id');
-            $table->char('tipo', 1);
-            $table->foreignId('tipo_estados_id')->nullable();
+            $table->foreignId('ventas_id');
+            $table->foreignId('ventas_detalles_id')->nullable();
+            $table->text('comentario');
             $table->date('fecha')->default(DB::raw('CURRENT_DATE'));
             $table->time('hora')->default(DB::raw('CURRENT_TIME'));
             $table->foreignId('user_create_id');            
@@ -27,8 +27,8 @@ return new class extends Migration
             $table->boolean('is_active')->default(true); 
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('servicios_id')->references('id')->on('servicios');
-            $table->foreign('tipo_estados_id')->references('id')->on('tipo_estados');
+            $table->foreign('ventas_id')->references('id')->on('ventas');
+            $table->foreign('ventas_detalles_id')->references('id')->on('ventas_detalles');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
@@ -43,6 +43,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('servicios_historiales');
+        Schema::dropIfExists('ventas_comentarios');
     }
 };

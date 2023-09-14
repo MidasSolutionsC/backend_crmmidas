@@ -16,6 +16,7 @@ class SaleHistory extends Model implements AuthorizableContract, Authenticatable
 
     protected $fillable = [
         'ventas_id',
+        'ventas_detalles_id',
         'comentario',
         'tipo',
         'tipo_estados_id',
@@ -46,6 +47,11 @@ class SaleHistory extends Model implements AuthorizableContract, Authenticatable
     public function sale(){
         return $this->belongsTo(Sale::class, 'ventas_id');
     }
+
+    public function saleDetail(){
+        return $this->belongsTo(SaleDetail::class, 'ventas_detalles_id');
+    }
+
 
     public function typeStatus(){
         return $this->belongsTo(TypeStatus::class, 'tipo_estados_id');

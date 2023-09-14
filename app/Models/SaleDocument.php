@@ -16,6 +16,7 @@ class SaleDocument extends Model implements AuthorizableContract, Authenticatabl
 
     protected $fillable = [
         'ventas_id',
+        'ventas_detalles_id',
         'nombre',
         'archivo',
         'user_create_id',

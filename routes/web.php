@@ -390,6 +390,20 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'PromotionController@restore');
   });
 
+  // SERVICIOS
+  $router->group(['prefix' => '/service'], function () use ($router) {
+    $router->get('/', 'ServiceController@listAll');
+    $router->get('/index', 'ServiceController@index');
+    $router->post('/search', 'ServiceController@search');
+    $router->get('/filterTypeService/{typeServiceId}', 'ServiceController@getByTypeService');
+    $router->get('/filterPromotion/{promotionId}', 'ServiceController@getByPromotion');
+    $router->get('/{id}', 'ServiceController@get');
+    $router->post('/', 'ServiceController@create');
+    $router->post('/{id}', 'ServiceController@update');
+    $router->delete('/{id}', 'ServiceController@delete');
+    $router->get('/restore/{id}', 'ServiceController@restore');
+  });
+
   // VENTAS
   $router->group(['prefix' => '/sale'], function () use ($router) {
     $router->get('/', 'SaleController@listAll');
@@ -398,6 +412,36 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->put('/{id}', 'SaleController@update');
     $router->delete('/{id}', 'SaleController@delete');
     $router->get('/restore/{id}', 'SaleController@restore');
+  });
+
+  // VENTAS TEMPORALES
+  $router->group(['prefix' => '/tmpSale'], function () use ($router) {
+    $router->get('/', 'TmpSaleController@listAll');
+    $router->get('/{id}', 'TmpSaleController@get');
+    $router->post('/', 'TmpSaleController@create');
+    $router->put('/{id}', 'TmpSaleController@update');
+    $router->delete('/{id}', 'TmpSaleController@delete');
+    $router->get('/restore/{id}', 'TmpSaleController@restore');
+  });
+
+  // INSTALACIONES
+  $router->group(['prefix' => '/installation'], function () use ($router) {
+    $router->get('/', 'InstallationController@listAll');
+    $router->get('/{id}', 'InstallationController@get');
+    $router->post('/', 'InstallationController@create');
+    $router->put('/{id}', 'InstallationController@update');
+    $router->delete('/{id}', 'InstallationController@delete');
+    $router->get('/restore/{id}', 'InstallationController@restore');
+  });
+
+  // INSTALACIONES TEMPORALES
+  $router->group(['prefix' => '/tmpInstallation'], function () use ($router) {
+    $router->get('/', 'TmpInstallationController@listAll');
+    $router->get('/{id}', 'TmpInstallationController@get');
+    $router->post('/', 'TmpInstallationController@create');
+    $router->put('/{id}', 'TmpInstallationController@update');
+    $router->delete('/{id}', 'TmpInstallationController@delete');
+    $router->get('/restore/{id}', 'TmpInstallationController@restore');
   });
 
   // VENTAS DOCUMENTOS
@@ -421,6 +465,18 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'SaleDetailController@restore');
   });
 
+  // VENTAS DETALLES TEMPORALES
+  $router->group(['prefix' => '/tmpSaleDetail'], function () use ($router) {
+    $router->get('/', 'TmpSaleDetailController@listAll');
+    $router->get('/{id}', 'TmpSaleDetailController@get');
+    $router->get('/filterSale/{saleId}', 'TmpSaleDetailController@getFilterBySale');
+    $router->post('/', 'TmpSaleDetailController@create');
+    $router->post('/register', 'TmpSaleDetailController@createComplete');
+    $router->put('/{id}', 'TmpSaleDetailController@update');
+    $router->delete('/{id}', 'TmpSaleDetailController@delete');
+    $router->get('/restore/{id}', 'TmpSaleDetailController@restore');
+  });
+
   // VENTAS HISTORIAL
   $router->group(['prefix' => '/saleHistory'], function () use ($router) {
     $router->get('/', 'SaleHistoryController@listAll');
@@ -431,50 +487,14 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'SaleHistoryController@restore');
   });
 
-  // INSTALACIONES
-  $router->group(['prefix' => '/installation'], function () use ($router) {
-    $router->get('/', 'InstallationController@listAll');
-    $router->get('/{id}', 'InstallationController@get');
-    $router->post('/', 'InstallationController@create');
-    $router->put('/{id}', 'InstallationController@update');
-    $router->delete('/{id}', 'InstallationController@delete');
-    $router->get('/restore/{id}', 'InstallationController@restore');
-  });
-
-  // SERVICIOS
-  $router->group(['prefix' => '/service'], function () use ($router) {
-    $router->get('/', 'ServiceController@listAll');
-    $router->get('/index', 'ServiceController@index');
-    $router->post('/search', 'ServiceController@search');
-    $router->get('/filterTypeService/{typeServiceId}', 'ServiceController@getByTypeService');
-    $router->get('/filterPromotion/{promotionId}', 'ServiceController@getByPromotion');
-    $router->get('/{id}', 'ServiceController@get');
-    $router->post('/', 'ServiceController@create');
-    $router->post('/{id}', 'ServiceController@update');
-    $router->delete('/{id}', 'ServiceController@delete');
-    $router->get('/restore/{id}', 'ServiceController@restore');
-  });
-
   // SERVICIOS COMENTARIOS
-  $router->group(['prefix' => '/serviceComment'], function () use ($router) {
-    $router->get('/', 'ServiceCommentController@listAll');
-    $router->get('/filterService/{serviceId}', 'ServiceCommentController@getFilterByService');
-    $router->get('/{id}', 'ServiceCommentController@get');
-    $router->post('/', 'ServiceCommentController@create');
-    $router->put('/{id}', 'ServiceCommentController@update');
-    $router->delete('/{id}', 'ServiceCommentController@delete');
-    $router->get('/restore/{id}', 'ServiceCommentController@restore');
-  });
-
-  // SERVICIOS HISTORIALES
-  $router->group(['prefix' => '/serviceHistory'], function () use ($router) {
-    $router->get('/', 'ServiceHistoryController@listAll');
-    $router->get('/filterService/{serviceId}', 'ServiceHistoryController@getFilterByService');
-    $router->get('/{id}', 'ServiceHistoryController@get');
-    $router->post('/', 'ServiceHistoryController@create');
-    $router->put('/{id}', 'ServiceHistoryController@update');
-    $router->delete('/{id}', 'ServiceHistoryController@delete');
-    $router->get('/restore/{id}', 'ServiceHistoryController@restore');
+  $router->group(['prefix' => '/saleComment'], function () use ($router) {
+    $router->get('/', 'SaleCommentController@listAll');
+    $router->get('/{id}', 'SaleCommentController@get');
+    $router->post('/', 'SaleCommentController@create');
+    $router->put('/{id}', 'SaleCommentController@update');
+    $router->delete('/{id}', 'SaleCommentController@delete');
+    $router->get('/restore/{id}', 'SaleCommentController@restore');
   });
 
   // MANUALES

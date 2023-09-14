@@ -14,23 +14,23 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('servicios_comentarios', function (Blueprint $table) {
+        Schema::create('tmp_ventas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('servicios_id');
-            $table->text('descripcion');
+            $table->foreignId('clientes_id')->nullable();
             $table->date('fecha')->default(DB::raw('CURRENT_DATE'));
             $table->time('hora')->default(DB::raw('CURRENT_TIME'));
+            $table->text('comentario')->nullable();
             $table->foreignId('user_create_id');            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
-            $table->boolean('is_active')->default(true); 
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('servicios_id')->references('id')->on('servicios');
+            $table->foreign('clientes_id')->references('id')->on('clientes');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
-            $table->engine = 'InnoDB';
+            $table->engine = 'InnoDB';  
         });
     }
 
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('servicios_comentarios');
+        Schema::dropIfExists('tmp_ventas');
     }
 };

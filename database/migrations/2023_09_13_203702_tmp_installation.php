@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('instalaciones', function (Blueprint $table) {
+        Schema::create('tmp_instalaciones', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ventas_id'); 
             $table->string('tipo', 20);
@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('portal', 70)->nullable();
             $table->string('planta', 70)->nullable();
             $table->string('puerta', 20)->nullable();
-            $table->string('codigo_postal', 20)->nullable();
+            $table->string('codigo_postal', 20);
             $table->string('localidad', 70);
             $table->string('provincia', 70);
             $table->boolean('is_active')->default(true);
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->foreignId('user_delete_id')->nullable(); 
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('ventas_id')->references('id')->on('ventas');
+            $table->foreign('ventas_id')->references('id')->on('tmp_ventas');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
@@ -47,6 +47,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('instalaciones');
+        Schema::dropIfExists('tmp_instalaciones');
     }
 };

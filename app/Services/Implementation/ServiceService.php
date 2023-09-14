@@ -40,7 +40,7 @@ class ServiceService implements IService{
         $query->where('servicios.nombre', 'LIKE', "%$search%")
               ->orWhere('servicios.descripcion', 'LIKE', "%$search%")
               ->orWhere('TS.nombre', 'LIKE', "%$search%")
-              ->orWhere('PR.nombre ', 'LIKE', "%$search%")
+              ->orWhere('PR.nombre', 'LIKE', "%$search%")
               ->orWhere('PM.nombre', 'LIKE', "%$search%");
     }
 

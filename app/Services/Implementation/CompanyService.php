@@ -29,7 +29,9 @@ class CompanyService implements ICompany{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
     $company = $this->model->create($data);
     if($company){
       $company->created_at = Carbon::parse($company->created_at)->format('Y-m-d H:i:s');
@@ -40,7 +42,9 @@ class CompanyService implements ICompany{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
     $company = $this->model->find($id);
     if($company){
       $company->fill($data);

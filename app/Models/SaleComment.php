@@ -9,15 +9,15 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceHistory extends Model implements AuthorizableContract, AuthenticatableContract{
+class SaleComment extends Model implements AuthorizableContract, AuthenticatableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
-    protected $table = "servicios_historiales";
+    protected $table = "ventas_comentarios";
 
     protected $fillable = [
-        'servicios_id',
-        'tipo',
-        'tipo_estados_id',
+        'ventas_id',
+        'ventas_detalles_id',
+        'comentario',
         'fecha',
         'hora',
         'is_active',

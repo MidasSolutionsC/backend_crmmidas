@@ -9,20 +9,22 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceComment extends Model implements AuthorizableContract, AuthenticatableContract{
+class TmpSaleDetail extends Model implements AuthorizableContract, AuthenticatableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
-
-    protected $table = "servicios_comentarios";
-
+    
+    protected $table = "tmp_ventas_detalles";
+    
     protected $fillable = [
+        'ventas_id',
         'servicios_id',
-        'descripcion',
-        'fecha',
-        'hora',
-        'is_active',
+        'tipo_estados_id',
+        'instalaciones_id',
+        'fecha_cierre',
+        'datos_json',
         'user_create_id',
         'user_update_id',
         'user_delete_id',
+        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -38,4 +40,14 @@ class ServiceComment extends Model implements AuthorizableContract, Authenticata
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    /**
+     * Relación de pertenencia entre modulo externo
+     */
+    public function sale(){
+        return $this->belongsTo(Sale::class, 'ventas_id');
+    }
+
+    public function service(){
+        return $this->belongsTo(Service::class, 'servicios_id');
+    }
 }

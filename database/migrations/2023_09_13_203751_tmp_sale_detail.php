@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('ventas_detalles', function (Blueprint $table) {
+        Schema::create('tmp_ventas_detalles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ventas_id');
             $table->foreignId('servicios_id');
@@ -29,9 +29,9 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('ventas_id')->references('id')->on('ventas');
+            $table->foreign('ventas_id')->references('id')->on('tmp_ventas');
             $table->foreign('servicios_id')->references('id')->on('servicios');
-            $table->foreign('instalaciones_id')->references('id')->on('instalaciones');
+            $table->foreign('instalaciones_id')->references('id')->on('tmp_instalaciones');
             $table->foreign('tipo_estados_id')->references('id')->on('tipo_estados');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
@@ -47,6 +47,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('ventas_detalles');
+        Schema::dropIfExists('tmp_ventas_detalles');
     }
 };

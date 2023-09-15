@@ -33,6 +33,21 @@ class TmpInstallationController extends Controller{
     }
   }
 
+  public function getBySale($saleId){
+    try{
+      $result = $this->tmpInstallationService->getBySale($saleId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos de la instalación', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->tmpInstallationService->getById($id);

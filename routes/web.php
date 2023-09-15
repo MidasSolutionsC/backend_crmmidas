@@ -437,6 +437,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // INSTALACIONES TEMPORALES
   $router->group(['prefix' => '/tmpInstallation'], function () use ($router) {
     $router->get('/', 'TmpInstallationController@listAll');
+    $router->get('/filterSale/{saleId}', 'TmpInstallationController@getBySale');
     $router->get('/{id}', 'TmpInstallationController@get');
     $router->post('/', 'TmpInstallationController@create');
     $router->put('/{id}', 'TmpInstallationController@update');

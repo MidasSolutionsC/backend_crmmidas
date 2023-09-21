@@ -21,6 +21,43 @@ class CompanyService implements ICompany{
     return $result;
   }
 
+  public function search(array $data){
+    $search = $data['search'];
+    $typeDocumentId = !empty($data['tipo_documentos_id'])? $data['tipo_documentos_id']: null;
+    $document = !empty($data['documento'])? $data['documento']: null;
+
+    $query = $this->model->query();
+
+    $query->select(
+      'empresas.*',
+      'TD.nombre as tipo_documentos_nombre',
+      'TD.abreviacion as tipo_documentos_abreviacion',
+      'PS.nombre as paises_nombre',
+
+    );
+
+    $query->join('paises as PS', 'empresas.paises_id', 'PS.id');
+    $query->join('tipo_documentos as TD', 'empresas.tipo_documentos_id', 'TD.id');
+
+    if(!is_null($typeDocumentId)){
+      $query->where('tipo_documentos_id', $typeDocumentId);
+    }
+
+    if(!is_null($document)){
+      $query->where('documento', 'like', ['%' . $document . '%']);
+    }
+
+    $query->where(function ($query) use ($search) {
+      $query->where('razon_social', 'like', '%' . $search . '%')
+          ->orWhere('nombre_comercial', 'like', '%' . $search . '%')
+          ->orWhere('documento', 'like', '%' . $search . '%');
+    });
+  
+    $query->take(25); // Limite de resultados
+    $result = $query->get();
+    return $result;
+  }
+
   public function getById(int $id){
     $query = $this->model->select();
     $result = $query->find($id);

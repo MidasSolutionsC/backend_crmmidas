@@ -29,7 +29,7 @@ class TmpInstallationValidator {
 
   private function rules(){
     return [
-      'ventas_id' => 'nullable|integer',
+      'ventas_id' => 'required|integer',
       'tipo' => 'required|string|max:20',
       'direccion' => 'required|string|max:200',
       'numero' => 'nullable|string|max:20',

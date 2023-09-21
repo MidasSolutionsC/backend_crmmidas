@@ -22,6 +22,7 @@ class ServiceService implements IService{
     $page = !empty($data['page'])? $data['page'] : 1; // Número de página
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
     $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+    $typeServiceId = !empty($data['tipo_servicios_id']) ? $data['tipo_servicios_id']: ""; // Término de búsqueda
 
     $query = Service::query();
     $query->select(
@@ -42,6 +43,10 @@ class ServiceService implements IService{
               ->orWhere('TS.nombre', 'LIKE', "%$search%")
               ->orWhere('PR.nombre', 'LIKE', "%$search%")
               ->orWhere('PM.nombre', 'LIKE', "%$search%");
+    }
+
+    if(!empty($typeServiceId)){
+      $query->where('servicios.tipo_servicios_id', $typeServiceId);
     }
 
     // Handle sorting

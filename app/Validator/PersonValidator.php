@@ -17,6 +17,12 @@ class PersonValidator {
       $this->id = $request->route('id');
     }
   }
+  
+  public function setRequest(array  $data, int $id = null){
+    $this->request = new Request();
+    $this->request->replace($data);
+    $this->id = $id;
+  }
 
   public function validate(){
     return Validator::make($this->request->all(), $this->rules());
@@ -34,9 +40,9 @@ class PersonValidator {
       'documento' => 'required|string|max:11|unique:personas,documento,' . $this->request->input('personas_id') . ',id,tipo_documentos_id,' . $this->request->input('tipo_documentos_id'),    
       'reverso_documento' => 'nullable|string|max:250',
       'fecha_nacimiento' => 'nullable|date:Y-m-d',
-      'telefono' => 'nullable|string|max:11',
-      'correo' => 'nullable|string|max:100',
-      'direccion' => 'nullable|string|max:100',
+      // 'telefono' => 'nullable|string|max:11',
+      // 'correo' => 'nullable|string|max:100',
+      // 'direccion' => 'nullable|string|max:100',
     ];
   }
 

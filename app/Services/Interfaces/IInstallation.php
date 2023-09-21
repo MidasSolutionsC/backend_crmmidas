@@ -4,6 +4,7 @@ namespace App\Services\Interfaces;
 
 interface IInstallation{
   function getAll();
+  function search(array $data);
   function getBySale(int $saleId);
   function getById(int $id);
   function create(array $data);

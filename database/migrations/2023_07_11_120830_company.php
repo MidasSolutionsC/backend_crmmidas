@@ -23,10 +23,10 @@ return new class extends Migration
             $table->foreignId('tipo_documentos_id');
             $table->string('documento', 11);
             $table->string('tipo_empresa', 30)->nullable();
-            $table->string('direccion', 250)->nullable();
-            $table->string('ciudad', 60)->nullable();
-            $table->string('telefono', 11)->nullable();
-            $table->string('correo', 100)->unique();
+            // $table->string('direccion', 250)->nullable();
+            // $table->string('ciudad', 60)->nullable();
+            // $table->string('telefono', 11)->nullable();
+            // $table->string('correo', 100)->unique();
             $table->boolean('is_active')->default(true);
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            

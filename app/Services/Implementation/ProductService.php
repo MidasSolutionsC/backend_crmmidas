@@ -92,7 +92,13 @@ class ProductService implements IProduct{
 
   public function search(array $data){
     $search = $data['search'];
-    $query = $this->model->select();
+    $typeServiceId = !empty($data['tipo_servicios_id'])? $data['tipo_servicios_id']: null;
+
+    $query = $this->model->query();
+    if(!is_null($typeServiceId)){
+      $query->where("tipo_servicios_id", $typeServiceId);
+    }
+
     $query->whereRaw("nombre like ?", ['%' . $search . '%']);
     $query->orderBy('id', 'desc');
     $query->take(20);

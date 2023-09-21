@@ -33,6 +33,21 @@ class PersonController extends Controller{
     }
   }
 
+  public function search(){
+    try{
+      $result = $this->personService->search($this->request->all());
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar las personas', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->personService->getById($id);

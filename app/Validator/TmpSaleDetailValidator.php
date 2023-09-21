@@ -30,7 +30,7 @@ class TmpSaleDetailValidator {
   private function rules(){
     return [
       'ventas_id' => 'required|integer',
-      'servicios_id' => 'required|integer|unique:ventas_detalles,servicios_id,' . $this->id . ',id,ventas_id,' . $this->request->input('ventas_id'),
+      'servicios_id' => 'required|integer|unique:tmp_ventas_detalles,servicios_id,' . $this->id . ',id,deleted_at,NULL,ventas_id,' . $this->request->input('ventas_id'),
       'instalaciones_id' => 'nullable|integer',
       'tipo_estados_id' => 'nullable|integer',
       'observacion' => 'nullable|string',

@@ -24,6 +24,7 @@ class TypeStatusValidator {
   private function rules(){
     return [
       'nombre' => 'required|string|max:50|unique:tipo_estados,nombre,'. $this->id . ',id,deleted_at,NULL',
+      'categorias_id' => 'nullable|number',
       'descripcion' => 'nullable|string',
       'is_active' => 'nullable|boolean'
     ];

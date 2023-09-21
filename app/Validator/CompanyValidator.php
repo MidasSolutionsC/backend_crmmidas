@@ -11,10 +11,16 @@ class CompanyValidator {
   private $id;
 
   public function __construct(Request $request = null) {
-    $this->request = $request;
     if ($request) {
+      $this->request = $request;
       $this->id = $request->route('id');
     }
+  }
+
+  public function setRequest(array  $data, int $id = null){
+    $this->request = new Request();
+    $this->request->replace($data);
+    $this->id = $id;
   }
 
   public function validate(){
@@ -31,9 +37,9 @@ class CompanyValidator {
       'tipo_documentos_id' => 'required|integer',
       'documento' => 'required|string|max:11|unique:empresas,documento,'. $this->id . ',id,tipo_documentos_id,'. $this->request->input('tipo_documentos_id'),
       'tipo_empresa' => 'nullable|string|max:30',
-      'direccion' => 'nullable|string|max:250',
-      'ciudad' => 'nullable|string|max:60',
-      'telefono' => 'nullable|string|max:11',
+      // 'direccion' => 'nullable|string|max:250',
+      // 'ciudad' => 'nullable|string|max:60',
+      // 'telefono' => 'nullable|string|max:11',
       'correo' => 'required|max:100|email|unique:empresas,correo,' . $this->id . ',id',
       'is_active' => 'nullable|is_active',
       'user_create_id' => 'nullable|integer',

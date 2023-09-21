@@ -5,6 +5,8 @@ namespace App\Services\Implementation;
 use App\Models\SaleDetail;
 use App\Services\Interfaces\ISaleDetail;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SaleDetailService implements ISaleDetail{
 
@@ -14,6 +16,61 @@ class SaleDetailService implements ISaleDetail{
   {
     $this->model = new SaleDetail();
   }
+
+  public function index(array $data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+
+    $query = SaleDetail::query();
+
+    $query->select(
+      'ventas_detalles.*',
+      'SR.nombre as servicios_nombre',
+      'IT.provincia as instalaciones_provincia',
+      'IT.localidad as instalaciones_localidad',
+    );
+
+    $query->selectRaw("CONCAT_WS(', ',
+      CASE WHEN IT.tipo IS NOT NULL AND IT.tipo != '' THEN CONCAT(IT.tipo, ' ', IT.direccion) ELSE NULL END,
+      CASE WHEN IT.numero IS NOT NULL AND IT.numero != '' THEN CONCAT(' N° ', IT.numero) ELSE NULL END,
+      CASE WHEN IT.escalera IS NOT NULL AND IT.escalera != '' THEN IT.escalera ELSE NULL END,
+      CASE WHEN IT.portal IS NOT NULL AND IT.portal != '' THEN IT.portal ELSE NULL END,
+      CASE WHEN IT.planta IS NOT NULL AND IT.planta != '' THEN IT.planta ELSE NULL END,
+      CASE WHEN IT.puerta IS NOT NULL AND IT.puerta != '' THEN IT.puerta ELSE NULL END
+    ) as instalaciones_direccion_completo");
+
+    $query->join('ventas as VT', 'ventas_detalles.ventas_id', 'VT.id');
+    $query->leftJoin('instalaciones as IT', 'ventas_detalles.instalaciones_id', 'IT.id');
+    $query->join('servicios as SR', 'ventas_detalles.servicios_id', 'SR.id');
+
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    if (!empty($search)) {
+        $query->where('IT.localidad', 'LIKE', "%$search%")
+              ->orWhere('IT.provincia', 'LIKE', "%$search%")
+              ->orWhere('SR.nombre', 'LIKE', "%$search%");
+    }
+
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
+  }
+
 
   public function getAll(){
     $query = $this->model->select();

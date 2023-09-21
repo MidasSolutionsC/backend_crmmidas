@@ -19,6 +19,7 @@ class TmpSaleDetail extends Model implements AuthorizableContract, Authenticatab
         'servicios_id',
         'tipo_estados_id',
         'instalaciones_id',
+        'observacion',
         'fecha_cierre',
         'datos_json',
         'user_create_id',
@@ -43,8 +44,12 @@ class TmpSaleDetail extends Model implements AuthorizableContract, Authenticatab
     /**
      * Relación de pertenencia entre modulo externo
      */
-    public function sale(){
-        return $this->belongsTo(Sale::class, 'ventas_id');
+    public function tmpSale(){
+        return $this->belongsTo(TmpSale::class, 'ventas_id');
+    }
+
+    public function tmpInstallation(){
+        return $this->belongsTo(TmpInstallation::class, 'instalaciones_id');
     }
 
     public function service(){

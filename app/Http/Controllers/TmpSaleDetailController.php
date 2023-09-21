@@ -11,6 +11,7 @@ use App\Validator\TmpSaleValidator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
+use function PHPUnit\Framework\isEmpty;
 
 class TmpSaleDetailController extends Controller{
   private $request;
@@ -40,6 +41,24 @@ class TmpSaleDetailController extends Controller{
     $this->tmpSaleValidator = $tmpSaleValidator;
     $this->tmpInstallationService = $tmpInstallationService;
     $this->tmpInstallationValidator = $tmpInstallationValidator;
+  }
+
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->tmpSaleDetailService->index($data);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los detalles', 'error' => $e->getMessage()], 500);
+    }
   }
 
   public function listAll(){
@@ -130,97 +149,36 @@ class TmpSaleDetailController extends Controller{
       // Iniciar una transacción
       DB::beginTransaction();
 
-      // Obtener las instalaciones
-      $installation = $this->request->input('instalacion');
-
       // Obtener los servicios
       $serviceIds = $this->request->input('servicios_ids');
+      // Crear detalle 
+      $resSaleDetail = [];
+      $resErrors = [];
 
-      // Obtener el detalle de la venta
-      $ventasId = $this->request->input('ventas_id');
-      $saleDetail = $this->request->input('detalle_venta');
-      
+      $reqSaleDetail = $this->request->all();
+      $reqSaleDetail["user_create_id"] = $this->request->input('user_auth_id');
 
-      // Actualizar datos del request
-      $this->tmpInstallationValidator->setRequest($installation);
-      $this->tmpSaleDetailValidator->setRequest($saleDetail);
-
-      $validatorInstallation = $this->tmpInstallationValidator->validate();
-      
-      $validatorSaleDetail = $this->tmpSaleDetailValidator->validate();
-
-      // Errores obtenidos
-      $combinedErrors = [];
-        
-      if ($validatorInstallation->fails()) {
-        $combinedErrors['installation_errors'] = $validatorInstallation->errors();
-      }
-      
-      if ($validatorSaleDetail->fails()) {
-        $combinedErrors['sale_detail_errors'] = $validatorSaleDetail->errors();
-      }
-
-      if(!empty($combinedErrors)){
-        $response = $this->responseError($combinedErrors, 422);
-      } else {
-        // Validar la venta Temporal
-        $validatorSale = $this->tmpSaleValidator->validate();
-        if($validatorSale->fails()){
-          $combinedErrors['sale_errors'] = $validatorSale->errors();
-          $response = $this->responseError($combinedErrors, 422);
+      foreach($serviceIds as $serviceId){
+        $reqSaleDetail['servicios_id'] = $serviceId;
+        $this->tmpSaleDetailValidator->setRequest($reqSaleDetail);
+        $validatorSaleDetail = $this->tmpSaleDetailValidator->validate();
+        if ($validatorSaleDetail->fails()) {
+          $resErrors = $validatorSaleDetail->errors();
+          DB::rollBack();
+          break;
         } else {
-          $resData = [];
-          // Crear la venta Temporal
-          $reqSale = [
-            "comentario" => "pendiente",
-            "user_create_id" => $this->request->input('user_auth_id')
-          ];
-          
-          $saleId = null;
-          if(is_null($ventasId)){
-            $resSale = $this->tmpSaleService->create($reqSale);
-            if($resSale){
-              $saleId = $resSale->id;
-            }
-          } else {
-            $saleId = $ventasId;
-          }
-
-          $resData['ventas_id'] = $saleId;
-          
-          if(!is_null($saleId)){
-            // Crear instalación
-            $installation["ventas_id"] = $saleId;
-            $installation["user_create_id"] = $this->request->input('user_auth_id');
-            $resInstallation = $this->tmpInstallationService->create($installation);
-            $installationId = null;
-            if($resInstallation){
-              $installationId = $resInstallation->id;
-            }
-            
-
-            // Crear detalle 
-            $resSaleDetail = [];
-            foreach($serviceIds as $serviceId){
-              $reqSaleDetail["user_create_id"] = $this->request->input('user_auth_id');
-              $reqSaleDetail = ["ventas_id" => $saleId, "servicios_id" => $serviceId];
-  
-              if(is_null($installationId)){
-                $reqSaleDetail['instalacines_id'] = $installationId;
-              } 
-  
-              $resSaleDetail[] = $this->tmpSaleDetailService->create($reqSaleDetail);
-            }
-            
-            $resData['instalaciones_id'] = $installationId;
-            $resData['ventas_detalles'] = $resSaleDetail;
-          }
-
-          $response = $this->responseCreated($resData);
+          $resSaleDetail[] = $this->tmpSaleDetailService->create($reqSaleDetail);
         }
       }
-  
-  
+
+      if(!empty($resErrors)){
+        $response = $this->responseError($resErrors, 422);
+      } else {
+        $resData = ["ventas_detalles" => $resSaleDetail, "errors" => $resErrors];
+        $response = $this->responseCreated($resData);
+      }        
+
+
       // Si todo está bien, confirmar la transacción
       DB::commit();
       return $response;
@@ -234,7 +192,6 @@ class TmpSaleDetailController extends Controller{
       return $this->responseError(['message' => 'Error al crear el detalle de la venta', 'error' => $e->getMessage()], 500);
     }
   }
-
 
   public function delete($id){
     try{

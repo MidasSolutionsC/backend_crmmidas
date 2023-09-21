@@ -21,10 +21,10 @@ return new class extends Migration
             $table->char('cif', 9)->nullable();
             $table->string('codigo_carga', 100)->nullable();
             $table->string('segmento_vodafond', 30)->nullable();
-            $table->string('cta_bco', 100)->nullable();
             $table->foreignId('user_create_id');            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
+            $table->boolean('persona_juridica')->default(true);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

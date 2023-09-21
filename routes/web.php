@@ -118,6 +118,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // EMPRESAS
   $router->group(['prefix' => '/company'], function () use ($router) {
     $router->get('/', 'CompanyController@listAll');
+    $router->post('/search', 'CompanyController@search');
     $router->get('/{id}', 'CompanyController@get');
     $router->post('/', 'CompanyController@create');
     $router->put('/{id}', 'CompanyController@update');
@@ -128,6 +129,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // PERSONAS
   $router->group(['prefix' => '/person'], function () use ($router) {
     $router->get('/', 'PersonController@listAll');
+    $router->post('/search', 'PersonController@search');
     $router->get('/{id}', 'PersonController@get');
     $router->post('/', 'PersonController@create');
     $router->put('/{id}', 'PersonController@update');
@@ -281,9 +283,13 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // CLIENTES
   $router->group(['prefix' => '/client'], function () use ($router) {
     $router->get('/', 'ClientController@listAll');
+    $router->get('/getByPerson/{personId}', 'ClientController@getByPersonId');
+    $router->get('/getByCompany/{companyId}', 'ClientController@getByCompanyId');
     $router->get('/{id}', 'ClientController@get');
     $router->post('/', 'ClientController@create');
+    $router->post('/register', 'ClientController@createComplete');
     $router->put('/{id}', 'ClientController@update');
+    $router->post('/update/{id}', 'ClientController@updateComplete');
     $router->delete('/{id}', 'ClientController@delete');
     $router->get('/restore/{id}', 'ClientController@restore');
   });
@@ -437,9 +443,13 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // INSTALACIONES TEMPORALES
   $router->group(['prefix' => '/tmpInstallation'], function () use ($router) {
     $router->get('/', 'TmpInstallationController@listAll');
+    $router->post('/search', 'TmpInstallationController@search');
+    $router->get('/filterSale/{saleId}', 'TmpInstallationController@getBySale');
     $router->get('/{id}', 'TmpInstallationController@get');
     $router->post('/', 'TmpInstallationController@create');
+    $router->post('/register', 'TmpInstallationController@createComplete');
     $router->put('/{id}', 'TmpInstallationController@update');
+    $router->put('/update/{id}', 'TmpInstallationController@updateComplete');
     $router->delete('/{id}', 'TmpInstallationController@delete');
     $router->get('/restore/{id}', 'TmpInstallationController@restore');
   });
@@ -467,6 +477,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
 
   // VENTAS DETALLES TEMPORALES
   $router->group(['prefix' => '/tmpSaleDetail'], function () use ($router) {
+    $router->get('/index', 'TmpSaleDetailController@index');
     $router->get('/', 'TmpSaleDetailController@listAll');
     $router->get('/{id}', 'TmpSaleDetailController@get');
     $router->get('/filterSale/{saleId}', 'TmpSaleDetailController@getFilterBySale');

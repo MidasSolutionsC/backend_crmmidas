@@ -17,6 +17,12 @@ class ClientValidator {
     }
   }
 
+  public function setRequest(array  $data, int $id = null){
+    $this->request = new Request();
+    $this->request->replace($data);
+    $this->id = $id;
+  }
+
   public function validate(){
     return Validator::make($this->request->all(), $this->rules());
   }
@@ -29,10 +35,10 @@ class ClientValidator {
       'cif' => 'nullable|string|size:9',
       'codigo_carga' => 'nullable|string|max:100',
       'segmento_vodafond' => 'nullable|string|max:30',
-      'cta_bco' => 'nullable|string|max:100',
-      'user_create_id' => 'required|integer',
+      'user_create_id' => 'nullable|integer',
       'user_update_id' => 'nullable|integer',
       'user_delete_id' => 'nullable|integer',
+      'persona_juridica' => 'nullable|boolean',
       'is_active' => 'nullable|boolean',
     ];
   }

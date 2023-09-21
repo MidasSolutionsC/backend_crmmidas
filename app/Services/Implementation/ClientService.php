@@ -20,6 +20,24 @@ class ClientService implements IClient {
     return $result;
   }
 
+  public function getByPersonId(int $personId){
+    $query = $this->model->query();
+    if($personId){
+      $query->where('personas_id', $personId);
+    }
+    $result = $query->get()->first();
+    return $result;
+  }
+
+  public function getByCompanyId(int $companyId){
+    $query = $this->model->query();
+    if($companyId){
+      $query->where('empresas_id', $companyId);
+    }
+    $result = $query->get()->first();
+    return $result;
+  }
+
   public function getById(int $id){
     $query = $this->model->select();
     $result = $query->find($id);

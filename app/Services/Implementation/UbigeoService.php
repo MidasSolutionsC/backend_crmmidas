@@ -26,7 +26,7 @@ class UbigeoService implements IUbigeo{
     $query = $this->model->select();
     $query->selectRaw("CONCAT(dpto, ', ', prov, ', ', distrito) as ciudad");
     $query->havingRaw("ciudad like ?", ['%' . $search . '%']);
-    $query->take(20); // Limite de resultados
+    $query->take(25); // Limite de resultados
     $result = $query->get();
     return $result;
   }

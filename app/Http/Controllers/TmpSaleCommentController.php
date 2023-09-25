@@ -1,17 +1,18 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Services\Implementation\SaleCommentService;
-use App\Validator\SaleCommentValidator;
 use Illuminate\Http\Request;
+use App\Models\TmpSaleComment;
+use App\Services\Implementation\TmpSaleCommentService;
+use App\Validator\TmpSaleCommentValidator;
 
-class SaleCommentController extends Controller{
+class TmpSaleCommentController extends Controller{
 
   private $request;
   private $saleCommentService;
   private $saleCommentValidator;
 
-  public function __construct(Request $request, SaleCommentService $saleCommentService, SaleCommentValidator $saleCommentValidator)
+  public function __construct(Request $request, TmpSaleCommentService $saleCommentService, TmpSaleCommentValidator $saleCommentValidator)
   {
     $this->request = $request;
     $this->saleCommentService = $saleCommentService;
@@ -30,6 +31,21 @@ class SaleCommentController extends Controller{
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al listar los comentarios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function getFilterBySale($saleId){
+    try{
+      $result = $this->saleCommentService->getFilterBySale($saleId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos del comentario', 'error' => $e->getMessage()], 500);
     }
   }
 

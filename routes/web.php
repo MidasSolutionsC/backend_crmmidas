@@ -464,6 +464,17 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'SaleDocumentController@restore');
   });
 
+  // VENTAS DOCUMENTOS TEMPORALES
+  $router->group(['prefix' => '/tmpSaleDocument'], function () use ($router) {
+    $router->get('/', 'TmpSaleDocumentController@listAll');
+    $router->get('/filterSale/{saleId}', 'TmpSaleDocumentController@getFilterBySale');
+    $router->get('/{id}', 'TmpSaleDocumentController@get');
+    $router->post('/', 'TmpSaleDocumentController@create');
+    $router->post('/update/{id}', 'TmpSaleDocumentController@update');
+    $router->delete('/{id}', 'TmpSaleDocumentController@delete');
+    $router->get('/restore/{id}', 'TmpSaleDocumentController@restore');
+  });
+
   // VENTAS DETALLES
   $router->group(['prefix' => '/saleDetail'], function () use ($router) {
     $router->get('/', 'SaleDetailController@listAll');
@@ -498,6 +509,17 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/restore/{id}', 'SaleHistoryController@restore');
   });
 
+  // VENTAS HISTORIAL TEMPORALES
+  $router->group(['prefix' => '/tmpSaleHistory'], function () use ($router) {
+    $router->get('/', 'TmpSaleHistoryController@listAll');
+    $router->get('/filterSale/{saleId}', 'TmpSaleHistoryController@getFilterBySale');
+    $router->get('/{id}', 'TmpSaleHistoryController@get');
+    $router->post('/', 'TmpSaleHistoryController@create');
+    $router->put('/{id}', 'TmpSaleHistoryController@update');
+    $router->delete('/{id}', 'TmpSaleHistoryController@delete');
+    $router->get('/restore/{id}', 'TmpSaleHistoryController@restore');
+  });
+
   // SERVICIOS COMENTARIOS
   $router->group(['prefix' => '/saleComment'], function () use ($router) {
     $router->get('/', 'SaleCommentController@listAll');
@@ -506,6 +528,17 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->put('/{id}', 'SaleCommentController@update');
     $router->delete('/{id}', 'SaleCommentController@delete');
     $router->get('/restore/{id}', 'SaleCommentController@restore');
+  });
+
+  // SERVICIOS COMENTARIOS TEMPORALES
+  $router->group(['prefix' => '/tmpSaleComment'], function () use ($router) {
+    $router->get('/', 'TmpSaleCommentController@listAll');
+    $router->get('/filterSale/{saleId}', 'TmpSaleCommentController@getFilterBySale');
+    $router->get('/{id}', 'TmpSaleCommentController@get');
+    $router->post('/', 'TmpSaleCommentController@create');
+    $router->put('/{id}', 'TmpSaleCommentController@update');
+    $router->delete('/{id}', 'TmpSaleCommentController@delete');
+    $router->get('/restore/{id}', 'TmpSaleCommentController@restore');
   });
 
   // MANUALES

@@ -23,6 +23,15 @@ class SaleCommentService implements ISaleComment{
     return $result;
   }
 
+  public function getFilterBySale(int $saleId){
+    $query = $this->model->select();
+    if($saleId){
+      $query->where('ventas_id', $saleId);
+    }
+    $result = $query->get();
+    return $result;
+  }
+
   public function getById(int $id){
     $query = $this->model->select();
     $result = $query->find($id);

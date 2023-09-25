@@ -145,7 +145,7 @@ class UserController extends Controller{
         if($resPerson){
           $this->request['personas_id'] = $resPerson->id;
         } else {
-          $response = $this->responseError(['message' => 'Erro al obtener el registro como persona'], 422);
+          $response = $this->responseError(['message' => 'Error al obtener el registro como persona'], 422);
         }
         
         $typeUser = $this->typeUserService->getByName('invitado');

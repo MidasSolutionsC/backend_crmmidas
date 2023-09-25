@@ -9,17 +9,19 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class SaleDocument extends Model implements AuthorizableContract, AuthenticatableContract{
+class TmpSaleHistory extends Model implements AuthorizableContract, AuthenticatableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
-    protected $table = "ventas_documentos";
+    protected $table = "tmp_ventas_historial";
 
     protected $fillable = [
         'ventas_id',
         'ventas_detalles_id',
-        'nombre',
+        'comentario',
         'tipo',
-        'archivo',
+        'tipo_estados_id',
+        'fecha',
+        'hora',
         'user_create_id',
         'user_update_id',
         'user_delete_id',
@@ -43,7 +45,15 @@ class SaleDocument extends Model implements AuthorizableContract, Authenticatabl
      * Relación de pertenencia entre modulo externo
      */
     public function sale(){
-        return $this->belongsTo(Sale::class, 'ventas_id');
+        return $this->belongsTo(TmpSale::class, 'ventas_id');
     }
 
+    public function saleDetail(){
+        return $this->belongsTo(TmpSaleDetail::class, 'ventas_detalles_id');
+    }
+
+
+    public function typeStatus(){
+        return $this->belongsTo(TypeStatus::class, 'tipo_estados_id');
+    }
 }

@@ -2,17 +2,17 @@
 
 namespace App\Services\Implementation;
 
-use App\Models\SaleHistory;
+use App\Models\TmpSaleHistory;
 use App\Services\Interfaces\ISaleHistory;
 use Illuminate\Support\Carbon;
 
-class SaleHistoryService implements ISaleHistory{
+class TmpSaleHistoryService implements ISaleHistory{
 
   private $model;
 
   public function __construct()
   {
-    $this->model = new SaleHistory();
+    $this->model = new TmpSaleHistory();
   }
 
   public function getAll(){
@@ -22,9 +22,21 @@ class SaleHistoryService implements ISaleHistory{
   }
 
   public function getFilterBySale(int $saleId){
-    $query = $this->model->select();
+    $query = $this->model->query();
+
+    $query->select(
+      'tmp_ventas_historial.*', 
+      'TE.nombre as tipo_estados_nombre', 
+      'SR.nombre as servicios_nombre', 
+    );
+    
+    $query->join('tipo_estados as TE', 'tmp_ventas_historial.tipo_estados_id', 'TE.id');
+    $query->leftJoin('tmp_ventas as TV', 'tmp_ventas_historial.ventas_id', 'TV.id');
+    $query->leftJoin('tmp_ventas_detalles as VD', 'tmp_ventas_historial.ventas_detalles_id', 'VD.id');
+    $query->leftJoin('servicios as SR', 'VD.servicios_id', 'SR.id');
+
     if($saleId){
-      $query->where('ventas_id', $saleId);
+      $query->where('tmp_ventas_historial.ventas_id', $saleId);
     }
     $result = $query->get();
     return $result;
@@ -38,7 +50,10 @@ class SaleHistoryService implements ISaleHistory{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
+
     $saleHistory = $this->model->create($data);
     if($saleHistory){
       $saleHistory->created_at = Carbon::parse($saleHistory->created_at)->format('Y-m-d H:i:s');
@@ -49,7 +64,10 @@ class SaleHistoryService implements ISaleHistory{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
+
     $saleHistory = $this->model->find($id);
     if($saleHistory){
       $saleHistory->fill($data);

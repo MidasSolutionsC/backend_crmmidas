@@ -45,6 +45,9 @@ class DefaultData extends Seeder
         DB::table('tipo_servicios')->insert([
             'nombre' => 'Linea Fija',
         ]);
+        DB::table('tipo_servicios')->insert([
+            'nombre' => 'Linea TV',
+        ]);
 
         // Monedas
         DB::table('divisas')->insert([
@@ -70,5 +73,16 @@ class DefaultData extends Seeder
         DB::table('marcas')->insert([
             'nombre' => 'Empresa Vodafone',
         ]);
+
+        // OPERADORES
+        // DB::table('operadores')->insert([
+        //     'nombre' => 'Entel',
+        // ]);
+        // DB::table('operadores')->insert([
+        //     'nombre' => 'Vodafond',
+        // ]);
+        // DB::table('operadores')->insert([
+        //     'nombre' => 'Movistar',
+        // ]);
     }
 }

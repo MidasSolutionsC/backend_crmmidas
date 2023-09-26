@@ -2,17 +2,17 @@
 
 namespace App\Services\Implementation;
 
-use App\Models\SaleDocument;
+use App\Models\TmpSaleDocument;
 use App\Services\Interfaces\ISaleDocument;
 use Illuminate\Support\Carbon;
 
-class SaleDocumentService implements ISaleDocument{
+class TmpSaleDocumentService implements ISaleDocument{
 
   private $model;
 
   public function __construct()
   {
-    $this->model = new SaleDocument();
+    $this->model = new TmpSaleDocument();
   }
 
   public function getAll(){
@@ -38,7 +38,9 @@ class SaleDocumentService implements ISaleDocument{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
     $saleDocument = $this->model->create($data);
     if($saleDocument){
       $saleDocument->created_at = Carbon::parse($saleDocument->created_at)->format('Y-m-d H:i:s');
@@ -49,7 +51,10 @@ class SaleDocumentService implements ISaleDocument{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
+
     $saleDocument = $this->model->find($id);
     if($saleDocument){
       $saleDocument->fill($data);

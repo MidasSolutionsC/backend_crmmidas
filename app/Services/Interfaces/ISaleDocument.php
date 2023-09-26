@@ -4,6 +4,7 @@ namespace App\Services\Interfaces;
 
 interface ISaleDocument {
   function getAll();
+  function getFilterBySale(int $saleId);
   function getById(int $id);
   function create(array $data);
   function update(array $data, int $id);

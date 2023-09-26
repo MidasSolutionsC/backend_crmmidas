@@ -6,18 +6,20 @@ use App\Services\Implementation\AuthService;
 use App\Validator\AuthValidator;
 use Illuminate\Http\Request;
 
-class AuthController extends Controller {
+class AuthController extends Controller
+{
 
     private $request;
     private $authService;
     private $authValidator;
-  
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct(Request $request, AuthService $authService, AuthValidator $authValidator) {
+    public function __construct(Request $request, AuthService $authService, AuthValidator $authValidator)
+    {
         $this->middleware('auth:api', ['except' => ['login', 'logout', 'register']]);
         $this->request = $request;
         $this->authService = $authService;
@@ -25,10 +27,11 @@ class AuthController extends Controller {
     }
 
 
-    public function login(){
-        try{
+    public function login()
+    {
+        try {
             $validator = $this->authValidator->validate();
-            if($validator->fails()){
+            if ($validator->fails()) {
                 $response = $this->responseError($validator->errors(), 422);
             } else {
                 $credentials = $this->request->only('nombre_usuario', 'clave');
@@ -37,16 +40,17 @@ class AuthController extends Controller {
             }
 
             return $response;
-        } catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->responseError(['message' => 'Error al iniciar sesión', 'error' => $e->getMessage()], 500);
         }
     }
 
-    public function logout($id){
-        try{
+    public function logout($id)
+    {
+        try {
             $result = $this->authService->logout($id);
             return $this->response($result);
-        } catch(\Exception $e){
+        } catch (\Exception $e) {
             return $this->responseError(['message' => 'Error al cerrar sesión', 'error' => $e->getMessage()], 500);
         }
     }

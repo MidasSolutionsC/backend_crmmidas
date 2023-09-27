@@ -25,7 +25,7 @@ class AddressValidator {
     return [
       'empresas_id' => 'nullable|integer',
       'personas_id' => 'nullable|integer',
-      'domicilio' => 'required|string',
+      'domicilio' => 'nullable|string',
       'tipo' => 'required|string|max:30',
       'direccion' => 'required|string|max:250',
       'numero' => 'string|max:6',

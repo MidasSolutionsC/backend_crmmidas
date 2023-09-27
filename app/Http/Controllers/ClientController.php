@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\TmpSale;
 use Illuminate\Http\Request;
 use App\Services\Implementation\ClientService;
 use App\Services\Implementation\CompanyService;
@@ -30,7 +31,7 @@ class ClientController extends Controller{
     PersonService $personService,
     PersonValidator $personValidator,
     CompanyService $companyService,
-    CompanyValidator $companyValidator,
+    CompanyValidator $companyValidator
     ) {
     $this->request = $request;
     $this->clientService = $clientService;
@@ -148,6 +149,7 @@ class ClientController extends Controller{
       $dataPerson = $this->request->input('datos_persona');
       $dataCompany = $this->request->input('datos_empresa');
       $personaJuridica = $this->request->input('persona_juridica');
+      $ventaId = $this->request->input('ventas_id');
       $this->request['persona_juridica'] = boolval($personaJuridica);
 
       if(is_null($personaJuridica)) {
@@ -216,12 +218,23 @@ class ClientController extends Controller{
         $result = $this->clientService->create($this->request->all());
         $resultFull['client'] = $result;
 
+        // Busca el registro por su ID
+        if(!is_null($ventaId)){
+          $sale = TmpSale::findOrFail($ventaId);
+          $sale->clientes_id = $result->id;
+          $sale->save();
+        }
+
         $response = $this->responseCreated($resultFull);
       }
   
       // Si todo está bien, confirmar la transacción
       DB::commit();
       return $response;
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+      // Maneja la excepción, por ejemplo, muestra un mensaje de error
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al actualizar la venta', 'error' => $e->getMessage()], 422);
     } catch (ValidationException $e) {
       // Si hay errores de validación, revertir la transacción y devolver los errores
       DB::rollBack();
@@ -242,6 +255,7 @@ class ClientController extends Controller{
       $dataPerson = $this->request->input('datos_persona');
       $dataCompany = $this->request->input('datos_empresa');
       $personaJuridica = $this->request->input('persona_juridica');
+      $ventaId = $this->request->input('ventas_id');
       $this->request['persona_juridica'] = boolval($personaJuridica);
 
       
@@ -303,12 +317,24 @@ class ClientController extends Controller{
       } else {
         $result = $this->clientService->update($this->request->all(), $id);
         $resultFull['client'] = $result;
+
+        // Busca el registro por su ID
+        if(!is_null($ventaId)){
+          $sale = TmpSale::findOrFail($ventaId);
+          $sale->clientes_id = $result->id;
+          $sale->save();
+        }
+      
         $response = $this->responseUpdate($resultFull);
       }
   
       // Si todo está bien, confirmar la transacción
       DB::commit();
       return $response;
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+      // Maneja la excepción, por ejemplo, muestra un mensaje de error
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al actualizar la venta', 'error' => $e->getMessage()], 422);
     } catch (ValidationException $e) {
       // Si hay errores de validación, revertir la transacción y devolver los errores
       DB::rollBack();

@@ -28,6 +28,16 @@ class AddressService implements IAddress{
 
   public function getFilterByCompany(int $companyId){
     $query = $this->model->select();
+
+    $query->selectRaw("CONCAT_WS(', ',
+      CASE WHEN tipo IS NOT NULL AND tipo != '' THEN CONCAT(tipo, ' ', direccion) ELSE NULL END,
+      CASE WHEN numero IS NOT NULL AND numero != '' THEN CONCAT(' N° ', numero) ELSE NULL END,
+      CASE WHEN escalera IS NOT NULL AND escalera != '' THEN escalera ELSE NULL END,
+      CASE WHEN portal IS NOT NULL AND portal != '' THEN portal ELSE NULL END,
+      CASE WHEN planta IS NOT NULL AND planta != '' THEN planta ELSE NULL END,
+      CASE WHEN puerta IS NOT NULL AND puerta != '' THEN puerta ELSE NULL END
+    ) as direccion_completo");
+    
     if($companyId){
       $query->where('empresas_id', $companyId);
     }
@@ -38,6 +48,16 @@ class AddressService implements IAddress{
 
   public function getFilterByPerson(int $personId){
     $query = $this->model->select();
+
+    $query->selectRaw("CONCAT_WS(', ',
+      CASE WHEN tipo IS NOT NULL AND tipo != '' THEN CONCAT(tipo, ' ', direccion) ELSE NULL END,
+      CASE WHEN numero IS NOT NULL AND numero != '' THEN CONCAT(' N° ', numero) ELSE NULL END,
+      CASE WHEN escalera IS NOT NULL AND escalera != '' THEN escalera ELSE NULL END,
+      CASE WHEN portal IS NOT NULL AND portal != '' THEN portal ELSE NULL END,
+      CASE WHEN planta IS NOT NULL AND planta != '' THEN planta ELSE NULL END,
+      CASE WHEN puerta IS NOT NULL AND puerta != '' THEN puerta ELSE NULL END
+    ) as direccion_completo");
+
     if($personId){
       $query->where('personas_id', $personId);
     }

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('user_create_id');            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
-            $table->boolean('persona_juridica')->default(true);
+            $table->boolean('persona_juridica')->default(false);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();

@@ -24,7 +24,15 @@ class BankAccountService implements IBankAccount{
   }
 
   public function getFilterByClient(int $clientId){
-    $query = $this->model->select();
+    $query = $this->model->query();
+
+    $query->select(
+      'cuentas_bancarias.*',
+      'TC.nombre as tipo_cuentas_bancarias_nombre'
+    );
+    
+    $query->join('tipo_cuentas_bancarias as TC', 'cuentas_bancarias.tipo_cuentas_bancarias_id', 'TC.id');
+
     if($clientId){
       $query->where('clientes_id', $clientId);
     }
@@ -41,7 +49,10 @@ class BankAccountService implements IBankAccount{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
+
     $bankAccount = $this->model->create($data);
     if($bankAccount){
       $bankAccount->created_at = Carbon::parse($bankAccount->created_at)->format('Y-m-d H:i:s');
@@ -52,7 +63,10 @@ class BankAccountService implements IBankAccount{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
+
     $bankAccount = $this->model->find($id);
     if($bankAccount){
       $bankAccount->fill($data);

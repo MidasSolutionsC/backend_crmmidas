@@ -39,7 +39,10 @@ class ClientService implements IClient {
   }
 
   public function getById(int $id){
-    $query = $this->model->select();
+    // $query = $this->model->select();
+    $query = $this->model->query();
+    $query->with('person');
+    $query->with('company');
     $result = $query->find($id);
     return $result;
   }

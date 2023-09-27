@@ -120,7 +120,7 @@ class TmpInstallationController extends Controller{
 
       $ventasId = $this->request->input('ventas_id');
 
-      if(isEmpty($ventasId)){
+      if(empty($ventasId)){
         $reqSale = [
           "comentario" => "pendiente",
           "user_create_id" => $this->request->input('user_auth_id')

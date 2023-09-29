@@ -22,7 +22,7 @@ return new class extends Migration
             $table->text('descripcion')->nullable();
             $table->foreignId('tipo_documentos_id');
             $table->string('documento', 11);
-            $table->string('tipo_empresa', 30)->nullable();
+            $table->string('tipo_empresa', 50)->nullable();
             // $table->string('direccion', 250)->nullable();
             // $table->string('ciudad', 60)->nullable();
             // $table->string('telefono', 11)->nullable();

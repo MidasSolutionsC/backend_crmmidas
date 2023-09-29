@@ -75,7 +75,10 @@ class AddressService implements IAddress{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
+
     $address = $this->model->create($data);
     if($address){
       $address->created_at = Carbon::parse($address->created_at)->format('Y-m-d H:i:s');
@@ -86,7 +89,10 @@ class AddressService implements IAddress{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
+
     $address = $this->model->find($id);
     if($address){
       $address->fill($data);

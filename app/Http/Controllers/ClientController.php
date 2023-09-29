@@ -187,6 +187,11 @@ class ClientController extends Controller{
         $requestWithoutAttribute = $this->request->except(['empresas_id']);
     
         if(empty($this->request->input('personas_id'))){
+
+          if(empty($dataPerson['codigo_ubigeo'])){
+            unset($dataPerson['codigo_ubigeo']);
+          }
+
           $this->personValidator->setRequest($dataPerson);
           $validatorPerson = $this->personValidator->validate();
     
@@ -268,6 +273,10 @@ class ClientController extends Controller{
       if(boolval($personaJuridica)){
         $requestWithoutAttribute = $this->request->except(['personas_id']);
 
+        if(empty($dataPerson['codigo_ubigeo'])){
+          unset($dataPerson['codigo_ubigeo']);
+        }
+
         if(!empty($dataCompany)){
           // actualizar empresa
           $this->companyValidator->setRequest($dataCompany, $dataCompany['id']);
@@ -289,7 +298,11 @@ class ClientController extends Controller{
         $this->clientValidator->setRequest($requestWithoutAttribute);
       } else {
         $requestWithoutAttribute = $this->request->except(['empresas_id']);
-    
+
+        if(empty($dataPerson['codigo_ubigeo'])){
+          unset($dataPerson['codigo_ubigeo']);
+        }
+   
         if(!empty($dataPerson)){
           $this->personValidator->setRequest($dataPerson, $dataPerson['id']);
           $validatorPerson = $this->personValidator->validate();

@@ -242,7 +242,7 @@ class TmpSaleDetailService implements ISaleDetail{
       $saleDetail->tipo_servicios_nombre = $typeService->nombre;
       
       $installation = TmpInstallation::where('id', $saleDetail->instalaciones_id)
-        // ->select('id', 'tipo')
+        ->select('*')
         ->selectRaw("CONCAT_WS(', ',
           CASE WHEN tipo IS NOT NULL AND tipo != '' THEN CONCAT(tipo, ' ', direccion) ELSE NULL END,
           CASE WHEN numero IS NOT NULL AND numero != '' THEN CONCAT(' N° ', numero) ELSE NULL END,
@@ -254,7 +254,12 @@ class TmpSaleDetailService implements ISaleDetail{
         ->first();
 
 
-      $saleDetail->instalaciones_direccion_completo = $installation->direccion_completo;
+        if($installation){
+          $saleDetail->instalaciones_direccion_completo = $installation->direccion_completo;
+          $saleDetail->instalaciones_codigo_postal = $installation->codigo_postal;
+          $saleDetail->instalaciones_localidad = $installation->localidad;
+          $saleDetail->instalaciones_provincia = $installation->provincia;
+        }
 
       return $saleDetail;
     }

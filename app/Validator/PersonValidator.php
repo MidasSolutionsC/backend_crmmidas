@@ -12,8 +12,8 @@ class PersonValidator {
   private $id;
 
   public function __construct(Request $request = null) {
-    $this->request = $request;
     if ($request) {
+      $this->request = $request;
       $this->id = $request->route('id');
     }
   }
@@ -37,7 +37,7 @@ class PersonValidator {
       'codigo_ubigeo' => 'nullable|string',
       'tipo_documentos_id' => 'required|integer',
       // 'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,deleted_at,NULL',
-      'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,deleted_at,NULL,tipo_documentos_id,' . $this->request->input('tipo_documentos_id'),    
+      'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,tipo_documentos_id,' . $this->request->input('tipo_documentos_id') . ',deleted_at,NULL',    
       'reverso_documento' => 'nullable|string|max:250',
       'fecha_nacimiento' => 'nullable|date:Y-m-d',
       // 'telefono' => 'nullable|string|max:11',

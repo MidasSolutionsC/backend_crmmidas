@@ -222,7 +222,7 @@ class UserController extends Controller{
         
         $resUser = $this->userService->update($this->request->all(), $id);
         if(is_null($resUser)){
-          $response = $this->responseError(['message' => 'Erro al actualizar usuario'], 422);
+          $response = $this->responseError(['message' => 'Error al actualizar usuario'], 422);
         }
 
         $response = $this->responseUpdate(['person' => $resPerson,  'user' => $resUser]);
@@ -238,7 +238,7 @@ class UserController extends Controller{
     } catch(\Exception $e){
       // Si hay un error inesperado, revertir la transacción
       DB::rollBack();
-      return $this->responseError(['message' => 'Error al crear el usuario', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al modificar el usuario', 'error' => $e->getMessage()], 500);
     }
   }
 

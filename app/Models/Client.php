@@ -42,4 +42,14 @@ class Client extends Model implements AuthenticatableContract, AuthorizableContr
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    // FORÁNEOS
+    public function person(){
+        return $this->belongsTo(Person::class, 'personas_id');
+    }
+
+    public function company(){
+        return $this->belongsTo(Company::class, 'empresas_id');
+    }
+
+
 }

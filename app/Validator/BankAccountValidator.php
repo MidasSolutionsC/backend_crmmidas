@@ -41,7 +41,7 @@ class BankAccountValidator {
       'fecha_apertura' => 'nullable|date:Y-m-d',
       'is_primary' => 'nullable|boolean',
       'is_active' => 'nullable|boolean',
-      'user_create_id' => 'required|integer',
+      'user_create_id' => 'nullable|integer',
       'user_update_id' => 'integer',
       'user_delete_id' => 'integer',
     ];

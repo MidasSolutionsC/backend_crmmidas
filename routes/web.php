@@ -144,6 +144,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/filterPerson/{personId}', 'ContactController@getFilterByPerson');
     $router->get('/{id}', 'ContactController@get');
     $router->post('/', 'ContactController@create');
+    $router->post('/register', 'ContactController@createComplete');
     $router->put('/{id}', 'ContactController@update');
     $router->delete('/{id}', 'ContactController@delete');
     $router->get('/restore/{id}', 'ContactController@restore');

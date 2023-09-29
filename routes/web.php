@@ -27,7 +27,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
    * NO PROTEGIDAS
    */
 
-   
+
 
   /**
    * PROTEGIDAS POR AUTHENTICATION
@@ -73,7 +73,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->delete('/{id}', 'TypeStatusController@delete');
     $router->get('/restore/{id}', 'TypeStatusController@restore');
   });
-  
+
   // TIPO DE DOCUMENTOS
   $router->group(['prefix' => '/typeDocument'], function () use ($router) {
     $router->get('/', 'TypeDocumentController@listAll');
@@ -177,13 +177,13 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->post('/register', 'UserController@createComplete');
     $router->get('/index', 'UserController@index');
     $router->get('/serverSide', 'UserController@getAllServerSide');
-    
+
     $router->get('/{id}', 'UserController@get');
     $router->put('/{id}', 'UserController@update');
     $router->put('/update/{id}', 'UserController@updateComplete');
     $router->delete('/{id}', 'UserController@delete');
     $router->get('/restore/{id}', 'UserController@restore');
-    
+
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
       $router->get('/', 'UserController@listAll');
     });
@@ -562,5 +562,14 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->delete('/{id}', 'AdvertisementController@delete');
     $router->get('/restore/{id}', 'AdvertisementController@restore');
   });
- 
+
+  // IPs
+  $router->group(['prefix' => '/ip-allowed'], function () use ($router) {
+    $router->get('/', 'IpAllowedController@listAll');
+    $router->get('/{id}', 'IpAllowedController@get');
+    $router->post('/', 'IpAllowedController@create');
+    $router->put('/{id}', 'IpAllowedController@update');
+    $router->delete('/{id}', 'IpAllowedController@delete');
+    $router->get('/restore/{id}', 'IpAllowedController@restore');
+  });
 });

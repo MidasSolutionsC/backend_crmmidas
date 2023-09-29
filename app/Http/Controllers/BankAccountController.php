@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\Implementation\BankAccountService;
 use App\Validator\BankAccountValidator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class BankAccountController extends Controller{
 
@@ -77,6 +79,54 @@ class BankAccountController extends Controller{
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al crear la cuenta bancaria', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function createComplete(){
+    try {
+      // Iniciar una transacción
+      DB::beginTransaction();
+      $resultFull = [];
+
+      $clientId = $this->request->input('clientes_id');
+      $dataArray = $this->request->input('data_array');
+
+      foreach ($dataArray as $row) {
+        $row['user_create_id'] = $this->request->input('user_auth_id');
+        if (!empty($clientId)) {
+          $row['clientes_id'] = $clientId;
+        } else {
+          unset($row['clientes_id']);
+        }
+
+        $this->bankAccountValidator->setRequest($row);
+        $validator = $this->bankAccountValidator->validate();
+
+        if ($validator->fails()) {
+          $response = $this->responseError($validator->errors(), 422);
+        } else {
+          $result = $this->bankAccountService->create($row);
+          $resultFull[] = $result;
+        }
+      }
+
+      $response = $this->responseCreated($resultFull);
+
+      // Si todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+      // Maneja la excepción, por ejemplo, muestra un mensaje de error
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al registrar las direcciones', 'error' => $e->getMessage()], 422);
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch (\Exception $e) {
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al crear las direcciones', 'error' => $e->getMessage()], 500);
     }
   }
 

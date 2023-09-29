@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\Implementation\AddressService;
 use App\Validator\AddressValidator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class AddressController extends Controller{
 
@@ -92,6 +94,59 @@ class AddressController extends Controller{
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al crear usuario de la dirección', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function createComplete(){
+    try {
+      // Iniciar una transacción
+      DB::beginTransaction();
+      $resultFull = [];
+
+      $personId = $this->request->input('personas_id');
+      $companyId = $this->request->input('empresas_id');
+
+      $dataArray = $this->request->input('data_array');
+      foreach ($dataArray as $row) {
+        $row['user_create_id'] = $this->request->input('user_auth_id');
+        if (!empty($personId)) {
+          unset($row['empresas_id']);
+          $row['personas_id'] = $personId;
+        }
+
+        if (!empty($companyId)) {
+          unset($row['personas_id']);
+          $row['empresas_id'] = $companyId;
+        }
+
+        $this->addressValidator->setRequest($row);
+        $validator = $this->addressValidator->validate();
+
+        if ($validator->fails()) {
+          $response = $this->responseError($validator->errors(), 422);
+        } else {
+          $result = $this->addressService->create($row);
+          $resultFull[] = $result;
+        }
+      }
+
+      $response = $this->responseCreated($resultFull);
+
+      // Si todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+      // Maneja la excepción, por ejemplo, muestra un mensaje de error
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al registrar las direcciones', 'error' => $e->getMessage()], 422);
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch (\Exception $e) {
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al crear las direcciones', 'error' => $e->getMessage()], 500);
     }
   }
 

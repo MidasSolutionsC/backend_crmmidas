@@ -36,7 +36,7 @@ class CompanyValidator {
       'descripcion' => 'nullable|string',
       'tipo_documentos_id' => 'required|integer',
       'documento' => 'required|string|max:11|unique:empresas,documento,'. $this->id . ',id,tipo_documentos_id,'. $this->request->input('tipo_documentos_id'),
-      'tipo_empresa' => 'nullable|string|max:30',
+      'tipo_empresa' => 'nullable|string|max:50',
       // 'direccion' => 'nullable|string|max:250',
       // 'ciudad' => 'nullable|string|max:60',
       // 'telefono' => 'nullable|string|max:11',

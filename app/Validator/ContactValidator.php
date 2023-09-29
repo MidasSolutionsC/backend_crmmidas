@@ -24,7 +24,6 @@ class ContactValidator{
     $this->id = $id;
   }
 
-
   public function validate(){
     return Validator::make($this->request->all(), $this->rules());
   }

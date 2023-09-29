@@ -157,6 +157,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/filterPerson/{personId}', 'AddressController@getFilterByPerson');
     $router->get('/{id}', 'AddressController@get');
     $router->post('/', 'AddressController@create');
+    $router->post('/register', 'AddressController@createComplete');
     $router->put('/{id}', 'AddressController@update');
     $router->delete('/{id}', 'AddressController@delete');
     $router->get('/restore/{id}', 'AddressController@restore');
@@ -311,6 +312,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/filterClient/{clientId}', 'BankAccountController@getFilterByClient');
     $router->get('/{id}', 'BankAccountController@get');
     $router->post('/', 'BankAccountController@create');
+    $router->post('/register', 'BankAccountController@createComplete');
     $router->put('/{id}', 'BankAccountController@update');
     $router->delete('/{id}', 'BankAccountController@delete');
     $router->get('/restore/{id}', 'BankAccountController@restore');
@@ -426,6 +428,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/', 'TmpSaleController@listAll');
     $router->get('/{id}', 'TmpSaleController@get');
     $router->post('/', 'TmpSaleController@create');
+    $router->post('/finalProcess', 'TmpSaleController@finalProcess');
     $router->put('/{id}', 'TmpSaleController@update');
     $router->delete('/{id}', 'TmpSaleController@delete');
     $router->get('/restore/{id}', 'TmpSaleController@restore');

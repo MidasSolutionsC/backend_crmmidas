@@ -174,7 +174,6 @@ class SaleController extends Controller{
     }
   }
   
-
   public function delete($id){
     try{
       $result = $this->saleService->delete($id);

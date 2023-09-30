@@ -28,7 +28,15 @@ class IpAllowedValidator
   {
     return [
       'ip' => 'required|string|ip|unique:ip_permitidas,ip,' . $this->id . ',id,deleted_at,NULL',
-      'descripcion' => 'required|string|max:255,' . $this->id . ',id,deleted_at,NULL',
+      'sedes_id' => 'nullable|integer',
+      'descripcion' => 'nullable|string|max:500',
+      'fecha' => 'nullable|date:Y-m-d',
+      'hora' => ['nullable', 'regex:/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/'],
+      'fecha_expiracion' => 'nullable|date:Y-m-d',
+      'is_active' => 'nullable|boolean',
+      'user_create_id' => 'nullable|integer',
+      'user_delete_id' => 'nullable|integer',
+      'user_delete_id' => 'nullable|integer',
     ];
   }
 }

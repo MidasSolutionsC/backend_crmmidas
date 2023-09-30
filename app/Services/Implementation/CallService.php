@@ -27,6 +27,7 @@ class CallService implements ICall
   public function index(array $data)
   {
     $id_usuario = Auth::user()->id;
+
     $o_usuario = User::find($id_usuario);
     $o_tipo_usuario = TypeUser::find($o_usuario->tipo_usuarios_id);
     $tipo_usuario = strtoupper(trim($o_tipo_usuario->nombre));

@@ -18,8 +18,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('usuarios_id');
             $table->string('dispositivo', 50);
-            $table->text('descripcion');
             $table->string('ip_address', 50);
+            $table->text('descripcion')->nullable();
             $table->string('so', 30);
             $table->string('navegador', 50);
             $table->boolean('login')->default(false);

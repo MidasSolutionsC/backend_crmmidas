@@ -17,8 +17,16 @@ class IpAllowed extends Model implements AuthenticatableContract, AuthorizableCo
     protected $table = "ip_permitidas";
 
     protected $fillable = [
+        'sedes_id',
         'ip',
         'descripcion',
+        'fecha',
+        'hora',
+        'fecha_expiracion',
+        'is_active',
+        'user_create_id',
+        'user_update_id',
+        'user_delete_id',
         'created_at',
         'updated_at',
         'deleted_at',

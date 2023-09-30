@@ -46,4 +46,22 @@ class Company extends Model implements AuthenticatableContract, AuthorizableCont
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function ubigeo(){
+        return $this->belongsTo(Ubigeo::class, 'codigo_ubigeo');
+    }
+    
+
+    public function typeDocument(){
+        return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
+    }
+    
+    public function addresses()
+    {
+        return $this->hasMany(Address::class, 'empresas_id');
+    }
+
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class, 'empresas_id');
+    }
 }

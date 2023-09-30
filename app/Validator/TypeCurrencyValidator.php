@@ -5,7 +5,7 @@ namespace App\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CurrencyValidator{
+class TypeCurrencyValidator{
 
   private $request;
   private $id;
@@ -24,7 +24,7 @@ class CurrencyValidator{
   private function rules(){
     return [
       'paises_id' => 'nullable|integer',
-      'nombre' => 'nullable|string|unique:divisas,nombre,' . $this->id . ',id,deleted_at,NULL',
+      'nombre' => 'nullable|string|unique:tipo_monedas,nombre,' . $this->id . ',id,deleted_at,NULL',
       'descripcion' => 'nullable|string' ,
       'tasa_cambio' => 'nullable|numeric|max:99999999.99|regex:/^\d+(\.\d{1,2})?$/',
       'iso_code' => 'required|string|max:3' ,

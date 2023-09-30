@@ -2,17 +2,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Services\Implementation\CurrencyService;
-use App\Validator\CurrencyValidator;
+use App\Services\Implementation\TypeCurrencyService;
+use App\Validator\TypeCurrencyValidator;
 
-class CurrencyController extends Controller{
+class TypeCurrencyController extends Controller{
 
   private $request;
   private $currencyService;
   private $currencyValidator;
 
 
-  public function __construct(Request $request, CurrencyService $currencyService, CurrencyValidator $currencyValidator)
+  public function __construct(Request $request, TypeCurrencyService $currencyService, TypeCurrencyValidator $currencyValidator)
   {
     $this->request = $request;
     $this->currencyService = $currencyService;
@@ -33,7 +33,7 @@ class CurrencyController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al listar las divisas', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al listar las tipo de monedas', 'error' => $e->getMessage()], 500);
     }
   }
 
@@ -48,7 +48,7 @@ class CurrencyController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al listar las divisas', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al listar las tipo de monedas', 'error' => $e->getMessage()], 500);
     }
   }
 
@@ -63,7 +63,7 @@ class CurrencyController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al obtener los datos de la divisa', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al obtener los datos del tipo de moneda', 'error' => $e->getMessage()], 500);
     }
   }
 
@@ -80,7 +80,7 @@ class CurrencyController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al crear la divisa', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al crear el tipo de moneda', 'error' => $e->getMessage()], 500);
     }
   }
   
@@ -101,7 +101,7 @@ class CurrencyController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al actualizar los datos de la divisa', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al actualizar los datos del tipo de moneda', 'error' => $e->getMessage()], 500);
     }
   }
 
@@ -116,7 +116,7 @@ class CurrencyController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al eliminar la divisa', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al eliminar el tipo de moneda', 'error' => $e->getMessage()], 500);
     }
   }
 
@@ -131,7 +131,7 @@ class CurrencyController extends Controller{
   
       return $response;
     } catch(\Exception $e){
-      return $this->responseError(['message' => 'Error al restaurar la divisa', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al restaurar el tipo de moneda', 'error' => $e->getMessage()], 500);
     }
     
   }

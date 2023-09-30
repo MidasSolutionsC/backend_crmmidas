@@ -14,25 +14,25 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('productos_precios', function (Blueprint $table) {
+        Schema::create('ip_permitidas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('productos_id');
-            $table->foreignId('tipo_monedas_id');
-            $table->double('precio', 10, 2);
-            $table->date('fecha_inicio')->default(DB::raw('CURRENT_DATE'));            
-            $table->date('fecha_fin')->nullable();
-            $table->foreignId('user_create_id');
-            $table->foreignId('user_update_id')->nullable();
-            $table->foreignId('user_delete_id')->nullable();
+            $table->foreignId('sedes_id')->nullable();
+            $table->string('ip', 50);
+            $table->text('descripcion')->nullable();
+            $table->date('fecha')->default(DB::raw('CURRENT_DATE'));
+            $table->time('hora')->default(DB::raw('CURRENT_TIME'));
+            $table->date('fecha_expiracion')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->foreignId('user_create_id')->nullable();            
+            $table->foreignId('user_update_id')->nullable();            
+            $table->foreignId('user_delete_id')->nullable(); 
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('productos_id')->references('id')->on('productos');
-            $table->foreign('tipo_monedas_id')->references('id')->on('tipo_monedas');
+            $table->foreign('sedes_id')->references('id')->on('sedes');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');
-            $table->engine = 'InnoDB';  
+            $table->engine  = 'InnoDB';
         });
     }
 
@@ -43,6 +43,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('productos_precios');
+        Schema::dropIfExists('ip_permitidas');
     }
 };

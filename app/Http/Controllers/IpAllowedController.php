@@ -51,6 +51,22 @@ class IpAllowedController extends Controller
     }
   }
 
+  public function getIP()
+  {
+    try {
+      $ip = $this->request->ip();
+      $response = $this->response();
+
+      if (!empty($ip)) {
+        $response = $this->response(["ip" => $ip]);
+      }
+
+      return $response;
+    } catch (\Exception $e) {
+      return $this->responseError(['message' => 'Error al obtener la IP', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function create()
   {
     try {

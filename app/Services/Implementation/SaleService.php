@@ -22,37 +22,61 @@ class SaleService implements ISale
 
   public function getAll()
   {
-    $id_usuario = Auth::user()->id;
-    $o_usuario = User::find($id_usuario);
-    $o_tipo_usuario = TypeUser::find($o_usuario->tipo_usuarios_id);
-    $tipo_usuario = strtoupper(trim($o_tipo_usuario->nombre));
+    // $id_usuario = Auth::user()->id;
+    // $o_usuario = User::find($id_usuario);
+    // $o_tipo_usuario = TypeUser::find($o_usuario->tipo_usuarios_id);
+    // $tipo_usuario = strtoupper(trim($o_tipo_usuario->nombre));
 
 
-    $query = $this->model->select(
-      'ventas.*'
+    $query = $this->model->query();
+
+    $query->select(
+      'ventas.*',
+      'CL.persona_juridica as clientes_persona_juridica',
+      DB::raw('
+        CASE 
+          WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
+          WHEN CL.persona_juridica = 1 THEN EM.razon_social
+          ELSE NULL
+        END AS clientes_nombre,
+        CASE 
+          WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
+          WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
+          ELSE NULL
+        END AS clientes_tipo_documento,
+        CASE 
+          WHEN CL.persona_juridica = 0 THEN PR.documento
+          WHEN CL.persona_juridica = 1 THEN EM.documento
+          ELSE NULL
+        END AS clientes_documento
+      ')
     );
 
-    switch ($tipo_usuario) {
+    $query->join('clientes as CL', 'ventas.clientes_id', 'CL.id');
+    $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
+    $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
+    $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
+    $query->leftJoin('tipo_documentos as TDE', 'EM.tipo_documentos_id', 'TDE.id');
 
-      case 'VENDEDOR':
-        $query->where('user_create_id', $id_usuario);
+    // switch ($tipo_usuario) {
 
-        break;
-      case 'BACKOFFICE':
-        DB::statement("SET SQL_MODE=''");
-        $query->join('integrantes as I', 'ventas.user_create_id', '=', 'I.usuarios_id');
-        $query->whereIn('I.grupos_id', function ($subquery) use ($id_usuario) {
-          $subquery->select('grupos_id')
-            ->from('integrantes')
-            ->where('usuarios_id', $id_usuario);
-        });
-        $query->groupBy('ventas.id');
-        break;
+    //   case 'VENDEDOR':
+    //     $query->where('user_create_id', $id_usuario);
 
-      default;
-    }
+    //     break;
+    //   case 'BACKOFFICE':
+    //     DB::statement("SET SQL_MODE=''");
+    //     $query->join('integrantes as I', 'ventas.user_create_id', '=', 'I.usuarios_id');
+    //     $query->whereIn('I.grupos_id', function ($subquery) use ($id_usuario) {
+    //       $subquery->select('grupos_id')
+    //         ->from('integrantes')
+    //         ->where('usuarios_id', $id_usuario);
+    //     });
+    //     $query->groupBy('ventas.id');
+    //     break;
 
-
+    //   default;
+    // }
 
     $result = $query->get();
     return $result;

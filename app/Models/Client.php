@@ -51,5 +51,9 @@ class Client extends Model implements AuthenticatableContract, AuthorizableContr
         return $this->belongsTo(Company::class, 'empresas_id');
     }
 
+    public function bankAccounts()
+    {
+        return $this->hasMany(BankAccount::class, 'clientes_id');
+    }
 
 }

@@ -54,4 +54,14 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
         return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
     }
 
+    public function addresses()
+    {
+        return $this->hasMany(Address::class, 'personas_id');
+    }
+
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class, 'personas_id');
+    }
+
 }

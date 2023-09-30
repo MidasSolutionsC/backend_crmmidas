@@ -89,29 +89,19 @@ class TmpSaleController extends Controller
       $clientId = $this->request->input('clientes_id');
 
       if(empty($saleId)){
-        $response = $this->responseError(["messafe" => "no se especifico id de la venta"], 422);
+        $response = $this->responseError(["message" => ["no se especifico id de la venta"]], 422);
         DB::rollBack();
       }
 
-      // Filtra los registros de TemporalCliente que deseas copiar
-      // $tmpInstallations = TmpInstallation::where('ventas_id', '=', $saleId)->get();
-      // $tmpSaleDetails = TmpSaleDetail::where('ventas_id', '=', $saleId)->get();
-
-      // foreach ($tmpInstallations as $data) {
-      //   $installation = new Installation($data->toArray());
-      //   $installation->save();
-      // }
-
-      // foreach ($tmpSaleDetails as $data) {
-      //   $saleDetail = new SaleDetail($data->toArray());
-      //   $saleDetail->save();
-      // }
-      
+      if(empty($clientId)){
+        $response = $this->responseError(["message" => ["no se especifico id del cliente"]], 422);
+        DB::rollBack();
+      }
 
       // Copiar datos de temp_clientes a clientes
       DB::statement('INSERT INTO ventas 
-        (clientes_id, fecha, hora, comentario, user_create_id, is_active)
-      SELECT clientes_id, fecha, hora, comentario, user_create_id, is_active
+        (clientes_id, fecha, hora, comentario, user_create_id, is_active, created_at)
+      SELECT clientes_id, fecha, hora, comentario, user_create_id, is_active, created_at
       FROM tmp_ventas WHERE id = ?', [$saleId]);
 
       // Obtener el último ID insertado de la tabla ventas
@@ -126,55 +116,49 @@ class TmpSaleController extends Controller
         DB::statement("UPDATE tmp_ventas_detalles SET instalaciones_id = ? WHERE id = ?", [$installation->id, $data->instalaciones_id]);
       }
 
-      // Copiar datos de tmp_instalaciones a instalaciones con el nuevo ID de venta
-      DB::statement('INSERT INTO ventas_detalles 
-        (ventas_id, tipo, direccion, numero, escalera, portal, planta, puerta, codigo_postal, localidad, provincia, is_active, user_create_id)
-        SELECT ?, tipo, direccion, numero, escalera, portal, planta, puerta, codigo_postal, localidad, provincia, is_active, user_create_id
-      FROM tmp_instalaciones WHERE ventas_id = ?', [$lastSaleId, $saleId]);
+
+      $tmpSaleDetails = TmpSaleDetail::where('ventas_id', $saleId)->get();
+      foreach ($tmpSaleDetails as $data) {
+        $data->ventas_id = $lastSaleId;
+        $saleDetail = new SaleDetail($data->toArray());
+        $saleDetail->save();
+
+        // DOCUMENTOS 
+        DB::statement("UPDATE tmp_ventas_documentos SET ventas_detalles_id = ? WHERE ventas_detalles_id = ?", [$saleDetail->id, $data->id]);
+        // COMENTARIOS 
+        DB::statement("UPDATE tmp_ventas_comentarios SET ventas_detalles_id = ? WHERE ventas_detalles_id = ?", [$saleDetail->id, $data->id]);
+        // HISTORIAL 
+        DB::statement("UPDATE tmp_ventas_historial SET ventas_detalles_id = ? WHERE ventas_detalles_id = ?", [$saleDetail->id, $data->id]);
+      }
+
+      // DOCUMENTOS 
+      DB::statement('INSERT INTO ventas_documentos 
+        (ventas_id, ventas_detalles_id, nombre, tipo, archivo, user_create_id, user_update_id, user_delete_id, is_active, created_at)
+        SELECT ?, ventas_detalles_id, nombre, tipo, archivo, user_create_id, user_update_id, user_delete_id, is_active, created_at
+      FROM tmp_ventas_documentos WHERE ventas_id = ?', [$lastSaleId, $saleId]);
+
+      // COMENTARIOS 
+      DB::statement('INSERT INTO ventas_comentarios 
+        (ventas_id, ventas_detalles_id, comentario, fecha, hora, user_create_id, user_update_id, user_delete_id, is_active, created_at)
+        SELECT ?, ventas_detalles_id, comentario, fecha, hora, user_create_id, user_update_id, user_delete_id, is_active, created_at
+      FROM tmp_ventas_comentarios WHERE ventas_id = ?', [$lastSaleId, $saleId]);
+
+      // HISTORIAL 
+      DB::statement('INSERT INTO ventas_historial 
+        (ventas_id, ventas_detalles_id, tipo, tipo_estados_id, fecha, hora, comentario, user_create_id, user_update_id, user_delete_id, is_active, created_at)
+        SELECT ?, ventas_detalles_id, tipo, tipo_estados_id, fecha, hora, comentario, user_create_id, user_update_id, user_delete_id, is_active, created_at
+      FROM tmp_ventas_historial WHERE ventas_id = ?', [$lastSaleId, $saleId]);
 
 
-      // // Copiar datos de tmp_instalaciones a instalaciones con el nuevo ID de venta
-      // DB::statement('INSERT INTO instalaciones 
-      //   (ventas_id, tipo, direccion, numero, escalera, portal, planta, puerta, codigo_postal, localidad, provincia, is_active, user_create_id)
-      //   SELECT ?, tipo, direccion, numero, escalera, portal, planta, puerta, codigo_postal, localidad, provincia, is_active, user_create_id
-      // FROM tmp_instalaciones WHERE ventas_id = ?', [$lastSaleId, $saleId]);
+      // ELIMINAR TEMPORALES
+      DB::statement('DELETE FROM tmp_ventas_historial WHERE ventas_id = ?', [$saleId]);
+      DB::statement('DELETE FROM tmp_ventas_comentarios WHERE ventas_id = ?', [$saleId]);
+      DB::statement('DELETE FROM tmp_ventas_documentos WHERE ventas_id = ?', [$saleId]);
+      DB::statement('DELETE FROM tmp_ventas_detalles WHERE ventas_id = ?', [$saleId]);
+      DB::statement('DELETE FROM tmp_instalaciones WHERE ventas_id = ?', [$saleId]);
+      DB::statement('DELETE FROM tmp_ventas WHERE id = ?', [$saleId]);
 
-
-      // Obtener los IDs de las instalaciones recién insertados
-      $installationIds = DB::table('instalaciones')->pluck('id');
-
-
-      // foreach ($installationIds as $installationId) {
-      //   // Reemplaza 'detalle_venta' y 'campo_instalacion' con los nombres reales de tu tabla y columna
-      //   DB::table('detalle_venta')->insert([
-      //       'venta_id' => $lastSaleId, // ID de venta
-      //       'instalacion_id' => $installationId, // ID de instalación
-      //   ]);
-      // }
-
-      // DB::statement('UPDATE ventas_detalles
-      // SET id_instalacion = ?,
-      //     id_venta = ?
-      // WHERE id_instalacion IN (?)', [$lastSaleId, $lastSaleId, $installationIds]);
-
-
-      // // Copiar datos de temp_pedidos a pedidos
-      // DB::statement('INSERT INTO ventas_detalles (cliente_id, fecha, ...)
-      // SELECT cliente_id, fecha, ...
-      // FROM tmp_');
-
-      // Copiar datos de temp_pedidos_productos a pedidos_productos (tabla pivote)
-      // DB::statement('INSERT INTO venta_detalles 
-      //   (ventas_id, servicios_id, user_create_id, observacion, fecha_cierre, datos_json, tipo_estados_id, is_active)
-
-      // SELECT ?, TVD.servicios_id, TVD.user_create_id, TVD.observacion, TVD.fecha_cierre, TVD.datos_json, TVD.tipo_estados_id, TVD.is_active
-      // FROM tmp_ventas_detalles TVD
-      // INNER JOIN temp_pedidos t ON tp.pedido_id = t.id
-      // INNER JOIN clientes c ON t.cliente_id = c.id
-      // WHERE c.id IN (' . implode(',', $installationIds) . ')');
-
-
-      $response = $this->responseCreated(["ventas_id" => $lastSaleId, "installations" => $installationIds]);
+      $response = $this->responseCreated(["ventas_id" => $lastSaleId, "message" => "Proceso completado"]);
       
       // SFFi todo está bien, confirmar la transacción
       DB::commit();

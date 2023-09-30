@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Services\Implementation\AuthService;
 use App\Validator\AuthValidator;
 use Illuminate\Http\Request;
 use App\Services\Implementation\IpAllowedService;
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthController extends Controller
 {
@@ -35,12 +39,10 @@ class AuthController extends Controller
         try {
 
             $ip = $this->request->ip();
-
             $result = $this->ipService->getFilterByIP($ip);
 
-
             if (count($result) == 0) {
-                return $this->responseError(['message' => 'No cuenta con acceso', 'error' => ''], 403);
+                return $this->responseError(['message' => ['No cuenta con acceso autorizado'], 'error' => ['IP no autorizada']], 403);
             }
 
 
@@ -49,6 +51,29 @@ class AuthController extends Controller
                 $response = $this->responseError($validator->errors(), 422);
             } else {
                 $credentials = $this->request->only('nombre_usuario', 'clave');
+
+                $credentialsAuth = [
+                    User::USERNAME_FIELD => $this->request->input('nombre_usuario'),
+                    User::PASSWORD_FIELD => $this->request->input('clave'),
+                ];
+            
+
+                // if(Auth::attempt($credentialsAuth)){
+                //     request()->session()->regenerate();
+                //     return 'Logeado';
+                // }
+
+                // try {
+                //     if (!$token = JWTAuth::attempt($credentialsAuth)) {
+                //         return response()->json(['error' => 'Credenciales incorrectas'], 401);
+                //     }
+                // } catch (JWTException $e) {
+                //     return response()->json(['error' => 'No se pudo crear el token'], 500);
+                // }
+                
+                // return response()->json(compact('token'));
+
+
                 $result = $this->authService->login($credentials);
                 $response = $this->response($result);
             }
@@ -65,7 +90,7 @@ class AuthController extends Controller
             $result = $this->authService->logout($id);
             return $this->response($result);
         } catch (\Exception $e) {
-            return $this->responseError(['message' => 'Error al cerrar sesión', 'error' => $e->getMessage()], 500);
+            return $this->responseError(['message' => 'Error al cerrar la sesión', 'error' => $e->getMessage()], 500);
         }
     }
 

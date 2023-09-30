@@ -52,20 +52,22 @@ class IpAllowedService implements IIpAllowed
     $ipAllowed = null;
 
     if (!is_null($existingRecord) && $existingRecord->trashed()) {
+      if(isset($data["user_auth_id"])){
+        $data["user_update_id"] = $data["user_auth_id"];
+      }
       $existingRecord->updated_at = Carbon::now();
       $existingRecord->save();
       $result = $existingRecord->restore();
       if ($result) {
-        $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
         $ipAllowed = $existingRecord;
       }
     } else {
       // No existe un registro con el mismo valor, puedes crear uno nuevo
+      if(isset($data["user_auth_id"])){
+        $data["user_create_id"] = $data["user_auth_id"];
+      }
       $data['created_at'] = Carbon::now();
       $ipAllowed = $this->model->create($data);
-      if ($ipAllowed) {
-        $ipAllowed->created_at = Carbon::parse($ipAllowed->created_at)->format('Y-m-d H:i:s');
-      }
     }
 
     return $ipAllowed;
@@ -73,12 +75,14 @@ class IpAllowedService implements IIpAllowed
 
   public function update(array $data, int $id)
   {
+    if(isset($data["user_auth_id"])){
+      $data["user_update_id"] = $data["user_auth_id"];
+    }
     $data['updated_at'] = Carbon::now();
     $ipAllowed = $this->model->find($id);
     if ($ipAllowed) {
       $ipAllowed->fill($data);
       $ipAllowed->save();
-      $ipAllowed->updated_at = Carbon::parse($ipAllowed->updated_at)->format('Y-m-d H:i:s');
       return $ipAllowed;
     }
 

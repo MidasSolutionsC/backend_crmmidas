@@ -118,6 +118,7 @@ class TmpSaleDetailService implements ISaleDetail{
       'IT.provincia as instalaciones_provincia',
       'IT.localidad as instalaciones_localidad',
       'IT.codigo_postal as instalaciones_codigo_postal',
+      'TE.nombre as tipo_estados_nombre',
     );
 
     $query->selectRaw("CONCAT_WS(', ',
@@ -133,6 +134,7 @@ class TmpSaleDetailService implements ISaleDetail{
     $query->leftJoin('tmp_instalaciones as IT', 'tmp_ventas_detalles.instalaciones_id', 'IT.id');
     $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
     $query->leftJoin('tipo_servicios as TS', 'SR.tipo_servicios_id', 'TS.id');
+    $query->leftJoin('tipo_estados as TE', 'tmp_ventas_detalles.tipo_estados_id', 'TE.id');
 
     if($saleId){
       $query->where('VT.id', $saleId);

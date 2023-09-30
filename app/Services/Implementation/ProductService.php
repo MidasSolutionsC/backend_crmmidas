@@ -28,8 +28,8 @@ class ProductService implements IProduct{
       'productos.*', 
       'TS.nombre as tipo_servicios_nombre', 
       'PP.precio as precio',
-      'DV.id as divisas_id',
-      'DV.nombre as divisas_nombre',
+      'TM.id as tipo_monedas_id',
+      'TM.nombre as tipo_monedas_nombre',
     );
     
     $query->join('tipo_servicios as TS', 'productos.tipo_servicios_id', '=', 'TS.id');
@@ -41,7 +41,7 @@ class ProductService implements IProduct{
         ->whereColumn('productos_id', 'productos.id');
       });
     });
-    $query->join('divisas as DV', 'PP.divisas_id', '=', 'DV.id');
+    $query->join('tipo_monedas as TM', 'PP.tipo_monedas_id', '=', 'TM.id');
 
     // Aplicar filtro de búsqueda si se proporciona un término
     if (!empty($search)) {

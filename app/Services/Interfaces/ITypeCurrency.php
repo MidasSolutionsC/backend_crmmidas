@@ -2,7 +2,7 @@
 
 namespace App\Services\Interfaces;
 
-interface ICurrency{
+interface ITypeCurrency{
   function getAll();
   function getById(int $id);
   function create(array $data);

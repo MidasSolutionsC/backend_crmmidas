@@ -50,7 +50,7 @@ class DefaultData extends Seeder
         ]);
 
         // Monedas
-        DB::table('divisas')->insert([
+        DB::table('tipo_monedas')->insert([
             'nombre' => 'Soles',
             'iso_code' => 'PEN',
             'simbolo' => 'S/.',

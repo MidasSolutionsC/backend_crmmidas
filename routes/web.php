@@ -330,14 +330,14 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   });
 
   // PRODUCTOS
-  $router->group(['prefix' => '/currency'], function () use ($router) {
-    $router->get('/', 'CurrencyController@listAll');
-    $router->get('/index', 'CurrencyController@index');
-    $router->get('/{id}', 'CurrencyController@get');
-    $router->post('/', 'CurrencyController@create');
-    $router->put('/{id}', 'CurrencyController@update');
-    $router->delete('/{id}', 'CurrencyController@delete');
-    $router->get('/restore/{id}', 'CurrencyController@restore');
+  $router->group(['prefix' => '/typeCurrency'], function () use ($router) {
+    $router->get('/', 'TypeCurrencyController@listAll');
+    $router->get('/index', 'TypeCurrencyController@index');
+    $router->get('/{id}', 'TypeCurrencyController@get');
+    $router->post('/', 'TypeCurrencyController@create');
+    $router->put('/{id}', 'TypeCurrencyController@update');
+    $router->delete('/{id}', 'TypeCurrencyController@delete');
+    $router->get('/restore/{id}', 'TypeCurrencyController@restore');
   });
 
   // PRODUCTOS
@@ -568,9 +568,10 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   });
 
   // IPs
-  $router->group(['prefix' => '/ip-allowed'], function () use ($router) {
+  $router->group(['prefix' => '/ipAllowed'], function () use ($router) {
     $router->get('/', 'IpAllowedController@listAll');
-    $router->get('/{id}', 'IpAllowedController@get');
+    $router->get('/get/{id}', 'IpAllowedController@get');
+    $router->get('/get-ip', 'IpAllowedController@getIP');
     $router->post('/', 'IpAllowedController@create');
     $router->put('/{id}', 'IpAllowedController@update');
     $router->delete('/{id}', 'IpAllowedController@delete');

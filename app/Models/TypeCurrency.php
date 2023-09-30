@@ -9,10 +9,10 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class Currency extends Model implements AuthorizableContract, AuthenticatableContract{
+class TypeCurrency extends Model implements AuthorizableContract, AuthenticatableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
-    protected $table = "divisas";
+    protected $table = "tipo_monedas";
 
     protected $fillable = [
         'paises_id',

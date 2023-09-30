@@ -3,19 +3,20 @@
 namespace App\Services\Implementation;
 
 use App\Models\Currency;
-use App\Services\Interfaces\ICurrency;
+use App\Models\TypeCurrency;
+use App\Services\Interfaces\ITypeCurrency;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class CurrencyService implements ICurrency{
+class TypeCurrencyService implements ITypeCurrency{
 
   private $model;
 
   public function __construct()
   {
-    $this->model = new Currency();
+    $this->model = new TypeCurrency();
   }
 
   public function index(array $data){
@@ -23,19 +24,19 @@ class CurrencyService implements ICurrency{
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
     $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
 
-    $query = Currency::query();
+    $query = TypeCurrency::query();
     $query->select(
-      'divisas.*', 
+      'tipo_monedas.*', 
       'PA.nombre as paises_nombre'
     );
     
-    $query->leftJoin('paises as PA', 'divisas.paises_id', '=', 'PA.id');
+    $query->leftJoin('paises as PA', 'tipo_monedas.paises_id', '=', 'PA.id');
 
 
     // Aplicar filtro de búsqueda si se proporciona un término
     if (!empty($search)) {
-        $query->where('divisas.nombre', 'LIKE', "%$search%")
-              ->orWhere('divisas.descripcion', 'LIKE', "%$search%")
+        $query->where('tipo_monedas.nombre', 'LIKE', "%$search%")
+              ->orWhere('tipo_monedas.descripcion', 'LIKE', "%$search%")
               ->orWhere('PA.nombre', 'LIKE', "%$search%");
     }
 
@@ -60,11 +61,11 @@ class CurrencyService implements ICurrency{
 
   public function getAll(){
     $query = $this->model->select(
-        'divisas.*', 
+        'tipo_monedas.*', 
         'PA.nombre as paises_nombre'
       );
       
-    $query->leftJoin('paises as PA', 'divisas.paises_id', '=', 'PA.id');
+    $query->leftJoin('paises as PA', 'tipo_monedas.paises_id', '=', 'PA.id');
     $result = $query->get();
     return $result;
   }

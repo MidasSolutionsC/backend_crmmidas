@@ -13,6 +13,11 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
+
+    const USERNAME_FIELD = 'nombre_usuario'; // Cambia este valor al campo de nombre de usuario
+    const PASSWORD_FIELD = 'clave'; // Cambia este valor al campo de clave
+
+    
     protected $table = "usuarios";
 
     protected $fillable = [

@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('divisas', function (Blueprint $table) {
+        Schema::create('tipo_monedas', function (Blueprint $table) {
             $table->id();
             $table->foreignId('paises_id')->nullable();
             $table->string('nombre')->unique();
@@ -44,6 +44,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('divisas');
+        Schema::dropIfExists('tipo_monedas');
     }
 };

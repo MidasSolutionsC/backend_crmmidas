@@ -80,9 +80,36 @@ class SaleDetailService implements ISaleDetail{
 
 
   public function getFilterBySale(int $saleId){
-    $query = $this->model->select();
+    $query = $this->model->query();
+
+    $query->select(
+      'ventas_detalles.*',
+      'TS.id as tipo_servicios_id',
+      'TS.nombre as tipo_servicios_nombre',
+      'SR.nombre as servicios_nombre',
+      'IT.provincia as instalaciones_provincia',
+      'IT.localidad as instalaciones_localidad',
+      'IT.codigo_postal as instalaciones_codigo_postal',
+      'TE.nombre as tipo_estados_nombre',
+    );
+
+    $query->selectRaw("CONCAT_WS(', ',
+      CASE WHEN IT.tipo IS NOT NULL AND IT.tipo != '' THEN CONCAT(IT.tipo, ' ', IT.direccion) ELSE NULL END,
+      CASE WHEN IT.numero IS NOT NULL AND IT.numero != '' THEN CONCAT(' N° ', IT.numero) ELSE NULL END,
+      CASE WHEN IT.escalera IS NOT NULL AND IT.escalera != '' THEN IT.escalera ELSE NULL END,
+      CASE WHEN IT.portal IS NOT NULL AND IT.portal != '' THEN IT.portal ELSE NULL END,
+      CASE WHEN IT.planta IS NOT NULL AND IT.planta != '' THEN IT.planta ELSE NULL END,
+      CASE WHEN IT.puerta IS NOT NULL AND IT.puerta != '' THEN IT.puerta ELSE NULL END
+    ) as instalaciones_direccion_completo");
+
+    $query->join('ventas as VT', 'ventas_detalles.ventas_id', 'VT.id');
+    $query->leftJoin('instalaciones as IT', 'ventas_detalles.instalaciones_id', 'IT.id');
+    $query->join('servicios as SR', 'ventas_detalles.servicios_id', 'SR.id');
+    $query->leftJoin('tipo_servicios as TS', 'SR.tipo_servicios_id', 'TS.id');
+    $query->leftJoin('tipo_estados as TE', 'ventas_detalles.tipo_estados_id', 'TE.id');
+
     if($saleId){
-      $query->where('ventas_id', $saleId);
+      $query->where('ventas_detalles.ventas_id', $saleId);
     }
     
     $result = $query->get();

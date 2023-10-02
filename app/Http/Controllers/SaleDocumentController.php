@@ -33,6 +33,21 @@ class SaleDocumentController extends Controller{
     }
   }
 
+  public function getFilterBySale($saleId){
+    try{
+      $result = $this->saleDocumentService->getFilterBySale($saleId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los documentos de la venta', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->saleDocumentService->getById($id);

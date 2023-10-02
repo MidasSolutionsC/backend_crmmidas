@@ -462,6 +462,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   $router->group(['prefix' => '/saleDocument'], function () use ($router) {
     $router->get('/', 'SaleDocumentController@listAll');
     $router->get('/{id}', 'SaleDocumentController@get');
+    $router->get('/filterSale/{saleId}', 'SaleDocumentController@getFilterBySale');
     $router->post('/', 'SaleDocumentController@create');
     $router->put('/{id}', 'SaleDocumentController@update');
     $router->delete('/{id}', 'SaleDocumentController@delete');
@@ -506,6 +507,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // VENTAS HISTORIAL
   $router->group(['prefix' => '/saleHistory'], function () use ($router) {
     $router->get('/', 'SaleHistoryController@listAll');
+    $router->get('//filterSale/{saleId}', 'SaleHistoryController@getFilterBySale');
     $router->get('/{id}', 'SaleHistoryController@get');
     $router->post('/', 'SaleHistoryController@create');
     $router->put('/{id}', 'SaleHistoryController@update');
@@ -528,6 +530,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   $router->group(['prefix' => '/saleComment'], function () use ($router) {
     $router->get('/', 'SaleCommentController@listAll');
     $router->get('/{id}', 'SaleCommentController@get');
+    $router->get('/filterSale/{saleId}', 'SaleCommentController@getFilterBySale');
     $router->post('/', 'SaleCommentController@create');
     $router->put('/{id}', 'SaleCommentController@update');
     $router->delete('/{id}', 'SaleCommentController@delete');

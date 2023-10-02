@@ -23,6 +23,14 @@ class SaleHistoryService implements ISaleHistory{
 
   public function getFilterBySale(int $saleId){
     $query = $this->model->select();
+
+    $query->select(
+      'ventas_historial.*',
+      'TE.nombre as tipo_estados_nombre', 
+    );
+
+    $query->join('tipo_estados as TE', 'ventas_historial.tipo_estados_id', 'TE.id');
+
     if($saleId){
       $query->where('ventas_id', $saleId);
     }

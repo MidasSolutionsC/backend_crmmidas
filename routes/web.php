@@ -568,7 +568,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   });
 
   // IPs
-  $router->group(['prefix' => '/ipAllowed'], function () use ($router) {
+  $router->group(['prefix' => '/ip-allowed'], function () use ($router) {
     $router->get('/', 'IpAllowedController@listAll');
     $router->get('/get/{id}', 'IpAllowedController@get');
     $router->get('/get-ip', 'IpAllowedController@getIP');

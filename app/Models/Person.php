@@ -19,14 +19,12 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
         'apellido_paterno',
         'apellido_materno',
         'paises_id',
+        'nacionalidad',
         'codigo_ubigeo',
-        'tipo_documentos_id',
-        'documento',
-        'reverso_documento',
+        // 'tipo_documentos_id',
+        // 'documento',
+        // 'reverso_documento',
         'fecha_nacimiento',
-        // 'telefono',
-        // 'correo',
-        // 'direccion',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -50,8 +48,13 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
         return $this->belongsTo(Ubigeo::class, 'codigo_ubigeo');
     }
 
-    public function typeDocument(){
-        return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
+    // public function typeDocument(){
+    //     return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
+    // }
+
+    public function identificationDocument()
+    {
+        return $this->hasMany(IdentificationDocument::class, 'personas_id');
     }
 
     public function addresses()

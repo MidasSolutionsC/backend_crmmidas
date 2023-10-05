@@ -5,6 +5,8 @@ namespace App\Services\Implementation;
 use App\Models\Company;
 use App\Services\Interfaces\ICompany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class CompanyService implements ICompany{
 
@@ -15,42 +17,145 @@ class CompanyService implements ICompany{
     $this->model = new Company();
   }
 
+  public function index($data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+    
+    $query = $this->model->query();
+
+    $query = $this->model->with(['identificationDocument' => function ($subQuery) {
+      $subQuery->select(
+        'documentos_identificaciones.id', 
+        'documentos_identificaciones.empresas_id', 
+        'documentos_identificaciones.tipo_documentos_id', 
+        'documentos_identificaciones.documento', 
+        'documentos_identificaciones.reverso_documento',
+        'TD.abreviacion as tipo_documentos_abreviacion'
+      ); // Lista de columnas que deseas seleccionar
+  
+      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
+    }]);
+
+    $query->select(
+      'empresas.*',
+      'PS.nombre as paises_nombre',
+    );
+
+    $query->join('paises as PS', 'empresas.paises_id', 'PS.id');
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    $query->where(function ($query) use ($search) {
+      if(!empty($search)){
+        $query->orWhereHas('identificationDocument', function ($query) use ($search) {
+            $query->select();
+            $query->whereHas('typeDocument', function ($subquery) use ($search) {
+                $subquery->select();
+                if(!empty($search)){
+                  $subquery->where('abreviacion', $search);
+                }
+            });
+
+            if(!empty($search)){
+              $query->where('documento', 'like', '%' . $search . '%');
+            }
+        });
+      }
+
+      if(!empty($search)){
+        $query->where('razon_social', 'like', '%' . $search . '%')
+        ->orWhere('nombre_comercial', 'like', '%' . $search . '%');
+      }
+    });
+
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
+  }
+
   public function getAll(){
-    $query = $this->model->select();
+    // $query = $this->model->query();
+    $query = $this->model->with(['identificationDocument' => function ($subQuery) {
+      $subQuery->select(
+        'documentos_identificaciones.id', 
+        'documentos_identificaciones.empresas_id', 
+        'documentos_identificaciones.tipo_documentos_id', 
+        'documentos_identificaciones.documento', 
+        'documentos_identificaciones.reverso_documento',
+        'TD.abreviacion as tipo_documentos_abreviacion'
+      ); // Lista de columnas que deseas seleccionar
+  
+      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
+    }]);
+
     $result = $query->get();
     return $result;
   }
 
   public function search(array $data){
-    $search = $data['search'];
+    $search = !empty($data['search'])? $data['search']: "";
     $typeDocumentId = !empty($data['tipo_documentos_id'])? $data['tipo_documentos_id']: null;
     $document = !empty($data['documento'])? $data['documento']: null;
 
-    $query = $this->model->query();
+    // $query = $this->model->query();
+    $query = $this->model->with(['identificationDocument' => function ($subQuery) {
+      $subQuery->select(
+        'documentos_identificaciones.id', 
+        'documentos_identificaciones.empresas_id', 
+        'documentos_identificaciones.tipo_documentos_id', 
+        'documentos_identificaciones.documento', 
+        'documentos_identificaciones.reverso_documento',
+        'TD.abreviacion as tipo_documentos_abreviacion'
+      ); // Lista de columnas que deseas seleccionar
+  
+      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
+    }]);
 
     $query->select(
       'empresas.*',
-      'TD.nombre as tipo_documentos_nombre',
-      'TD.abreviacion as tipo_documentos_abreviacion',
+      // 'TD.nombre as tipo_documentos_nombre',
+      // 'TD.abreviacion as tipo_documentos_abreviacion',
       'PS.nombre as paises_nombre',
-
     );
 
     $query->join('paises as PS', 'empresas.paises_id', 'PS.id');
-    $query->join('tipo_documentos as TD', 'empresas.tipo_documentos_id', 'TD.id');
 
-    if(!is_null($typeDocumentId)){
-      $query->where('tipo_documentos_id', $typeDocumentId);
-    }
+     // BÚSQUEDA
+     $query->where(function ($query) use ($search, $document, $typeDocumentId) {
+      if(!is_null($typeDocumentId) || !is_null($document)){
+        $query->orWhereHas('identificationDocument', function ($query) use ($document, $typeDocumentId) {
+            $query->select();
+            $query->whereHas('typeDocument', function ($subquery) use ($typeDocumentId) {
+                $subquery->select();
+                if(!is_null($typeDocumentId)){
+                  $subquery->where('id', $typeDocumentId);
+                }
+            });
+  
+            if(!is_null($document)){
+              $query->where('documento', 'like', '%' . $document . '%');
+            }
+        });
+      }
 
-    if(!is_null($document)){
-      $query->where('documento', 'like', ['%' . $document . '%']);
-    }
-
-    $query->where(function ($query) use ($search) {
-      $query->where('razon_social', 'like', '%' . $search . '%')
-          ->orWhere('nombre_comercial', 'like', '%' . $search . '%')
-          ->orWhere('documento', 'like', '%' . $search . '%');
+      if(!empty($search)){
+        $query->where('razon_social', 'like', '%' . $search . '%')
+            ->orWhere('nombre_comercial', 'like', '%' . $search . '%');
+      }
     });
   
     $query->take(25); // Limite de resultados
@@ -59,7 +164,20 @@ class CompanyService implements ICompany{
   }
 
   public function getById(int $id){
-    $query = $this->model->select();
+    $query = $this->model->query();
+    $query->with(['identificationDocument' => function ($subQuery) {
+      $subQuery->select(
+        'documentos_identificaciones.id', 
+        'documentos_identificaciones.empresas_id', 
+        'documentos_identificaciones.tipo_documentos_id', 
+        'documentos_identificaciones.documento', 
+        'documentos_identificaciones.reverso_documento',
+        'TD.abreviacion as tipo_documentos_abreviacion'
+      ); // Lista de columnas que deseas seleccionar
+  
+      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
+    }]);
+
     $result = $query->find($id);
     return $result;
   }

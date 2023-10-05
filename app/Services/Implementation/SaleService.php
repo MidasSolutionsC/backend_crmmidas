@@ -9,6 +9,8 @@ use App\Services\Interfaces\ISale;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SaleService implements ISale
 {
@@ -18,6 +20,68 @@ class SaleService implements ISale
   public function __construct()
   {
     $this->model = new Sale();
+  }
+
+  public function index(array $data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+
+    $query = $this->model->query();
+
+    $query->select(
+      'ventas.*',
+      'CL.persona_juridica as clientes_persona_juridica',
+      DB::raw('
+        CASE 
+          WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
+          WHEN CL.persona_juridica = 1 THEN EM.razon_social
+          ELSE NULL
+        END AS clientes_nombre,
+        CASE 
+          WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
+          WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
+          ELSE NULL
+        END AS clientes_tipo_documento,
+        CASE 
+          WHEN CL.persona_juridica = 0 THEN PR.documento
+          WHEN CL.persona_juridica = 1 THEN EM.documento
+          ELSE NULL
+        END AS clientes_documento
+      ')
+    );
+
+    $query->join('clientes as CL', 'ventas.clientes_id', 'CL.id');
+    $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
+    $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
+    $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
+    $query->leftJoin('tipo_documentos as TDE', 'EM.tipo_documentos_id', 'TDE.id');
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    if (!empty($search)) {
+        // $query->where('productos.nombre', 'LIKE', "%$search%")
+        //       ->orWhere('productos.descripcion', 'LIKE', "%$search%")
+        //       ->orWhere('PP.precio', 'LIKE', "%$search%")
+        //       ->orWhere('TS.nombre', 'LIKE', "%$search%");
+    }
+
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
   }
 
   public function getAll()

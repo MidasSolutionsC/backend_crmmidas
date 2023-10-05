@@ -9,22 +9,22 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class Client extends Model implements AuthenticatableContract, AuthorizableContract{
+class IdentificationDocument extends Model  implements AuthenticatableContract, AuthorizableContract{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
-     
-    protected $table = "clientes";
+
+    protected $table = "documentos_identificaciones";
 
     protected $fillable = [
         'personas_id',
         'empresas_id',
-        'tipo_cliente',
-        'codigo_carga',
-        'segmento_vodafond',
+        'tipo_documentos_id',
+        'documento',
+        'reverso_documento',
+        'is_primary',
+        'is_active',
         'user_create_id',
         'user_update_id',
         'user_delete_id',
-        'persona_juridica',
-        'is_active',
         'created_at',
         'updated_at',
         'deleted_at',
@@ -32,8 +32,7 @@ class Client extends Model implements AuthenticatableContract, AuthorizableContr
 
     public $timestamps = false;
 
-
-    /**
+        /**
      * TRANSFORMACIÓN DE VALORES
      */
     protected $casts = [
@@ -41,7 +40,6 @@ class Client extends Model implements AuthenticatableContract, AuthorizableContr
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-    // FORÁNEOS
     public function person(){
         return $this->belongsTo(Person::class, 'personas_id');
     }
@@ -49,10 +47,9 @@ class Client extends Model implements AuthenticatableContract, AuthorizableContr
     public function company(){
         return $this->belongsTo(Company::class, 'empresas_id');
     }
-
-    public function bankAccounts()
-    {
-        return $this->hasMany(BankAccount::class, 'clientes_id');
+    
+    public function typeDocument(){
+        return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
     }
 
 }

@@ -118,6 +118,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // EMPRESAS
   $router->group(['prefix' => '/company'], function () use ($router) {
     $router->get('/', 'CompanyController@listAll');
+    $router->get('/index', 'CompanyController@index');
     $router->post('/search', 'CompanyController@search');
     $router->get('/{id}', 'CompanyController@get');
     $router->post('/', 'CompanyController@create');
@@ -129,12 +130,26 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // PERSONAS
   $router->group(['prefix' => '/person'], function () use ($router) {
     $router->get('/', 'PersonController@listAll');
+    $router->get('/index', 'PersonController@index');
     $router->post('/search', 'PersonController@search');
     $router->get('/{id}', 'PersonController@get');
     $router->post('/', 'PersonController@create');
     $router->put('/{id}', 'PersonController@update');
     $router->delete('/{id}', 'PersonController@delete');
     $router->get('/restore/{id}', 'PersonController@restore');
+  });
+
+  // DOCUMENTOS DE IDENTIFICACIÓN
+  $router->group(['prefix' => '/identificationDocument'], function () use ($router) {
+    $router->get('/', 'IdentificationDocumentController@listAll');
+    $router->get('/filterCompany/{companyId}', 'IdentificationDocumentController@getFilterByCompany');
+    $router->get('/filterPerson/{personId}', 'IdentificationDocumentController@getFilterByPerson');
+    $router->get('/{id}', 'IdentificationDocumentController@get');
+    $router->post('/', 'IdentificationDocumentController@create');
+    $router->post('/register', 'IdentificationDocumentController@createComplete');
+    $router->put('/{id}', 'IdentificationDocumentController@update');
+    $router->delete('/{id}', 'IdentificationDocumentController@delete');
+    $router->get('/restore/{id}', 'IdentificationDocumentController@restore');
   });
 
   // CONTACTOS
@@ -186,8 +201,8 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->delete('/{id}', 'UserController@delete');
     $router->get('/restore/{id}', 'UserController@restore');
 
+    $router->get('/', 'UserController@listAll');
     $router->group(['middleware' => 'jwt.auth'], function () use ($router) {
-      $router->get('/', 'UserController@listAll');
     });
   });
 

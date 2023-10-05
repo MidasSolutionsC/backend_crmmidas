@@ -17,6 +17,24 @@ class CompanyController extends Controller{
     $this->companyService = $companyService;
     $this->companyValidator = $companyValidator;
   }
+  
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->companyService->index($data);
+      $response = $this->response();
+  
+      if(!is_null($result)){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar las empresas', 'error' => $e->getMessage()], 500);
+    }
+  }
 
   public function listAll(){
     try{

@@ -83,17 +83,18 @@ class UserService implements IUser {
         'PR.nombres as nombres', 
         'PR.apellido_paterno as apellido_paterno', 
         'PR.apellido_materno as apellido_materno', 
-        'PR.documento as documento', 
+        // 'PR.documento as documento', 
         'PA.id as paises_id', 
         'PA.nombre as paises_nombre', 
         'TU.nombre as tipo_usuarios_nombre',
-        'TD.id as tipo_documentos_id',
-        'TD.abreviacion as tipo_documentos_abreviacion',
+        // 'TD.id as tipo_documentos_id',
+        // 'TD.abreviacion as tipo_documentos_abreviacion',
       )
       ->join('personas as PR', 'usuarios.personas_id', '=', 'PR.id')
       ->join('paises as PA', 'PR.paises_id', '=', 'PA.id')
-      ->join('tipo_documentos as TD', 'PR.tipo_documentos_id', '=', 'TD.id')
-      ->join('tipo_usuarios as TU', 'usuarios.tipo_usuarios_id', '=', 'TU.id');
+      // ->join('tipo_documentos as TD', 'PR.tipo_documentos_id', '=', 'TD.id')
+      ->join('tipo_usuarios as TU', 'usuarios.tipo_usuarios_id', '=', 'TU.id');// Usamos leftJoin para obtener usuarios incluso si no tienen documentos asociados
+
 
     $result = $query->get();
     return $result;

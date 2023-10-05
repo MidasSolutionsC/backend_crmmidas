@@ -20,23 +20,19 @@ return new class extends Migration
             $table->string('razon_social', 80);
             $table->string('nombre_comercial', 80)->nullable();
             $table->text('descripcion')->nullable();
-            $table->foreignId('tipo_documentos_id');
-            $table->string('documento', 11);
+            // $table->foreignId('tipo_documentos_id');
+            // $table->string('documento', 11);
             $table->string('tipo_empresa', 50)->nullable();
-            // $table->string('direccion', 250)->nullable();
-            // $table->string('ciudad', 60)->nullable();
-            // $table->string('telefono', 11)->nullable();
-            // $table->string('correo', 100)->unique();
             $table->boolean('is_active')->default(true);
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
-            $table->unique(['tipo_documentos_id', 'documento']);
+            // $table->unique(['tipo_documentos_id', 'documento']);
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('paises_id')->references('id')->on('paises');
             $table->foreign('codigo_ubigeo')->references('ubigeo')->on('ubigeos');
-            $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
+            // $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
             $table->engine = 'InnoDB';
         });
     }

@@ -20,13 +20,9 @@ class Company extends Model implements AuthenticatableContract, AuthorizableCont
         'razon_social',
         'nombre_comercial',
         'descripcion',
-        'tipo_documentos_id',
-        'documento',
+        // 'tipo_documentos_id',
+        // 'documento',
         'tipo_empresa',
-        // 'direccion',
-        // 'ciudad',
-        // 'telefono',
-        // 'correo',
         'is_active ',
         'user_create_id ',
         'user_update_id ',
@@ -51,8 +47,13 @@ class Company extends Model implements AuthenticatableContract, AuthorizableCont
     }
     
 
-    public function typeDocument(){
-        return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
+    // public function typeDocument(){
+    //     return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
+    // }
+
+    public function identificationDocument()
+    {
+        return $this->hasMany(IdentificationDocument::class, 'empresas_id');
     }
     
     public function addresses()

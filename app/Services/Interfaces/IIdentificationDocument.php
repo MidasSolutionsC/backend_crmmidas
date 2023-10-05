@@ -2,10 +2,10 @@
 
 namespace App\Services\Interfaces;
 
-interface ICompany{
-  function index(array $data);
+interface IIdentificationDocument{
   function getAll();
-  function search(array $data);
+  function getFilterByPerson(int $personId);
+  function getFilterByCompany(int $companyId);
   function getById(int $id);
   function create(array $data);
   function update(array $data, int $id);

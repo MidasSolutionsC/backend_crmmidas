@@ -5,6 +5,9 @@ namespace App\Services\Implementation;
 use App\Models\TmpSale;
 use App\Services\Interfaces\ISale;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class TmpSaleService implements ISale{
 
@@ -13,6 +16,42 @@ class TmpSaleService implements ISale{
   public function __construct()
   {
     $this->model = new TmpSale();
+  }
+
+  public function index(array $data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+
+    $query = $this->model->query();
+
+    $query->select();
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    if (!empty($search)) {
+        // $query->where('productos.nombre', 'LIKE', "%$search%")
+        //       ->orWhere('productos.descripcion', 'LIKE', "%$search%")
+        //       ->orWhere('PP.precio', 'LIKE', "%$search%")
+        //       ->orWhere('TS.nombre', 'LIKE', "%$search%");
+    }
+
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
   }
 
   public function getAll(){

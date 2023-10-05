@@ -33,16 +33,14 @@ class PersonValidator {
       'nombres' => 'required|string|max:60',
       'apellido_paterno' => 'required|string|max:60',
       'apellido_materno' => 'required|string|max:60',
+      'nacionalidad' => 'nullable|string|max:80',
       'paises_id' => 'required|integer',
       'codigo_ubigeo' => 'nullable|string',
-      'tipo_documentos_id' => 'required|integer',
+      // 'tipo_documentos_id' => 'required|integer',
       // 'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,deleted_at,NULL',
-      'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,tipo_documentos_id,' . $this->request->input('tipo_documentos_id') . ',deleted_at,NULL',    
-      'reverso_documento' => 'nullable|string|max:250',
+      // 'documento' => 'required|string|max:11|unique:personas,documento,' . $this->id . ',id,tipo_documentos_id,' . $this->request->input('tipo_documentos_id') . ',deleted_at,NULL',    
+      // 'reverso_documento' => 'nullable|string|max:250',
       'fecha_nacimiento' => 'nullable|date:Y-m-d',
-      // 'telefono' => 'nullable|string|max:11',
-      // 'correo' => 'nullable|string|max:100',
-      // 'direccion' => 'nullable|string|max:100',
     ];
   }
 

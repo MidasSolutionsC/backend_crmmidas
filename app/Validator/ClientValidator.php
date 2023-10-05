@@ -32,7 +32,6 @@ class ClientValidator {
       'personas_id' => 'integer',
       'empresas_id' => 'integer',
       'tipo_cliente' => 'required|string|size:2',
-      'cif' => 'nullable|string|size:9',
       'codigo_carga' => 'nullable|string|max:100',
       'segmento_vodafond' => 'nullable|string|max:30',
       'user_create_id' => 'nullable|integer',

@@ -3,6 +3,7 @@
 namespace App\Services\Interfaces;
 
 interface IPerson{
+  function index(array $data);
   function getAll();
   function search(array $data);
   function getById(int $id);

@@ -16,6 +16,7 @@ class MemberService implements IMember{
 
   public function getAll(){
     $query = $this->model->query();
+    $query->with(['user.person.identifications']);
     $query->select(
       'integrantes.*',
       'PR.nombres as personas_nombres',
@@ -28,30 +29,37 @@ class MemberService implements IMember{
     $query->join('personas as PR', 'US.personas_id', 'PR.id');
 
     $result = $query->get();
+    $result = $result->map(function ($item, $key) use ($result) {
+      $item->identificaciones = $item->user->person->identifications;
+      unset($item->user);
+      return $item;
+    });
+
     return $result;
   }
 
   public function getByGroup(int $groupId){
-    $query = $this->model->select();
+    $query = $this->model->query();
+    $query->with(['user.person.identifications']);
     $query->select(
       'integrantes.*',
       'PR.nombres as nombres', 
       'PR.apellido_paterno as apellido_paterno', 
       'PR.apellido_materno as apellido_materno', 
       'US.nombre_usuario as nombre_usuario',
-      'PR.documento as documento', 
+      // 'PR.documento as documento', 
       'PA.id as paises_id', 
       'PA.nombre as paises_nombre', 
       'TU.nombre as tipo_usuarios_nombre',
-      'TD.id as tipo_documentos_id',
-      'TD.abreviacion as tipo_documentos_abreviacion',
+      // 'TD.id as tipo_documentos_id',
+      // 'TD.abreviacion as tipo_documentos_abreviacion',
     );
 
     $query->join('grupos as GR', 'integrantes.grupos_id', 'GR.id');
     $query->join('usuarios as US', 'integrantes.usuarios_id', 'US.id');
     $query->join('personas as PR', 'US.personas_id', 'PR.id');
     $query->join('paises as PA', 'PR.paises_id', '=', 'PA.id');
-    $query->join('tipo_documentos as TD', 'PR.tipo_documentos_id', '=', 'TD.id');
+    // $query->join('tipo_documentos as TD', 'PR.tipo_documentos_id', '=', 'TD.id');
     $query->join('tipo_usuarios as TU', 'US.tipo_usuarios_id', '=', 'TU.id');
 
     if($groupId){
@@ -59,11 +67,18 @@ class MemberService implements IMember{
     }
 
     $result = $query->get();
+
+    $result = $result->map(function ($item, $key) use ($result) {
+      $item->identificaciones = $item->user->person->identifications;
+      unset($item->user);
+      return $item;
+    });
     return $result;
   }
 
   public function getById(int $id){
     $query = $this->model->query();
+    $query->with(['user.person.identifications']);
     $query->select(
       'integrantes.*',
       'PR.nombres as personas_nombres',
@@ -76,6 +91,8 @@ class MemberService implements IMember{
     $query->join('personas as PR', 'US.personas_id', 'PR.id');
     
     $result = $query->find($id);
+    $result->identificaciones = $result->user->person->identifications;
+    unset($result->user);
     return $result;
   }
 

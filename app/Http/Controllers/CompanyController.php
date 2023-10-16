@@ -66,6 +66,21 @@ class CompanyController extends Controller{
     }
   }
 
+  public function getByIdentification(){
+    try{
+      $result = $this->companyService->getByIdentification($this->request->all());
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response([$result]);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos de la empresa', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->companyService->getById($id);

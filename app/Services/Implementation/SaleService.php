@@ -93,34 +93,34 @@ class SaleService implements ISale
 
 
     $query = $this->model->query();
-
+    $query->with(['client.user.person.identifications']);
     $query->select(
       'ventas.*',
       'CL.persona_juridica as clientes_persona_juridica',
-      DB::raw('
-        CASE 
-          WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
-          WHEN CL.persona_juridica = 1 THEN EM.razon_social
-          ELSE NULL
-        END AS clientes_nombre,
-        CASE 
-          WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
-          WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
-          ELSE NULL
-        END AS clientes_tipo_documento,
-        CASE 
-          WHEN CL.persona_juridica = 0 THEN PR.documento
-          WHEN CL.persona_juridica = 1 THEN EM.documento
-          ELSE NULL
-        END AS clientes_documento
-      ')
+      // DB::raw('
+      //   CASE 
+      //     WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
+      //     WHEN CL.persona_juridica = 1 THEN EM.razon_social
+      //     ELSE NULL
+      //   END AS clientes_nombre,
+      //   CASE 
+      //     WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
+      //     WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
+      //     ELSE NULL
+      //   END AS clientes_tipo_documento,
+      //   CASE 
+      //     WHEN CL.persona_juridica = 0 THEN PR.documento
+      //     WHEN CL.persona_juridica = 1 THEN EM.documento
+      //     ELSE NULL
+      //   END AS clientes_documento
+      // ')
     );
 
     $query->join('clientes as CL', 'ventas.clientes_id', 'CL.id');
     $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
     $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
-    $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
-    $query->leftJoin('tipo_documentos as TDE', 'EM.tipo_documentos_id', 'TDE.id');
+    // $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
+    // $query->leftJoin('tipo_documentos as TDE', 'EM.tipo_documentos_id', 'TDE.id');
 
     // switch ($tipo_usuario) {
 

@@ -120,6 +120,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/', 'CompanyController@listAll');
     $router->get('/index', 'CompanyController@index');
     $router->post('/search', 'CompanyController@search');
+    $router->post('/getByIdentification', 'CompanyController@getByIdentification');
     $router->get('/{id}', 'CompanyController@get');
     $router->post('/', 'CompanyController@create');
     $router->put('/{id}', 'CompanyController@update');
@@ -132,6 +133,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/', 'PersonController@listAll');
     $router->get('/index', 'PersonController@index');
     $router->post('/search', 'PersonController@search');
+    $router->post('/getByIdentification', 'PersonController@getByIdentification');
     $router->get('/{id}', 'PersonController@get');
     $router->post('/', 'PersonController@create');
     $router->put('/{id}', 'PersonController@update');
@@ -190,7 +192,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   $router->group(['prefix' => '/user'], function () use ($router) {
     // $router->post('/login', 'AuthController@login');
     // $router->get('/logout/{id}', 'AuthController@logout');
-    // $router->post('/', 'UserController@create');
+    $router->post('/', 'UserController@create');
     $router->post('/register', 'UserController@createComplete');
     $router->get('/index', 'UserController@index');
     $router->get('/serverSide', 'UserController@getAllServerSide');

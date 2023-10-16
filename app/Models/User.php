@@ -89,4 +89,31 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public function typeUser(){
         return $this->belongsTo(TypeUser::class, 'tipo_usuarios_id');
     }
+
+    public function identifications()
+    {
+        return $this->hasMany(IdentificationDocument::class, 'personas_id')
+            ->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', '=', 'TD.id')
+            ->select(
+                'documentos_identificaciones.id', 
+                'documentos_identificaciones.personas_id', 
+                'documentos_identificaciones.tipo_documentos_id', 
+                'documentos_identificaciones.documento', 
+                'documentos_identificaciones.reverso_documento', 
+                'documentos_identificaciones.is_primary', 
+                'TD.nombre as tipo_documentos_nombre',
+                'TD.abreviacion as tipo_documentos_abreviacion');
+    }
+
+    public function identificationDocumentWithType(){
+        return $this->hasManyThrough(
+            IdentificationDocument::class,
+            Person::class,
+            'personas_id',  // Nombre de la clave foránea en la tabla personas
+            'personas_id', // Nombre de la clave foránea en la tabla identification_documents
+            'id',           // Nombre de la clave primaria en la tabla usuarios
+            'id'            // Nombre de la clave primaria en la tabla personas
+        );
+    }
+
 }

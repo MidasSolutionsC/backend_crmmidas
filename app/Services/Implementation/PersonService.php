@@ -24,20 +24,8 @@ class PersonService implements IPerson{
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
     $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
     
-    $query = $this->model->query();
-
-    $query = $this->model->with(['identificationDocument' => function ($subQuery) {
-      $subQuery->select(
-        'documentos_identificaciones.id', 
-        'documentos_identificaciones.personas_id', 
-        'documentos_identificaciones.tipo_documentos_id', 
-        'documentos_identificaciones.documento', 
-        'documentos_identificaciones.reverso_documento',
-        'TD.abreviacion as tipo_documentos_abreviacion'
-      ); // Lista de columnas que deseas seleccionar
-  
-      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
-    }]);
+    // $query = $this->model->query();
+    $query = $this->model->with(['identifications']);
 
     $query->select(
       'personas.*',
@@ -119,18 +107,7 @@ class PersonService implements IPerson{
 
     $query = $this->model->query();
 
-    $query = $this->model->with(['identificationDocument' => function ($subQuery) {
-      $subQuery->select(
-        'documentos_identificaciones.id', 
-        'documentos_identificaciones.personas_id', 
-        'documentos_identificaciones.tipo_documentos_id', 
-        'documentos_identificaciones.documento', 
-        'documentos_identificaciones.reverso_documento',
-        'TD.abreviacion as tipo_documentos_abreviacion'
-      ); // Lista de columnas que deseas seleccionar
-  
-      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
-    }])->select();
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications'])->select();
 
 
     $query->select(
@@ -171,23 +148,50 @@ class PersonService implements IPerson{
 
     $query->take(25); // Limite de resultados
     $result = $query->get();
+    
+    return $result;
+  }
+
+  public function getByIdentification(array $data){
+    $typeDocumentId = !empty($data['tipo_documentos_id'])? $data['tipo_documentos_id']: null;
+    $document = !empty($data['documento'])? $data['documento']: null;
+
+    $query = $this->model->query();
+
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications'])->select();
+
+
+    $query->select(
+      'personas.*',
+      'PS.nombre as paises_nombre',
+    );
+
+    $query->join('paises as PS', 'personas.paises_id', 'PS.id');
+
+    // BÚSQUEDA
+    $query->where(function ($query) use ($document, $typeDocumentId) {
+      if(!is_null($typeDocumentId) || !is_null($document)){
+        $query->orWhereHas('identificationDocument', function ($query) use ($document, $typeDocumentId) {
+            $query->whereHas('typeDocument', function ($subquery) use ($typeDocumentId) {
+                if(!is_null($typeDocumentId)){
+                  $subquery->where('id', $typeDocumentId);
+                }
+            });
+  
+            if(!is_null($document)){
+              $query->where('documento', $document);
+            }
+        });
+      }
+    });
+
+    $result = $query->first();
     return $result;
   }
 
   public function getById(int $id){
     $query = $this->model->query();
-    $query->with(['identificationDocument' => function ($subQuery) {
-      $subQuery->select(
-        'documentos_identificaciones.id', 
-        'documentos_identificaciones.personas_id', 
-        'documentos_identificaciones.tipo_documentos_id', 
-        'documentos_identificaciones.documento', 
-        'documentos_identificaciones.reverso_documento',
-        'TD.abreviacion as tipo_documentos_abreviacion'
-      ); // Lista de columnas que deseas seleccionar
-  
-      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
-    }]);
+    $query->with(['contacts','identifications']);
 
     $result = $query->find($id);
     return $result;
@@ -198,8 +202,10 @@ class PersonService implements IPerson{
     $person = $this->model->create($data);
     if($person){
       $person->created_at = Carbon::parse($person->created_at)->format('Y-m-d H:i:s');
-      // $person->paises_nombre = $person->country->nombre;
-      // $person->tipo_documentos_abreviacion = $person->typeDocument->abreviacion;
+      $person->load('identifications', 'contacts');
+      $person->paises_nombre = $person->country->nombre;
+      unset($person->country);
+
     }
 
     return $person;
@@ -212,8 +218,9 @@ class PersonService implements IPerson{
       $person->fill($data);
       $person->save();
       $person->updated_at = Carbon::parse($person->updated_at)->format('Y-m-d H:i:s');
+      $person->load('identifications', 'contacts');
       $person->paises_nombre = $person->country->nombre;
-      $person->tipo_documentos_abreviacion = $person->typeDocument->abreviacion;
+      unset($person->country);
       return $person;
     }
 

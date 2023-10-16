@@ -26,37 +26,71 @@ class UserService implements IUser {
     $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
 
     $query = User::query();
-    // $query = User::with(['person', 'typeUser']); // Carga las relaciones 'persona' y 'tipoUsuario'
+    $query->with(['person:id,nacionalidad', 'person.identifications']);
+    // $query->with(['person' => function ($subQuery) {
+    //   $subQuery->select(
+    //     'personas.id', 
+    //     'personas.nacionalidad', 
+    //   ); // Lista de columnas que deseas seleccionar
+
+    // },
+    // 'person.identificationDocument' => function ($subQuery) {
+    //   $subQuery->select(
+    //     'documentos_identificaciones.id', 
+    //     'documentos_identificaciones.personas_id', 
+    //     'documentos_identificaciones.tipo_documentos_id', 
+    //     'documentos_identificaciones.documento', 
+    //     'documentos_identificaciones.reverso_documento',
+    //     'TD.abreviacion as tipo_documentos_abreviacion'
+    //   ); // Lista de columnas que deseas seleccionar
+  
+    //   $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
+    // }]);
+
+  
     $query->select(
       'usuarios.*', 
       'PR.nombres as nombres', 
       'PR.apellido_paterno as apellido_paterno', 
       'PR.apellido_materno as apellido_materno', 
-      'PR.documento as documento', 
+      'PR.nacionalidad as nacionalidad', 
       'PA.id as paises_id', 
       'PA.nombre as paises_nombre', 
       'TU.nombre as tipo_usuarios_nombre',
-      'TD.id as tipo_documentos_id',
-      'TD.abreviacion as tipo_documentos_abreviacion',
+      // 'documentos_identificaciones.* as documentos',
+      // 'PR.documento as documento', 
+      // 'TD.id as tipo_documentos_id',
+      // 'TD.abreviacion as tipo_documentos_abreviacion',
     );
     
     $query->join('personas as PR', 'usuarios.personas_id', 'PR.id');
     $query->join('paises as PA', 'PR.paises_id', '=', 'PA.id');
-    $query->join('tipo_documentos as TD', 'PR.tipo_documentos_id', '=', 'TD.id');
     $query->join('tipo_usuarios as TU', 'usuarios.tipo_usuarios_id', '=', 'TU.id');
+    // $query->join('tipo_documentos as TD', 'PR.tipo_documentos_id', '=', 'TD.id');
+
 
     // Aplicar filtro de búsqueda si se proporciona un término
-    if (!empty($search)) {
+    $query->where(function ($query) use ($search) {
+      if(!empty($search)){
         $query->where('nombre_usuario', 'LIKE', "%$search%")
-              ->orWhere('PR.nombres', 'LIKE', "%$search%")
-              ->orWhere('PR.apellido_paterno', 'LIKE', "%$search%")
-              ->orWhere('PR.apellido_materno', 'LIKE', "%$search%")
-              ->orWhere('PR.documento', 'LIKE', "%$search%")
-              ->orWhere('PA.nombre', 'LIKE', "%$search%")
-              ->orWhere('TU.nombre', 'LIKE', "%$search%")
-              ->orWhere('TD.abreviacion', 'LIKE', "%$search%");
-    }
+        ->orWhere('PR.nombres', 'LIKE', "%$search%")
+        ->orWhere('PR.apellido_paterno', 'LIKE', "%$search%")
+        ->orWhere('PR.apellido_materno', 'LIKE', "%$search%")
 
+        ->orWhere('PA.nombre', 'LIKE', "%$search%")
+        ->orWhere('TU.nombre', 'LIKE', "%$search%");
+
+        $query->orWhereHas('person.identificationDocument', function ($query) use ($search) {
+            $query->select();
+            $query->where('documento', 'like', '%' . $search . '%');
+            $query->orWhereHas('typeDocument', function ($subQuery) use ($search) {
+              $subQuery->select();
+              $subQuery->where('abreviacion', 'LIKE', "%$search%");
+            });    
+        });   
+      }
+    });
+  
     // Handle sorting
     if (!empty($data['column']) && !empty($data['order'])) {
       $column = $data['column'];
@@ -67,6 +101,8 @@ class UserService implements IUser {
     $result = $query->paginate($perPage, ['*'], 'page', $page);
     $items = new Collection($result->items());
     $items = $items->map(function ($item, $key) use ($result) {
+        $item->identificaciones = $item->person->identifications;
+        unset($item->person);
         $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
         $item['index'] = $index;
         return $item;
@@ -178,6 +214,7 @@ class UserService implements IUser {
       $usuario->fill($data);
       $usuario->save();
       $usuario->tipo_usuarios_nombre = $usuario->typeUser->nombre;
+      unset($usuario->typeUser);
       return $usuario;
     } 
     

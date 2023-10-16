@@ -1,13 +1,22 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\BankAccount;
+use App\Models\Contact;
+use App\Models\IdentificationDocument;
 use App\Models\TmpSale;
+use App\Services\Implementation\BankAccountService;
 use Illuminate\Http\Request;
 use App\Services\Implementation\ClientService;
 use App\Services\Implementation\CompanyService;
+use App\Services\Implementation\ContactService;
+use App\Services\Implementation\IdentificationDocumentService;
 use App\Services\Implementation\PersonService;
+use App\Validator\BankAccountValidator;
 use App\Validator\ClientValidator;
 use App\Validator\CompanyValidator;
+use App\Validator\ContactValidator;
+use App\Validator\IdentificationDocumentValidator;
 use App\Validator\PersonValidator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -24,6 +33,15 @@ class ClientController extends Controller{
   private $companyService;
   private $companyValidator;
 
+  private $identificationService;
+  private $identificationValidator;
+
+  private $contactService;
+  private $contactValidator;
+
+  private $bankAccountService;
+  private $bankAccountValidator;
+
   public function __construct(
     Request $request, 
     ClientService $clientService, 
@@ -31,7 +49,13 @@ class ClientController extends Controller{
     PersonService $personService,
     PersonValidator $personValidator,
     CompanyService $companyService,
-    CompanyValidator $companyValidator
+    CompanyValidator $companyValidator,
+    IdentificationDocumentService $identificationService,
+    IdentificationDocumentValidator $identificationValidator,
+    ContactService $contactService,
+    ContactValidator $contactValidator,
+    BankAccountService $bankAccountService,
+    BankAccountValidator $bankAccountValidator
     ) {
     $this->request = $request;
     $this->clientService = $clientService;
@@ -40,6 +64,12 @@ class ClientController extends Controller{
     $this->personValidator = $personValidator;
     $this->companyService = $companyService;
     $this->companyValidator = $companyValidator;
+    $this->identificationService = $identificationService;
+    $this->identificationValidator = $identificationValidator;
+    $this->contactService = $contactService;
+    $this->contactValidator = $contactValidator;
+    $this->bankAccountService = $bankAccountService;
+    $this->bankAccountValidator = $bankAccountValidator;
   }
 
   public function listAll(){
@@ -145,12 +175,21 @@ class ClientController extends Controller{
       // Iniciar una transacción
       DB::beginTransaction();
       $resultFull = [];
+      $validationError = false; // Variable de control
 
       $dataPerson = $this->request->input('datos_persona');
       $dataCompany = $this->request->input('datos_empresa');
       $personaJuridica = $this->request->input('persona_juridica');
-      $ventaId = $this->request->input('ventas_id');
       $this->request['persona_juridica'] = boolval($personaJuridica);
+
+      $identificaciones = $this->request->input('identificaciones');
+      $resultIdentificaciones = [];
+
+      $contactos = $this->request->input('contactos');
+      $resultContactos = [];
+
+      $cuentasBancarias = $this->request->input('cuentas_bancarias');
+      $resultCuentaBancarias = [];
 
       if(is_null($personaJuridica)) {
         $response = $this->responseError(["persona_juridica" => ["No especifico el campo persona jurídica"]], 422);
@@ -159,12 +198,18 @@ class ClientController extends Controller{
       }
 
       if(boolval($personaJuridica)){
-        $requestWithoutAttribute = $this->request->except(['personas_id']);
+        // EMPRESA
+        $dataClientWithoutPerson = $this->request->except(['personas_id']);
 
         if(empty($this->request->input('empresas_id'))){
+          if(empty($dataCompany['codigo_ubigeo'])){
+            unset($dataCompany['codigo_ubigeo']);
+          }
+
           // registrar empresa
           $this->companyValidator->setRequest($dataCompany);
           $validatorCompany = $this->companyValidator->validate();
+
           if($validatorCompany->fails()){
             $response = $this->responseError($validatorCompany->errors(), 422);
             DB::rollBack();
@@ -172,19 +217,77 @@ class ClientController extends Controller{
           } else {
             // registrar empresa
             $dataCompany['user_create_id'] = $this->request->input('user_auth_id');
-            $result = $this->companyService->create($dataCompany);
-            if($result){
-              $this->request['empresas_id'] = $result->id;
-              $requestWithoutAttribute['empresas_id'] = $result->id;
-              $resultFull['company'] = $result;
+
+            if(empty($dataCompany['id'])){
+              $resCompany = $this->companyService->create($dataCompany);
+            } else {
+              $resCompany = $this->companyService->update($dataCompany, $dataCompany['id']);
+            }
+
+            if($resCompany){
+              $this->request['empresas_id'] = $resCompany->id;
+              $dataClientWithoutPerson['empresas_id'] = $resCompany->id;
+              $resultFull['company'] = $resCompany;
+
+              // REGISTRAR IDENTIFICACIONES DE LA EMPRESA
+              foreach($identificaciones as $identity){
+                $identity['empresas_id'] = $resCompany->id;
+                $identity['user_create_id'] = $this->request->input('user_auth_id');
+
+                $this->identificationValidator->setRequest($identity, $identity['id']);
+                $validatorIdentity = $this->identificationValidator->validate();
+    
+                if ($validatorIdentity->fails()) {
+                  $response = $this->responseError($validatorIdentity->errors(), 422);
+                  DB::rollBack();
+                  return $response;
+                  break; // Detener el ciclo en caso de error
+                } else {
+                  // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+                  if(empty($identity['id'])){
+                    $resultIdentificaciones[] = $this->identificationService->create($identity);
+                  } else {
+                    $resultIdentificaciones[] = $this->identificationService->update($identity, $identity['id']);
+                  }
+                }
+              }
+
+              // REGISTRAR CONTACTOS
+              foreach($contactos as $contact){
+                $contact['empresas_id'] = $resCompany->id;
+                
+
+                $this->contactValidator->setRequest($contact, $contact['id']);
+                $validatorContact = $this->contactValidator->validate();
+    
+                if ($validatorContact->fails()) {
+                  $response = $this->responseError($validatorContact->errors(), 422);
+                  DB::rollBack();
+                  return $response;
+                  break; // Detener el ciclo en caso de error
+                } else {
+                  // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+                  if(empty($contact['id'])){
+                    $contact['user_create_id'] = $this->request->input('user_auth_id');
+                    $resultContactos[] = $this->contactService->create($contact);
+                  } else {
+                    $contact['user_update_id'] = $this->request->input('user_auth_id');
+                    $resultContactos[] = $this->contactService->update($contact, $contact['id']);
+                  }
+                }
+              }
+
+              $resCompany->identifications = $resultIdentificaciones;
+              $resCompany->contacts = $resultContactos;
+              $resultFull['company'] = $resCompany;
             }
           }
-        }
+        } // FIN PROCESO - EMPRESA
 
-        $this->clientValidator->setRequest($requestWithoutAttribute);
+        $this->clientValidator->setRequest($dataClientWithoutPerson);
       } else {
         // PERSONA        
-        $requestWithoutAttribute = $this->request->except(['empresas_id']);
+        $dataClientWithoutCompany = $this->request->except(['empresas_id']);
     
         if(empty($this->request->input('personas_id'))){
 
@@ -200,18 +303,71 @@ class ClientController extends Controller{
             DB::rollBack();
             return $response;
           } else {
-            // registrar persona
-            $result = $this->personService->create($dataPerson);
-            if($result){
-              $this->request['personas_id'] = $result->id;
-              $requestWithoutAttribute['personas_id'] = $result->id;
-              $resultFull['person'] = $result;
+            // REGISTRAR O ACTUALIZAR LOS DATOS DE LA PERSONA
+            $resPerson = null;
+            if(empty($dataPerson['id'])){
+              $resPerson = $this->personService->create($dataPerson);
+            } else {
+              $resPerson = $this->personService->update($dataPerson, $dataPerson['id']);
+            }
 
+            if($resPerson){
+              $this->request['personas_id'] = $resPerson->id;
+              $dataClientWithoutCompany['personas_id'] = $resPerson->id;
+
+              // REGISTRAR IDENTIFICACIONES DE LA PERSONA
+              foreach($identificaciones as $identity){
+                $identity['personas_id'] = $resPerson->id;
+                $identity['user_create_id'] = $this->request->input('user_auth_id');
+                $this->identificationValidator->setRequest($identity, $identity['id']);
+                $validatorIdentity = $this->identificationValidator->validate();
+    
+                if ($validatorIdentity->fails()) {
+                  $response = $this->responseError($validatorIdentity->errors(), 422);
+                  DB::rollBack();
+                  return $response;
+                  break; // Detener el ciclo en caso de error
+                } else {
+                  // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+                  if(empty($identity['id'])){
+                    $resultIdentificaciones[] = $this->identificationService->create($identity);
+                  } else {
+                    $resultIdentificaciones[] = $this->identificationService->update($identity, $identity['id']);
+                  }
+                }
+              }
+
+              // REGISTRAR CONTACTOS
+              foreach($contactos as $contact){
+                $contact['personas_id'] = $resPerson->id;
+                $contact['user_create_id'] = $this->request->input('user_auth_id');
+
+                $this->contactValidator->setRequest($contact, $contact['id']);
+                $validatorContact = $this->contactValidator->validate();
+    
+                if ($validatorContact->fails()) {
+                  $response = $this->responseError($validatorContact->errors(), 422);
+                  DB::rollBack();
+                  return $response;
+                  break; // Detener el ciclo en caso de error
+                } else {
+                  // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+                  if(empty($contact['id'])){
+                    $resultContactos[] = $this->contactService->create($contact);
+                  } else {
+                    $resultContactos[] = $this->contactService->update($contact, $contact['id']);
+                  }
+                }
+              }
+    
+              $resPerson->identifications = $resultIdentificaciones;
+              $resPerson->contacts = $resultContactos;
+              $resultFull['person'] = $resPerson;
             }
           }
-        }
+        } // FIN PROCESO - PERSONA
 
-        $this->clientValidator->setRequest($requestWithoutAttribute);
+        $this->clientValidator->setRequest($dataClientWithoutCompany);
       } 
 
 
@@ -219,16 +375,37 @@ class ClientController extends Controller{
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
+        DB::rollBack();
+        return $response;
       } else {
-        $result = $this->clientService->create($this->request->all());
-        $resultFull['client'] = $result;
+        // CLIENTE
+        $resClient = $this->clientService->create($this->request->all());
+        
+        // REGISTRAR CONTACTOS
+        foreach($cuentasBancarias as $bankAccount){
+          $bankAccount['clientes_id'] = $resClient->id;
+          $bankAccount['user_create_id'] = $this->request->input('user_auth_id');
 
-        // Busca el registro por su ID
-        if(!is_null($ventaId)){
-          $sale = TmpSale::findOrFail($ventaId);
-          $sale->clientes_id = $result->id;
-          $sale->save();
+          $this->bankAccountValidator->setRequest($bankAccount, $bankAccount['id']);
+          $validatorBankAccount = $this->bankAccountValidator->validate();
+
+          if ($validatorBankAccount->fails()) {
+            $response = $this->responseError($validatorBankAccount->errors(), 422);
+            DB::rollBack();
+            return $response;
+            break; // Detener el ciclo en caso de error
+          } else {
+            // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+            if(empty($bankAccount['id'])){
+              $resultCuentaBancarias[] = $this->bankAccountService->create($bankAccount);
+            } else {
+              $resultCuentaBancarias[] = $this->bankAccountService->update($bankAccount, $bankAccount['id']);
+            }
+          }
         }
+
+        $resClient->bank_accounts = $resultCuentaBancarias;
+        $resultFull['client'] = $resClient;
 
         $response = $this->responseCreated($resultFull);
       }
@@ -260,9 +437,16 @@ class ClientController extends Controller{
       $dataPerson = $this->request->input('datos_persona');
       $dataCompany = $this->request->input('datos_empresa');
       $personaJuridica = $this->request->input('persona_juridica');
-      $ventaId = $this->request->input('ventas_id');
       $this->request['persona_juridica'] = boolval($personaJuridica);
 
+      $identificaciones = $this->request->input('identificaciones');
+      $resultIdentificaciones = [];
+
+      $contactos = $this->request->input('contactos');
+      $resultContactos = [];
+
+      $cuentasBancarias = $this->request->input('cuentas_bancarias');
+      $resultCuentaBancarias = [];
       
       if(is_null($personaJuridica)) {
         $response = $this->responseError(["persona_juridica" => ["No especifico el campo persona juridica"]], 422);
@@ -271,16 +455,17 @@ class ClientController extends Controller{
       }
 
       if(boolval($personaJuridica)){
-        $requestWithoutAttribute = $this->request->except(['personas_id']);
+        $dataClientWithoutPerson = $this->request->except(['personas_id']);
 
-        if(empty($dataPerson['codigo_ubigeo'])){
-          unset($dataPerson['codigo_ubigeo']);
+        if(empty($dataCompany['codigo_ubigeo'])){
+          unset($dataCompany['codigo_ubigeo']);
         }
 
         if(!empty($dataCompany)){
           // actualizar empresa
           $this->companyValidator->setRequest($dataCompany, $dataCompany['id']);
           $validatorCompany = $this->companyValidator->validate();
+
           if($validatorCompany->fails()){
             $response = $this->responseError($validatorCompany->errors(), 422);
             DB::rollBack();
@@ -288,16 +473,89 @@ class ClientController extends Controller{
           } else {
             // actualizar empresa
             $dataCompany['user_update_id'] = $this->request->input('user_auth_id');
-            $result = $this->companyService->update($dataCompany, $dataCompany['id']);
-            if($result){
-              $resultFull['company'] = $result;
+            $resCompany = $this->companyService->update($dataCompany, $dataCompany['id']);
+
+            if($resCompany){
+              // DOCUMENTOS
+              $beforeIdentifications = $resCompany->identifications;
+              $beforeIdentifications = $beforeIdentifications->toArray();
+
+              // Extrae los IDs de los arrays en $identificaciones
+              $beforeIds = array_column($beforeIdentifications, 'id');
+              $identIds = array_column($identificaciones, 'id');
+              $itemsToDelete = array_diff($beforeIds, $identIds);
+                        
+              // ELIMINAR DOCUMENTOS
+              IdentificationDocument::whereIn('id', $itemsToDelete)->delete();
+
+              // CONTACTOS
+              $beforeContacts = $resCompany->contacts;
+              $beforeContacts = $beforeContacts->toArray();
+
+              // Extrae los IDs de los arrays en $identificaciones
+              $beforeContactIds = array_column($beforeContacts, 'id');
+              $contactIds = array_column($contactos, 'id');
+              $itemsContactToDelete = array_diff($beforeContactIds, $contactIds);
+                        
+              // ELIMINAR DOCUMENTOS
+              Contact::whereIn('id', $itemsContactToDelete)->delete();
+           
+              // REGISTRAR IDENTIFICACIONES DE LA EMPRESA
+              foreach($identificaciones as $identity){
+                $identity['empresas_id'] = $resCompany->id;
+                $identity['user_create_id'] = $this->request->input('user_auth_id');
+
+                $this->identificationValidator->setRequest($identity, $identity['id']);
+                $validatorIdentity = $this->identificationValidator->validate();
+    
+                if ($validatorIdentity->fails()) {
+                  $response = $this->responseError($validatorIdentity->errors(), 422);
+                  DB::rollBack();
+                  return $response;
+                  break; // Detener el ciclo en caso de error
+                } else {
+                  // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+                  if(empty($identity['id'])){
+                    $resultIdentificaciones[] = $this->identificationService->create($identity);
+                  } else {
+                    $resultIdentificaciones[] = $this->identificationService->update($identity, $identity['id']);
+                  }
+                }
+              }
+
+              // REGISTRAR CONTACTOS
+              foreach($contactos as $contact){
+                $contact['empresas_id'] = $resCompany->id;
+                $contact['user_create_id'] = $this->request->input('user_auth_id');
+
+                $this->contactValidator->setRequest($contact, $contact['id']);
+                $validatorContact = $this->contactValidator->validate();
+    
+                if ($validatorContact->fails()) {
+                  $response = $this->responseError($validatorContact->errors(), 422);
+                  DB::rollBack();
+                  return $response;
+                  break; // Detener el ciclo en caso de error
+                } else {
+                  // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+                  if(empty($contact['id'])){
+                    $resultContactos[] = $this->contactService->create($contact);
+                  } else {
+                    $resultContactos[] = $this->contactService->update($contact, $contact['id']);
+                  }
+                }
+              }
+
+              $resCompany->identifications = $resultIdentificaciones;
+              $resCompany->contacts = $resultContactos;
+              $resultFull['company'] = $resCompany;
             }
           }
         }
 
-        $this->clientValidator->setRequest($requestWithoutAttribute);
+        $this->clientValidator->setRequest($dataClientWithoutPerson);
       } else {
-        $requestWithoutAttribute = $this->request->except(['empresas_id']);
+        $dataClientWithoutCompany = $this->request->except(['empresas_id']);
 
         if(empty($dataPerson['codigo_ubigeo'])){
           unset($dataPerson['codigo_ubigeo']);
@@ -313,31 +571,138 @@ class ClientController extends Controller{
             return $response;
           } else {
             // registrar persona
-            $result = $this->personService->update($dataPerson, $dataPerson['id']);
-            if($result){
-              $resultFull['person'] = $result;
+            $resPerson = $this->personService->update($dataPerson, $dataPerson['id']);
+            if($resPerson){
+  
+              // DOCUMENTOS
+              $beforeIdentifications = $resPerson->identifications;
+              $beforeIdentifications = $beforeIdentifications->toArray();
+
+              // Extrae los IDs de los arrays en $identificaciones
+              $beforeIds = array_column($beforeIdentifications, 'id');
+              $identIds = array_column($identificaciones, 'id');
+              $itemsToDelete = array_diff($beforeIds, $identIds);
+                        
+              // ELIMINAR DOCUMENTOS
+              IdentificationDocument::whereIn('id', $itemsToDelete)->delete();
+
+              // CONTACTOS
+              $beforeContacts = $resPerson->contacts;
+              $beforeContacts = $beforeContacts->toArray();
+
+              // Extrae los IDs de los arrays en $identificaciones
+              $beforeContactIds = array_column($beforeContacts, 'id');
+              $contactIds = array_column($contactos, 'id');
+              $itemsContactToDelete = array_diff($beforeContactIds, $contactIds);
+                        
+              // ELIMINAR DOCUMENTOS
+              Contact::whereIn('id', $itemsContactToDelete)->delete();
+              
+              // REGISTRAR IDENTIFICACIONES DE LA PERSONA
+              foreach($identificaciones as $identity){
+                $identity['personas_id'] = $resPerson->id;
+                $identity['user_create_id'] = $this->request->input('user_auth_id');
+
+                $this->identificationValidator->setRequest($identity, $identity['id']);
+                $validatorIdentity = $this->identificationValidator->validate();
+    
+                if ($validatorIdentity->fails()) {
+                  $response = $this->responseError($validatorIdentity->errors(), 422);
+                  DB::rollBack();
+                  return $response;
+                  break; // Detener el ciclo en caso de error
+                } else {
+                  // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+                  if(empty($identity['id'])){
+                    $resultIdentificaciones[] = $this->identificationService->create($identity);
+                  } else {
+                    $resultIdentificaciones[] = $this->identificationService->update($identity, $identity['id']);
+                  }
+                }
+              }
+
+              // REGISTRAR CONTACTOS
+              foreach($contactos as $contact){
+                $contact['personas_id'] = $resPerson->id;
+                $contact['user_create_id'] = $this->request->input('user_auth_id');
+
+                $this->contactValidator->setRequest($contact, $contact['id']);
+                $validatorContact = $this->contactValidator->validate();
+    
+                if ($validatorContact->fails()) {
+                  $response = $this->responseError($validatorContact->errors(), 422);
+                  DB::rollBack();
+                  return $response;
+                  break; // Detener el ciclo en caso de error
+                } else {
+                  // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+                  if(empty($contact['id'])){
+                    $resultContactos[] = $this->contactService->create($contact);
+                  } else {
+                    $resultContactos[] = $this->contactService->update($contact, $contact['id']);
+                  }
+                }
+              }
+    
+              $resPerson->identifications = $resultIdentificaciones;
+              $resPerson->contacts = $resultContactos;
+              $resultFull['person'] = $resPerson;
             }
           }
         }
 
-        $this->clientValidator->setRequest($requestWithoutAttribute);
+        $this->clientValidator->setRequest($dataClientWithoutCompany);
       }
 
       $validator = $this->clientValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
+        DB::rollBack();
+        return $response;
       } else {
-        $result = $this->clientService->update($this->request->all(), $id);
-        $resultFull['client'] = $result;
+        $resClient = $this->clientService->update($this->request->all(), $id);
 
-        // Busca el registro por su ID
-        if(!is_null($ventaId)){
-          $sale = TmpSale::findOrFail($ventaId);
-          $sale->clientes_id = $result->id;
-          $sale->save();
+          
+        // DOCUMENTOS
+        $beforeBankAccounts = $resClient->bankAccounts;
+        $beforeBankAccounts = $beforeBankAccounts->toArray();
+
+        // Extrae los IDs de los arrays en $identificaciones
+        $beforeIds = array_column($beforeBankAccounts, 'id');
+        $bankAccountIds = array_column($cuentasBancarias, 'id');
+        $itemsToDelete = array_diff($beforeIds, $bankAccountIds);
+                  
+        // ELIMINAR DOCUMENTOS
+        BankAccount::whereIn('id', $itemsToDelete)->delete();
+
+        // REGISTRAR CONTACTOS
+        foreach($cuentasBancarias as $bankAccount){
+          $bankAccount['clientes_id'] = $resClient->id;
+          
+          $this->bankAccountValidator->setRequest($bankAccount, $bankAccount['id']);
+          $validatorBankAccount = $this->bankAccountValidator->validate();
+          
+          if ($validatorBankAccount->fails()) {
+            $response = $this->responseError($validatorBankAccount->errors(), 422);
+            DB::rollBack();
+            return $response;
+            break; // Detener el ciclo en caso de error
+          } else {
+            // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
+            if(empty($bankAccount['id'])){
+              $bankAccount['user_create_id'] = $this->request->input('user_auth_id');
+              $resultCuentaBancarias[] = $this->bankAccountService->create($bankAccount);
+            } else {
+              $bankAccount['user_update_id'] = $this->request->input('user_auth_id');
+              $resultCuentaBancarias[] = $this->bankAccountService->update($bankAccount, $bankAccount['id']);
+            }
+          }
         }
-      
+
+        $resClient->bank_accounts = $resultCuentaBancarias;
+        
+        $resultFull['client'] = $resClient;
         $response = $this->responseUpdate($resultFull);
       }
   

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('empresas_id')->nullable();
             $table->foreignId('personas_id')->nullable();
             $table->char('tipo', 3);
-            $table->string('contacto', 60);
+            $table->string('contacto', 80);
             $table->unique(['empresas_id', 'contacto']);
             $table->unique(['personas_id', 'contacto']);
             $table->boolean('is_primary')->default(false);

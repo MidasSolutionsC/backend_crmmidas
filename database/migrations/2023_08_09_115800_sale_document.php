@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('ventas_id');    
             $table->foreignId('ventas_detalles_id')->nullable();        
+            $table->foreignId('tipo_documentos_id')->nullable();        
             $table->string('nombre', 70);
             $table->string('tipo', 10);
             $table->string('archivo', 100);
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->softDeletes();
             $table->foreign('ventas_id')->references('id')->on('ventas');
             $table->foreign('ventas_detalles_id')->references('id')->on('ventas_detalles');
+            $table->foreign('tipo_documentos_id')->references('id')->on('tipo_documentos');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');

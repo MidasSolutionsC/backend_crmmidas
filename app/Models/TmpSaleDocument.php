@@ -17,6 +17,7 @@ class TmpSaleDocument extends Model implements AuthorizableContract, Authenticat
     protected $fillable = [
         'ventas_id',
         'ventas_detalles_id',
+        'documentos_id',
         'nombre',
         'tipo',
         'archivo',

@@ -89,18 +89,7 @@ class CompanyService implements ICompany{
 
   public function getAll(){
     // $query = $this->model->query();
-    $query = $this->model->with(['identificationDocument' => function ($subQuery) {
-      $subQuery->select(
-        'documentos_identificaciones.id', 
-        'documentos_identificaciones.empresas_id', 
-        'documentos_identificaciones.tipo_documentos_id', 
-        'documentos_identificaciones.documento', 
-        'documentos_identificaciones.reverso_documento',
-        'TD.abreviacion as tipo_documentos_abreviacion'
-      ); // Lista de columnas que deseas seleccionar
-  
-      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
-    }]);
+    $query = $this->model->with(['identifications']);
 
     $result = $query->get();
     return $result;
@@ -112,18 +101,7 @@ class CompanyService implements ICompany{
     $document = !empty($data['documento'])? $data['documento']: null;
 
     // $query = $this->model->query();
-    $query = $this->model->with(['identificationDocument' => function ($subQuery) {
-      $subQuery->select(
-        'documentos_identificaciones.id', 
-        'documentos_identificaciones.empresas_id', 
-        'documentos_identificaciones.tipo_documentos_id', 
-        'documentos_identificaciones.documento', 
-        'documentos_identificaciones.reverso_documento',
-        'TD.abreviacion as tipo_documentos_abreviacion'
-      ); // Lista de columnas que deseas seleccionar
-  
-      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
-    }]);
+    $query = $this->model->with(['client', 'contacts', 'identifications']);
 
     $query->select(
       'empresas.*',
@@ -135,7 +113,7 @@ class CompanyService implements ICompany{
     $query->join('paises as PS', 'empresas.paises_id', 'PS.id');
 
      // BÚSQUEDA
-     $query->where(function ($query) use ($search, $document, $typeDocumentId) {
+    $query->where(function ($query) use ($search, $document, $typeDocumentId) {
       if(!is_null($typeDocumentId) || !is_null($document)){
         $query->orWhereHas('identificationDocument', function ($query) use ($document, $typeDocumentId) {
             $query->select();
@@ -163,20 +141,44 @@ class CompanyService implements ICompany{
     return $result;
   }
 
+  public function getByIdentification(array $data){
+    $typeDocumentId = !empty($data['tipo_documentos_id'])? $data['tipo_documentos_id']: null;
+    $document = !empty($data['documento'])? $data['documento']: null;
+
+    // $query = $this->model->query();
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications']);
+
+    $query->select(
+      'empresas.*',
+      'PS.nombre as paises_nombre',
+    );
+
+    $query->join('paises as PS', 'empresas.paises_id', 'PS.id');
+
+    // BÚSQUEDA
+    $query->where(function ($query) use ($document, $typeDocumentId) {
+      if(!is_null($typeDocumentId) || !is_null($document)){
+        $query->orWhereHas('identificationDocument', function ($query) use ($document, $typeDocumentId) {
+            $query->whereHas('typeDocument', function ($subquery) use ($typeDocumentId) {
+                if(!is_null($typeDocumentId)){
+                  $subquery->where('id', $typeDocumentId);
+                }
+            });
+
+            if(!is_null($document)){
+              $query->where('documento', $document);
+            }
+        });
+      }
+    });
+
+    $result = $query->first();
+    return $result;
+  }
+
   public function getById(int $id){
     $query = $this->model->query();
-    $query->with(['identificationDocument' => function ($subQuery) {
-      $subQuery->select(
-        'documentos_identificaciones.id', 
-        'documentos_identificaciones.empresas_id', 
-        'documentos_identificaciones.tipo_documentos_id', 
-        'documentos_identificaciones.documento', 
-        'documentos_identificaciones.reverso_documento',
-        'TD.abreviacion as tipo_documentos_abreviacion'
-      ); // Lista de columnas que deseas seleccionar
-  
-      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
-    }]);
+    $query->with(['identifications']);
 
     $result = $query->find($id);
     return $result;
@@ -190,6 +192,9 @@ class CompanyService implements ICompany{
     $company = $this->model->create($data);
     if($company){
       $company->created_at = Carbon::parse($company->created_at)->format('Y-m-d H:i:s');
+      $company->load('identifications', 'contacts');
+      $company->paises_nombre = $company->country->nombre;
+      unset($company->country);
     }
 
     return $company;
@@ -205,6 +210,9 @@ class CompanyService implements ICompany{
       $company->fill($data);
       $company->save();
       $company->updated_at = Carbon::parse($company->updated_at)->format('Y-m-d H:i:s');
+      $company->load('identifications', 'contacts');
+      $company->paises_nombre = $company->country->nombre;
+      unset($company->country);
       return $company;
     }
 

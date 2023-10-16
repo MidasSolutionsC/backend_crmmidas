@@ -36,7 +36,7 @@ class ContactValidator{
       'contacto' => [
         'required',
         'string',
-        'max:60',
+        'max:80',
           Rule::unique('contactos', 'contacto')
               ->ignore($this->id, 'id')
               ->where(function ($query) {

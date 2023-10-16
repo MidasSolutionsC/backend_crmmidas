@@ -16,12 +16,17 @@ class ClientService implements IClient {
 
   public function getAll(){
     $query = $this->model->select();
+    $query->with(['person.identifications', 'person.contacts']);
+    $query->with(['company.identifications', 'company.contacts']);
+    $query->with('bankAccounts');
     $result = $query->get();
     return $result;
   }
 
   public function getByPersonId(int $personId){
     $query = $this->model->query();
+    $query->with('person.identifications');
+    $query->with('bankAccounts');
     if($personId){
       $query->where('personas_id', $personId);
     }
@@ -31,6 +36,8 @@ class ClientService implements IClient {
 
   public function getByCompanyId(int $companyId){
     $query = $this->model->query();
+    $query->with('company.identifications');
+    $query->with('bankAccounts');
     if($companyId){
       $query->where('empresas_id', $companyId);
     }
@@ -41,8 +48,9 @@ class ClientService implements IClient {
   public function getById(int $id){
     // $query = $this->model->select();
     $query = $this->model->query();
-    $query->with('person.typeDocument');
-    $query->with('company.typeDocument');
+    $query->with(['person.identifications', 'person.contacts']);
+    $query->with(['company.identifications', 'company.contacts']);
+    $query->with('bankAccounts');
     $result = $query->find($id);
     return $result;
   }

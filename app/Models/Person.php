@@ -40,6 +40,10 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function client(){
+        return $this->hasOne(Client::class, 'personas_id', 'id');
+    }
+
     public function country(){
         return $this->belongsTo(Country::class, 'paises_id');
     }
@@ -55,6 +59,21 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
     public function identificationDocument()
     {
         return $this->hasMany(IdentificationDocument::class, 'personas_id');
+    }
+
+    public function identifications()
+    {
+        return $this->hasMany(IdentificationDocument::class, 'personas_id')
+            ->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', '=', 'TD.id')
+            ->select(
+                'documentos_identificaciones.id', 
+                'documentos_identificaciones.personas_id', 
+                'documentos_identificaciones.tipo_documentos_id', 
+                'documentos_identificaciones.documento', 
+                'documentos_identificaciones.reverso_documento', 
+                'documentos_identificaciones.is_primary', 
+                'TD.nombre as tipo_documentos_nombre',
+                'TD.abreviacion as tipo_documentos_abreviacion');
     }
 
     public function addresses()

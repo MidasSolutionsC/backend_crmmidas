@@ -133,8 +133,8 @@ class TmpSaleController extends Controller
 
       // DOCUMENTOS 
       DB::statement('INSERT INTO ventas_documentos 
-        (ventas_id, ventas_detalles_id, nombre, tipo, archivo, user_create_id, user_update_id, user_delete_id, is_active, created_at)
-        SELECT ?, ventas_detalles_id, nombre, tipo, archivo, user_create_id, user_update_id, user_delete_id, is_active, created_at
+        (ventas_id, ventas_detalles_id, documentos_id, nombre, tipo, archivo, user_create_id, user_update_id, user_delete_id, is_active, created_at)
+        SELECT ?, ventas_detalles_id, documentos_id, nombre, tipo, archivo, user_create_id, user_update_id, user_delete_id, is_active, created_at
       FROM tmp_ventas_documentos WHERE ventas_id = ?', [$lastSaleId, $saleId]);
 
       // COMENTARIOS 

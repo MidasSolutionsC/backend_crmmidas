@@ -20,7 +20,7 @@ return new class extends Migration
             $table->foreignId('tipo_documentos_id');
             $table->string('documento', 20);
             $table->string('reverso_documento', 250)->nullable();
-            $table->foreignId('user_create_id');            
+            $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
             $table->boolean('is_primary')->default(false); 

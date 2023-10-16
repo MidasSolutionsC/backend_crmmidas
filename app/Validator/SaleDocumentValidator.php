@@ -25,6 +25,7 @@ class SaleDocumentValidator{
     return [
       'ventas_id' => 'required|integer',
       'ventas_detalles_id' => 'nullable|integer',
+      'documentos_id' => 'nullable|integer',
       'nombre' => 'required|string|max:70',
       'archivo' => 'required|string|max:100',
       'user_create_id' => 'required|integer',

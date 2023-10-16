@@ -2,10 +2,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\TypeUser;
+use App\Services\Implementation\IdentificationDocumentService;
 use App\Services\Implementation\PersonService;
 use App\Services\Implementation\TypeUserService;
 use Illuminate\Http\Request;
 use App\Services\Implementation\UserService;
+use App\Validator\IdentificationDocumentValidator;
 use App\Validator\PersonValidator;
 use App\Validator\UserValidator;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +19,9 @@ class UserController extends Controller{
   
   private $personService;
   private $personValidator;
+  
+  private $identificationService;
+  private $identificationValidator;
 
   private $typeUserService;
   private $userService;
@@ -28,13 +33,18 @@ class UserController extends Controller{
     UserService $userService, 
     UserValidator $userValidator, 
     PersonService $personService,
-    PersonValidator $personValidator) {
+    PersonValidator $personValidator,
+    IdentificationDocumentService $identificationService,
+    IdentificationDocumentValidator $identificationValidator,
+  ) {
     $this->request = $request;
     $this->typeUserService = $typeUserService;
     $this->userService = $userService;
     $this->userValidator = $userValidator;
     $this->personService = $personService;
     $this->personValidator = $personValidator;
+    $this->identificationService = $identificationService;
+    $this->identificationValidator = $identificationValidator;
   }
 
   public function index(){
@@ -125,10 +135,14 @@ class UserController extends Controller{
       // Iniciar una transacción
       DB::beginTransaction();
 
+      $identificaciones = $this->request->input('identificaciones');
+      $resultIdentificaciones = [];
+
       $validatorPerson = $this->personValidator->validate();
       $validator = $this->userValidator->validateNotPersonId();
 
       $combinedErrors = [];
+      $validationError = false; // Variable de control
         
       if ($validatorPerson->fails()) {
         $combinedErrors['person_errors'] = $validatorPerson->errors();
@@ -144,6 +158,22 @@ class UserController extends Controller{
         $resPerson = $this->personService->create($this->request->all());
         if($resPerson){
           $this->request['personas_id'] = $resPerson->id;
+
+          foreach($identificaciones as $identity){
+            $identity['personas_id'] = $resPerson->id;
+            $identity['user_create_id'] = $this->request->input('user_auth_id');
+            $this->identificationValidator->setRequest($identity);
+            $validatorIdentity = $this->identificationValidator->validate();
+
+            if ($validatorIdentity->fails()) {
+              $combinedErrors['person_errors'] = $validatorIdentity->errors();
+              $validationError = true;
+              break; // Detener el ciclo en caso de error
+            } else {
+              $resultIdentificaciones[] = $this->identificationService->create($identity);
+            }
+          }
+
         } else {
           $response = $this->responseError(['message' => 'Error al obtener el registro como persona'], 422);
         }
@@ -153,11 +183,17 @@ class UserController extends Controller{
           $this->request['tipo_usuarios_id'] = $typeUser->id;
         }
 
+        $resPerson['identificaciones'] = $resultIdentificaciones;
         $resUser = $this->userService->create($this->request->all());
         $response = $this->responseCreated(['person' => $resPerson,  'user' => $resUser]);
-        // $response = $this->response($this->request->all());
       }
   
+      // Verificar si hubo errores de validación de identificaciones
+      if ($validationError) {
+        DB::rollBack();
+        return $this->responseError($combinedErrors, 422);
+      }
+
       // Si todo está bien, confirmar la transacción
       DB::commit();
       return $response;
@@ -198,10 +234,17 @@ class UserController extends Controller{
       // Iniciar una transacción
       DB::beginTransaction();
 
+      $identificaciones = $this->request->input('identificaciones');
+      $resultIdentificaciones = [];
+
+      $dataPerson = $this->request->all();
+      unset($dataPerson['identificaciones']);
+      $this->personValidator->setRequest($dataPerson, $this->request->input('personas_id'));
       $validatorPerson = $this->personValidator->validate();
       $validator = $this->userValidator->validate();
 
       $combinedErrors = [];
+      $validationError = false; // Variable de control
         
       if ($validatorPerson->fails()) {
         $combinedErrors['person_errors'] = $validatorPerson->errors();
@@ -217,7 +260,26 @@ class UserController extends Controller{
 
         $resPerson = $this->personService->update($this->request->all(), $this->request->input('personas_id'));
         if(is_null($resPerson)){
-          $response = $this->responseError(['message' => 'Erro al actualizar persona'], 422);
+          $response = $this->responseError(['message' => 'Error al actualizar persona'], 422);
+        } else {          
+          if(!empty($identificaciones)){
+            foreach($identificaciones as $identity){
+              $identity['personas_id'] = $resPerson->id;
+              $identity['user_update_id'] = $this->request->input('user_auth_id');
+              $this->identificationValidator->setRequest($identity, $identity['id']);
+              $validatorIdentity = $this->identificationValidator->validate();
+  
+              if ($validatorIdentity->fails()) {
+                $combinedErrors['person_errors'] = $validatorIdentity->errors();
+                $validationError = true;
+                break; // Detener el ciclo en caso de error
+              } else {
+                $resultIdentificaciones[] = $this->identificationService->update($identity, $identity['id']);
+              }
+            }
+
+            $resPerson->identificaciones = $resultIdentificaciones;
+          }
         }
         
         $resUser = $this->userService->update($this->request->all(), $id);
@@ -225,8 +287,16 @@ class UserController extends Controller{
           $response = $this->responseError(['message' => 'Error al actualizar usuario'], 422);
         }
 
+ 
         $response = $this->responseUpdate(['person' => $resPerson,  'user' => $resUser]);
       }
+
+      // Verificar si hubo errores de validación de identificaciones
+      if ($validationError) {
+        DB::rollBack();
+        return $this->responseError($combinedErrors, 422);
+      }
+        
   
       // Si todo está bien, confirmar la transacción
       DB::commit();

@@ -89,7 +89,7 @@ class CompanyService implements ICompany{
 
   public function getAll(){
     // $query = $this->model->query();
-    $query = $this->model->with(['identifications']);
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications', 'addresses']);
 
     $result = $query->get();
     return $result;
@@ -101,7 +101,7 @@ class CompanyService implements ICompany{
     $document = !empty($data['documento'])? $data['documento']: null;
 
     // $query = $this->model->query();
-    $query = $this->model->with(['client', 'contacts', 'identifications']);
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications', 'addresses']);
 
     $query->select(
       'empresas.*',
@@ -146,7 +146,7 @@ class CompanyService implements ICompany{
     $document = !empty($data['documento'])? $data['documento']: null;
 
     // $query = $this->model->query();
-    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications']);
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications', 'addresses']);
 
     $query->select(
       'empresas.*',
@@ -192,7 +192,7 @@ class CompanyService implements ICompany{
     $company = $this->model->create($data);
     if($company){
       $company->created_at = Carbon::parse($company->created_at)->format('Y-m-d H:i:s');
-      $company->load('identifications', 'contacts');
+      $company->load('identifications', 'contacts', 'addresses');
       $company->paises_nombre = $company->country->nombre;
       unset($company->country);
     }
@@ -210,7 +210,7 @@ class CompanyService implements ICompany{
       $company->fill($data);
       $company->save();
       $company->updated_at = Carbon::parse($company->updated_at)->format('Y-m-d H:i:s');
-      $company->load('identifications', 'contacts');
+      $company->load('identifications', 'contacts', 'addresses');
       $company->paises_nombre = $company->country->nombre;
       unset($company->country);
       return $company;

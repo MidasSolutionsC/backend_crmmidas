@@ -277,8 +277,7 @@ class ClientController extends Controller{
                 }
               }
 
-              $resCompany->identifications = $resultIdentificaciones;
-              $resCompany->contacts = $resultContactos;
+              $resCompany->load('identifications', 'contacts', 'addresses');
               $resultFull['company'] = $resCompany;
             }
           }
@@ -360,8 +359,7 @@ class ClientController extends Controller{
                 }
               }
     
-              $resPerson->identifications = $resultIdentificaciones;
-              $resPerson->contacts = $resultContactos;
+              $resPerson->load('identifications', 'contacts', 'addresses');
               $resultFull['person'] = $resPerson;
             }
           }
@@ -404,7 +402,8 @@ class ClientController extends Controller{
           }
         }
 
-        $resClient->bank_accounts = $resultCuentaBancarias;
+        // $resClient->bank_accounts = $resultCuentaBancarias;
+        $resClient->load('bankAccounts');
         $resultFull['client'] = $resClient;
 
         $response = $this->responseCreated($resultFull);
@@ -546,8 +545,9 @@ class ClientController extends Controller{
                 }
               }
 
-              $resCompany->identifications = $resultIdentificaciones;
-              $resCompany->contacts = $resultContactos;
+              $resCompany->load('identifications', 'contacts', 'addresses');
+              // $resCompany->identifications = $resultIdentificaciones;
+              // $resCompany->contacts = $resultContactos;
               $resultFull['company'] = $resCompany;
             }
           }
@@ -644,8 +644,7 @@ class ClientController extends Controller{
                 }
               }
     
-              $resPerson->identifications = $resultIdentificaciones;
-              $resPerson->contacts = $resultContactos;
+              $resPerson->load('identifications', 'contacts', 'addresses');
               $resultFull['person'] = $resPerson;
             }
           }
@@ -700,7 +699,7 @@ class ClientController extends Controller{
           }
         }
 
-        $resClient->bank_accounts = $resultCuentaBancarias;
+        $resClient->load('bankAccounts');
         
         $resultFull['client'] = $resClient;
         $response = $this->responseUpdate($resultFull);

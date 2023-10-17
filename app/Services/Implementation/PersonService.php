@@ -83,18 +83,7 @@ class PersonService implements IPerson{
 
   public function getAll(){
     // $query = $this->model->with('identificationDocument')->select();
-    $query = $this->model->with(['identificationDocument' => function ($subQuery) {
-      $subQuery->select(
-        'documentos_identificaciones.id', 
-        'documentos_identificaciones.personas_id', 
-        'documentos_identificaciones.tipo_documentos_id', 
-        'documentos_identificaciones.documento', 
-        'documentos_identificaciones.reverso_documento',
-        'TD.abreviacion as tipo_documentos_abreviacion'
-      ); // Lista de columnas que deseas seleccionar
-  
-      $subQuery->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', 'TD.id');
-    }])->select();
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications', 'addresses'])->select();
 
     $result = $query->get();
     return $result;
@@ -107,7 +96,7 @@ class PersonService implements IPerson{
 
     $query = $this->model->query();
 
-    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications'])->select();
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications', 'addresses'])->select();
 
 
     $query->select(
@@ -158,7 +147,7 @@ class PersonService implements IPerson{
 
     $query = $this->model->query();
 
-    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications'])->select();
+    $query = $this->model->with(['client.bankAccounts', 'contacts', 'identifications', 'addresses'])->select();
 
 
     $query->select(
@@ -191,7 +180,7 @@ class PersonService implements IPerson{
 
   public function getById(int $id){
     $query = $this->model->query();
-    $query->with(['contacts','identifications']);
+    $query->with(['client.bankAccounts', 'contacts', 'identifications', 'addresses']);
 
     $result = $query->find($id);
     return $result;
@@ -202,7 +191,7 @@ class PersonService implements IPerson{
     $person = $this->model->create($data);
     if($person){
       $person->created_at = Carbon::parse($person->created_at)->format('Y-m-d H:i:s');
-      $person->load('identifications', 'contacts');
+      $person->load('identifications', 'contacts', 'addresses');
       $person->paises_nombre = $person->country->nombre;
       unset($person->country);
 
@@ -218,7 +207,7 @@ class PersonService implements IPerson{
       $person->fill($data);
       $person->save();
       $person->updated_at = Carbon::parse($person->updated_at)->format('Y-m-d H:i:s');
-      $person->load('identifications', 'contacts');
+      $person->load('identifications', 'contacts', 'addresses');
       $person->paises_nombre = $person->country->nombre;
       unset($person->country);
       return $person;

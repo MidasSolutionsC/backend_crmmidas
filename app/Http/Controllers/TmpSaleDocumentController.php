@@ -4,25 +4,40 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TmpSaleDocument;
 use App\Services\Implementation\TmpSaleDocumentService;
+use App\Services\Implementation\TmpSaleService;
 use App\Validator\TmpSaleDocumentValidator;
 use App\Utilities\FileUploader;
+use App\Validator\TmpSaleValidator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class TmpSaleDocumentController extends Controller{
 
   private $request;
-  private $saleDocumentService;
-  private $saleDocumentValidator;
+  private $tmpSaleDocumentService;
+  private $tmpSaleDocumentValidator;
 
-  public function __construct(Request $request, TmpSaleDocumentService $saleDocumentService, TmpSaleDocumentValidator $saleDocumentValidator)
+  private $tmpSaleService;
+  private $tmpSaleValidator;
+
+  public function __construct(
+    Request $request, 
+    TmpSaleDocumentService $tmpSaleDocumentService, 
+    TmpSaleDocumentValidator $tmpSaleDocumentValidator,
+    TmpSaleService $tmpSaleService,
+    TmpSaleValidator $tmpSaleValidator,
+    )
   {
     $this->request = $request;
-    $this->saleDocumentService = $saleDocumentService;
-    $this->saleDocumentValidator = $saleDocumentValidator;
+    $this->tmpSaleDocumentService = $tmpSaleDocumentService;
+    $this->tmpSaleDocumentValidator = $tmpSaleDocumentValidator;
+    $this->tmpSaleService = $tmpSaleService;
+    $this->tmpSaleValidator = $tmpSaleValidator;
   }
 
   public function listAll(){
     try{
-      $result = $this->saleDocumentService->getAll();
+      $result = $this->tmpSaleDocumentService->getAll();
       $response = $this->response();
   
       if($result != null){
@@ -37,7 +52,7 @@ class TmpSaleDocumentController extends Controller{
 
   public function getFilterBySale($saleId){
     try{
-      $result = $this->saleDocumentService->getFilterBySale($saleId);
+      $result = $this->tmpSaleDocumentService->getFilterBySale($saleId);
       $response = $this->response();
   
       if($result != null){
@@ -52,7 +67,7 @@ class TmpSaleDocumentController extends Controller{
 
   public function get($id){
     try{
-      $result = $this->saleDocumentService->getById($id);
+      $result = $this->tmpSaleDocumentService->getById($id);
       $response = $this->response();
   
       if($result != null){
@@ -67,7 +82,7 @@ class TmpSaleDocumentController extends Controller{
 
   public function create(){
     try{
-      $validator = $this->saleDocumentValidator->validate();
+      $validator = $this->tmpSaleDocumentValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
@@ -78,7 +93,7 @@ class TmpSaleDocumentController extends Controller{
           $this->request['archivo'] = $fileName;
         }
 
-        $result = $this->saleDocumentService->create($this->request->all());
+        $result = $this->tmpSaleDocumentService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
   
@@ -88,9 +103,28 @@ class TmpSaleDocumentController extends Controller{
     }
   }
 
-  public function update($id){
+  public function createComplete(){
     try{
-      $validator = $this->saleDocumentValidator->validate();
+      // Iniciar una transacción
+      DB::beginTransaction();
+
+      $ventasId = $this->request->input('ventas_id');
+
+      if(empty($ventasId)){
+        $reqSale = [
+          "comentario" => "pendiente",
+          "user_create_id" => $this->request->input('user_auth_id')
+        ];
+
+        $resSale = $this->tmpSaleService->create($reqSale);
+        if($resSale){
+          // $ventasId = $resSale->id;
+          $this->request['ventas_id'] = $resSale->id;
+        }
+      } 
+
+
+      $validator = $this->tmpSaleDocumentValidator->validate();
   
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
@@ -101,7 +135,38 @@ class TmpSaleDocumentController extends Controller{
           $this->request['archivo'] = $fileName;
         }
 
-        $result = $this->saleDocumentService->update($this->request->all(), $id);
+        $result = $this->tmpSaleDocumentService->create($this->request->all());
+        $response = $this->responseCreated([$result]);
+      }
+  
+      // Si todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch(\Exception $e){
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al registrar el documento', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function update($id){
+    try{
+      $validator = $this->tmpSaleDocumentValidator->validate();
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
+      } else {
+        if($this->request->has('file')){
+          $file = $this->request->file('file');
+          $fileName = FileUploader::upload($file, 'files/sale/', []);
+          $this->request['archivo'] = $fileName;
+        }
+
+        $result = $this->tmpSaleDocumentService->update($this->request->all(), $id);
         if($result != null){
           $response = $this->responseUpdate([$result]);
         } else {
@@ -117,7 +182,7 @@ class TmpSaleDocumentController extends Controller{
 
   public function delete($id){
     try{
-      $result = $this->saleDocumentService->delete($id);
+      $result = $this->tmpSaleDocumentService->delete($id);
       if($result){
         $response = $this->responseDelete([$result]);
       } else {
@@ -132,7 +197,7 @@ class TmpSaleDocumentController extends Controller{
 
   public function restore($id){
     try{
-      $result = $this->saleDocumentService->restore($id);
+      $result = $this->tmpSaleDocumentService->restore($id);
       if($result){
         $response = $this->responseRestore([$result]);
       } else {

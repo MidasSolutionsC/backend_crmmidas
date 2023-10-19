@@ -25,7 +25,7 @@ class TmpSaleDocumentValidator{
     return [
       'ventas_id' => 'required|integer',
       'ventas_detalles_id' => 'nullable|integer',
-      'documentos_id' => 'nullable|integer',
+      'tipo_documentos_id' => 'nullable|integer',
       'nombre' => 'required|string|max:70',
       'archivo' => 'nullable|string|max:100',
       'user_create_id' => 'nullable|integer',

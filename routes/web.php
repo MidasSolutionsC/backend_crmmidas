@@ -492,6 +492,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/filterSale/{saleId}', 'TmpSaleDocumentController@getFilterBySale');
     $router->get('/{id}', 'TmpSaleDocumentController@get');
     $router->post('/', 'TmpSaleDocumentController@create');
+    $router->post('register/', 'TmpSaleDocumentController@createComplete');
     $router->post('/update/{id}', 'TmpSaleDocumentController@update');
     $router->delete('/{id}', 'TmpSaleDocumentController@delete');
     $router->get('/restore/{id}', 'TmpSaleDocumentController@restore');

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('productos_id');
             $table->foreignId('tipo_monedas_id');
+            // $table->foreignId('sede_productos_id')->nullable();
+            // $table->enum('tipo_precio', ['C', 'V']); // Puede ser 'compra' o 'venta'
             $table->double('precio', 10, 2);
             $table->date('fecha_inicio')->default(DB::raw('CURRENT_DATE'));            
             $table->date('fecha_fin')->nullable();

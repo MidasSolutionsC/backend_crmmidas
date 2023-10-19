@@ -16,7 +16,9 @@ class SaleDetail extends Model implements AuthorizableContract, AuthenticatableC
 
     protected $fillable = [
         'ventas_id',
-        'servicios_id',
+        'productos_id',
+        'promociones_id',
+        'cantidad',
         'tipo_estados_id',
         'instalaciones_id',
         'fecha_cierre',
@@ -47,7 +49,11 @@ class SaleDetail extends Model implements AuthorizableContract, AuthenticatableC
         return $this->belongsTo(Sale::class, 'ventas_id');
     }
 
-    public function service(){
-        return $this->belongsTo(Service::class, 'servicios_id');
+    public function product(){
+        return $this->belongsTo(Product::class, 'productos_id');
+    }
+
+    public function promotion(){
+        return $this->belongsTo(Promotion::class, 'promociones_id');
     }
 }

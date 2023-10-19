@@ -15,6 +15,7 @@ class Sale extends Model implements AuthorizableContract, AuthenticatableContrac
     protected $table = "ventas";
 
     protected $fillable = [
+        'nro_orden',
         'clientes_id',
         'fecha',
         'hora',

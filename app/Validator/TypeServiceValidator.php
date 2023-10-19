@@ -25,6 +25,7 @@ class TypeServiceValidator{
     return [
       'nombre' => 'required|unique:tipo_servicios,nombre,' . $this->id . ',id,deleted_at,NULL',
       'descripcion' => 'nullable|string',
+      'icono' => 'nullable|string|max:250',
       'is_active' => 'nullable|boolean',
     ];
   }

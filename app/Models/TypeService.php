@@ -17,6 +17,7 @@ class TypeService extends Model implements AuthenticatableContract, Authorizable
     protected $fillable = [
         'nombre',
         'descripcion',
+        'icono',
         'is_active',
         'created_at',
         'updated_at',

@@ -15,16 +15,18 @@ return new class extends Migration
     {
         Schema::create('productos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tipo_servicios_id');
+            $table->char('tipo_producto', 1); // F (Físico) S(Servicio)
+            $table->foreignId('tipo_servicios_id')->nullable();
             $table->foreignId('categorias_id')->nullable();
             $table->foreignId('marcas_id')->nullable();
             $table->string('nombre', 80);
+            $table->text('especificaciones')->nullable();
             $table->text('descripcion')->nullable();
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
             $table->boolean('is_active')->default(true);
-            $table->unique(['tipo_servicios_id', 'nombre']);
+            // $table->unique(['tipo_servicios_id', 'nombre']);
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('tipo_servicios_id')->references('id')->on('tipo_servicios');

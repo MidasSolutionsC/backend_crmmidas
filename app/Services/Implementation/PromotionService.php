@@ -29,7 +29,7 @@ class PromotionService implements IPromotion{
       'TS.nombre as tipo_servicios_nombre'
     );
     
-    $query->join('tipo_servicios as TS', 'promociones.tipo_servicios_id', '=', 'TS.id');
+    $query->leftJoin('tipo_servicios as TS', 'promociones.tipo_servicios_id', '=', 'TS.id');
 
 
     // Aplicar filtro de búsqueda si se proporciona un término
@@ -109,7 +109,9 @@ class PromotionService implements IPromotion{
     }
     
     // Obtener el nombre del tipo de servicio relacionado
-    $promotion->tipo_servicios_nombre = $promotion->typeService->nombre;
+    if ($promotion->typeService) {
+      $promotion->tipo_servicios_nombre = $promotion->typeService->nombre;
+    }
 
     return $promotion;
   }
@@ -122,8 +124,10 @@ class PromotionService implements IPromotion{
       $promotion->fill($data);
       $promotion->save();
       $promotion->updated_at = Carbon::parse($promotion->updated_at)->format('Y-m-d H:i:s');
-      // Obtener el nombre del tipo de servicio relacionado
-      $promotion->tipo_servicios_nombre = $promotion->typeService->nombre;
+      // Comprobar si existe una referencia a la tabla typeService
+      if ($promotion->typeService) {
+        $promotion->tipo_servicios_nombre = $promotion->typeService->nombre;
+      }
       return $promotion;
     }
 

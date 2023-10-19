@@ -15,6 +15,7 @@ class TmpSale extends Model implements AuthorizableContract, AuthenticatableCont
     protected $table = "tmp_ventas";
     
     protected $fillable = [
+        'nro_orden',
         'clientes_id',
         'fecha',
         'hora',

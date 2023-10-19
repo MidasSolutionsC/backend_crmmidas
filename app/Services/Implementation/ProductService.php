@@ -32,7 +32,7 @@ class ProductService implements IProduct{
       'TM.nombre as tipo_monedas_nombre',
     );
     
-    $query->join('tipo_servicios as TS', 'productos.tipo_servicios_id', '=', 'TS.id');
+    $query->leftJoin('tipo_servicios as TS', 'productos.tipo_servicios_id', '=', 'TS.id');
     $query->leftJoin('productos_precios as PP', function ($join) {
       $join->on('productos.id', '=', 'PP.productos_id')
       ->where('PP.created_at', '=', function ($subQuery) {
@@ -113,10 +113,14 @@ class ProductService implements IProduct{
   }
 
   public function create(array $data){
-    $existingRecord = $this->model->withTrashed()
-    ->where('nombre', $data['nombre'])
-    ->whereNotNull('deleted_at')->first();
+    $existingRecord = null;
     $product = null;
+
+    if(isset($data['nombre'])){
+      $existingRecord = $this->model->withTrashed()
+      ->where('nombre', $data['nombre'])
+      ->whereNotNull('deleted_at')->first();
+    }
 
     if (!is_null($existingRecord) && $existingRecord->trashed()) {
       if(isset($data['user_auth_id'])){
@@ -129,7 +133,6 @@ class ProductService implements IProduct{
       if($result){
         $existingRecord->updated_at = Carbon::parse($existingRecord->updated_at)->format('Y-m-d H:i:s');
         $product = $existingRecord;
-        $product->tipo_servicios_nombre = $product->typeService->nombre;
         $product->precio = $product->getLastPrice(); 
       }
     } else {
@@ -139,9 +142,13 @@ class ProductService implements IProduct{
       }
       $product = $this->model->create($data);
       if($product){
-        $product->tipo_servicios_nombre = $product->typeService->nombre;
         $product->precio = $product->getLastPrice(); 
       }
+    }
+
+    // Comprobar si existe una referencia a la tabla typeService
+    if ($product->typeService) {
+      $product->tipo_servicios_nombre = $product->typeService->nombre;
     }
     
     return $product;

@@ -16,12 +16,14 @@ return new class extends Migration
         Schema::create('ventas_detalles', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ventas_id');
-            $table->foreignId('servicios_id');
+            $table->foreignId('productos_id');
+            $table->foreignId('promociones_id')->nullable();
+            $table->smallInteger('cantidad')->nullable();
             $table->foreignId('user_create_id')->nullable();            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
             $table->foreignId('instalaciones_id')->nullable();
-            $table->unique(['ventas_id', 'servicios_id']);
+            $table->unique(['ventas_id', 'productos_id']);
             $table->text('observacion')->nullable();
             $table->date('fecha_cierre')->nullable();
             $table->json('datos_json')->nullable();
@@ -30,7 +32,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('ventas_id')->references('id')->on('ventas');
-            $table->foreign('servicios_id')->references('id')->on('servicios');
+            $table->foreign('productos_id')->references('id')->on('productos');
+            $table->foreign('promociones_id')->references('id')->on('promociones');
             $table->foreign('instalaciones_id')->references('id')->on('instalaciones');
             $table->foreign('tipo_estados_id')->references('id')->on('tipo_estados');
             $table->foreign('user_create_id')->references('id')->on('usuarios');

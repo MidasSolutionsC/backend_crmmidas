@@ -16,6 +16,7 @@ return new class extends Migration
     {
         Schema::create('ventas', function (Blueprint $table) {
             $table->id();
+            $table->integer('nro_orden')->unique();
             $table->foreignId('clientes_id')->nullable();
             $table->date('fecha')->default(DB::raw('CURRENT_DATE'));
             $table->time('hora')->default(DB::raw('CURRENT_TIME'));

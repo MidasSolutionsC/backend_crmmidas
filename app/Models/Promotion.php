@@ -15,10 +15,13 @@ class Promotion extends Model implements AuthorizableContract, AuthenticatableCo
     protected $table = "promociones";
 
     protected $fillable = [
+        'tipo_producto',
         'tipo_servicios_id',
+        'marcas_id',
         'nombre',
         'descripcion',
         'tipo_descuento',
+        'tipo_monedas_id',
         'descuento',
         'fecha_inicio',
         'fecha_fin',
@@ -51,11 +54,20 @@ class Promotion extends Model implements AuthorizableContract, AuthenticatableCo
         // Verifica si el valor es una cadena vacía y establece null en su lugar
         $this->attributes['fecha_fin'] = empty($value) ? null : $value;
     }
-
+    
     // En el modelo Promotion
     public function typeService()
     {
         return $this->belongsTo(TypeService::class, 'tipo_servicios_id');
+    }
+
+    public function brand(){
+        return $this->belongsTo(Brand::class, 'marcas_id');
+    }
+
+    public function typeCurrency()
+    {
+        return $this->belongsTo(TypeCurrency::class, 'tipo_monedas_id');
     }
 
 }

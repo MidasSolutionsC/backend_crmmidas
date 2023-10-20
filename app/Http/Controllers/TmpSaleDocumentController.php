@@ -112,6 +112,7 @@ class TmpSaleDocumentController extends Controller{
 
       if(empty($ventasId)){
         $reqSale = [
+          "nro_orden" => 1,
           "comentario" => "pendiente",
           "user_create_id" => $this->request->input('user_auth_id')
         ];

@@ -16,6 +16,9 @@ class Sale extends Model implements AuthorizableContract, AuthenticatableContrac
 
     protected $fillable = [
         'nro_orden',
+        'retailx_id',
+        'smart_id',
+        'direccion_smart_id',
         'clientes_id',
         'fecha',
         'hora',

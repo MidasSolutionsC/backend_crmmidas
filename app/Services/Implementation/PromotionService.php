@@ -71,10 +71,40 @@ class PromotionService implements IPromotion{
 
   public function search(array $data){
     $search = $data['search'];
-    $query = $this->model->select();
-    $query->whereRaw("nombre like ?", ['%' . $search . '%']);
-    $query->orderBy('id', 'desc');
-    $query->take(20); // Limite de resultados
+    $brandId = !empty($data['marcas_id'])? $data['marcas_id']: null;
+    $typeProduct = !empty($data['tipo_producto'])? $data['tipo_producto']: null;
+    $typeServiceId = !empty($data['tipo_servicios_id'])? $data['tipo_servicios_id']: null;
+    $len = !empty($data['len'])? $data['len']: 20;
+    $order = !empty($data['order'])? $data['order']: 'desc';
+    
+    $query = $this->model->query();
+    // $query->with(['typeCurrency:id,nombre,iso_code,simbolo']);
+    $query->select(
+      'promociones.*', 
+      // 'TS.nombre as tipo_servicios_nombre', 
+      'TM.id as tipo_monedas_id',
+      'TM.nombre as tipo_monedas_nombre',
+      'TM.simbolo as tipo_monedas_simbolo',
+      'TM.iso_code as tipo_monedas_iso_code',
+    );
+
+    $query->leftJoin('tipo_monedas as TM', 'promociones.tipo_monedas_id', '=', 'TM.id');
+
+    if(!is_null($typeProduct)){
+      $query->where("tipo_producto", $typeProduct);
+    }
+
+    if(!is_null($typeServiceId)){
+      $query->where("tipo_servicios_id", $typeServiceId);
+    }
+    
+    if(!is_null($brandId)){
+      $query->where("marcas_id", $brandId);
+    }
+
+    $query->whereRaw("promociones.nombre like ?", ['%' . $search . '%']);
+    $query->orderBy('id', $order);
+    $query->take($len); // Limite de resultados
     $result = $query->get();
     return $result;
   }

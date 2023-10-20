@@ -60,6 +60,10 @@ class Product extends Model implements AuthorizableContract, AuthenticatableCont
         return $this->hasMany(ProductPrice::class, 'productos_id');
     }
 
+    public function latestPrice() {
+        return $this->hasOne(ProductPrice::class, 'productos_id')->latest();
+    }
+
     public function getLastPrice(){
         $ultimoPrecio = $this->precios()->latest('created_at')->first();
         return $ultimoPrecio ? $ultimoPrecio->precio : null;

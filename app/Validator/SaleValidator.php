@@ -25,6 +25,9 @@ class SaleValidator {
   private function rules(){
     return [
       'nro_orden' => 'required|integer',
+      'retailx_id' => 'nullable|string|max:20',
+      'smart_id' => 'nullable|string|max:20',
+      'direccion_smart_id' => 'nullable|string|max:20',
       'clientes_id' => 'required|integer',
       'fecha' => 'nullable|date:Y-m-d',
       'hora' => ['nullable', 'regex:/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/'],

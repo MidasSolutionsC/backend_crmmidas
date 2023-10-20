@@ -17,6 +17,9 @@ return new class extends Migration
         Schema::create('tmp_ventas', function (Blueprint $table) {
             $table->id();
             $table->integer('nro_orden')->unique();
+            $table->string('retailx_id', 20)->nullable();
+            $table->string('smart_id', 20)->nullable();
+            $table->string('direccion_smart_id', 20)->nullable();
             $table->foreignId('clientes_id')->nullable();
             $table->date('fecha')->default(DB::raw('CURRENT_DATE'));
             $table->time('hora')->default(DB::raw('CURRENT_TIME'));

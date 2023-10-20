@@ -92,16 +92,50 @@ class ProductService implements IProduct{
 
   public function search(array $data){
     $search = $data['search'];
+    $brandId = !empty($data['marcas_id'])? $data['marcas_id']: null;
+    $typeProduct = !empty($data['tipo_producto'])? $data['tipo_producto']: null;
     $typeServiceId = !empty($data['tipo_servicios_id'])? $data['tipo_servicios_id']: null;
+    $len = !empty($data['len'])? $data['len']: 20;
+    $order = !empty($data['order'])? $data['order']: 'desc';
 
     $query = $this->model->query();
+    // $query->with(['brand:nombre as nombre_marca','latestPrice', 'latestPrice.typeCurrency:id,nombre,iso_code,simbolo']);
+    $query->select(
+      'productos.*', 
+      // 'TS.nombre as tipo_servicios_nombre', 
+      'TM.id as tipo_monedas_id',
+      'TM.nombre as tipo_monedas_nombre',
+      'TM.simbolo as tipo_monedas_simbolo',
+      'TM.iso_code as tipo_monedas_iso_code',
+      'PP.precio as precio'
+    );
+
+    $query->join('tipo_servicios as TS', 'productos.tipo_servicios_id', '=', 'TS.id');
+    $query->leftJoin('productos_precios as PP', function ($join) {
+      $join->on('productos.id', '=', 'PP.productos_id')
+          ->where('PP.created_at', '=', function ($subquery) {
+              $subquery->select(DB::raw('MAX(created_at)'))
+                  ->from('productos_precios')
+                  ->whereColumn('productos_id', 'productos.id');
+          });
+    });
+    $query->join('tipo_monedas as TM', 'PP.tipo_monedas_id', '=', 'TM.id');
+
+    if(!is_null($typeProduct)){
+      $query->where("tipo_producto", $typeProduct);
+    }
+
     if(!is_null($typeServiceId)){
       $query->where("tipo_servicios_id", $typeServiceId);
     }
+    
+    if(!is_null($brandId)){
+      $query->where("marcas_id", $brandId);
+    }
 
-    $query->whereRaw("nombre like ?", ['%' . $search . '%']);
-    $query->orderBy('id', 'desc');
-    $query->take(20);
+    $query->whereRaw("productos.nombre like ?", ['%' . $search . '%']);
+    $query->orderBy('id', $order);
+    $query->take($len);
     $result = $query->get();
     return $result;
   }

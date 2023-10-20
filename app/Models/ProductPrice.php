@@ -39,4 +39,8 @@ class ProductPrice extends Model implements AuthorizableContract, Authenticatabl
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function typeCurrency(){
+        return $this->belongsTo(TypeCurrency::class, 'tipo_monedas_id');
+    }
+
 }

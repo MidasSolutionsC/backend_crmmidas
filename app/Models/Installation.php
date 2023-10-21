@@ -16,6 +16,7 @@ class Installation extends Model implements AuthorizableContract, Authenticatabl
 
     protected $fillable = [
         'ventas_id',
+        'direcciones_id',
         'tipo',
         'direccion',
         'numero',
@@ -45,5 +46,10 @@ class Installation extends Model implements AuthorizableContract, Authenticatabl
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+    
+    public function address(){
+        return $this->belongsTo(Address::class, 'direcciones_id');
+    }
 
 }

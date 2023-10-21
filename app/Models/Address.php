@@ -46,4 +46,15 @@ class Address extends Model implements AuthenticatableContract, AuthorizableCont
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function installations()
+    {
+        return $this->hasMany(Installation::class, 'direcciones_id', 'id');
+    }
+
+    public function latestInstallation()
+    {
+        return $this->hasMany(Installation::class, 'direcciones_id', 'id')->latest()->first();
+    }
+
+
 }

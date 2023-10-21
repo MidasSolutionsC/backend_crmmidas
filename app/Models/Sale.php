@@ -49,4 +49,9 @@ class Sale extends Model implements AuthorizableContract, AuthenticatableContrac
     public function client(){
         return $this->belongsTo(Client::class, 'clientes_id');
     }
+
+    public function saleDetails()
+    {
+        return $this->hasMany(SaleDetail::class, 'ventas_id', 'id');
+    }
 }

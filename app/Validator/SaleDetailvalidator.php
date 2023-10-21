@@ -29,6 +29,7 @@ class SaleDetailValidator {
       'cantidad' => 'nullable|integer',
       'instalaciones_id' => 'nullable|integer',
       'tipo_estados_id' => 'nullable|integer',
+      'datos_json' => 'nullable|array',
       'observacion' => 'nullable|string',
       'fecha_cierre' => 'nullable|date:Y-m-d',
       'user_create_id' => 'required|integer',

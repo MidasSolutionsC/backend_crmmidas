@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\TmpSale;
 use App\Services\Implementation\TmpInstallationService;
 use Illuminate\Http\Request;
 use App\Services\Implementation\TmpSaleDetailService;
@@ -148,36 +149,42 @@ class TmpSaleDetailController extends Controller{
     try{
       // Iniciar una transacción
       DB::beginTransaction();
+      
+      $ventasId = $this->request->input('ventas_id');
+      $datos_json = $this->request->input('datos_json');
 
-      // Obtener los servicios
-      $serviceIds = $this->request->input('servicios_ids');
-      // Crear detalle 
-      $resSaleDetail = [];
-      $resErrors = [];
-
-      $reqSaleDetail = $this->request->all();
-      $reqSaleDetail["user_create_id"] = $this->request->input('user_auth_id');
-
-      foreach($serviceIds as $serviceId){
-        $reqSaleDetail['servicios_id'] = $serviceId;
-        $this->tmpSaleDetailValidator->setRequest($reqSaleDetail);
-        $validatorSaleDetail = $this->tmpSaleDetailValidator->validate();
-        if ($validatorSaleDetail->fails()) {
-          $resErrors = $validatorSaleDetail->errors();
-          DB::rollBack();
-          break;
-        } else {
-          $resSaleDetail[] = $this->tmpSaleDetailService->create($reqSaleDetail);
+      if(empty($ventasId)){
+        // Consulta el último registro
+        $latestSale = TmpSale::latest()->first();
+        $nro_orden = 1;
+        if($latestSale){
+          $nro_orden = $latestSale->nro_orden + 1;
         }
-      }
 
-      if(!empty($resErrors)){
-        $response = $this->responseError($resErrors, 422);
+        $reqSale = [
+          "nro_orden" => $nro_orden,
+          "comentario" => "pendiente",
+          "user_create_id" => $this->request->input('user_auth_id')
+        ];
+
+        $resSale = $this->tmpSaleService->create($reqSale);
+        if($resSale){
+          // $ventasId = $resSale->id;
+          $this->request['ventas_id'] = $resSale->id;
+        }
+      } 
+     
+      $validator = $this->tmpSaleDetailValidator->validate();
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
       } else {
-        $resData = ["ventas_detalles" => $resSaleDetail, "errors" => $resErrors];
-        $response = $this->responseCreated($resData);
-      }        
-
+        if(!empty($datos_json)){
+          $this->request['datos_json'] = json_encode($datos_json);
+        }
+        $result = $this->tmpSaleDetailService->create($this->request->all());
+        $response = $this->responseCreated([$result]);
+      }
 
       // Si todo está bien, confirmar la transacción
       DB::commit();
@@ -189,7 +196,7 @@ class TmpSaleDetailController extends Controller{
     } catch(\Exception $e){
       // Si hay un error inesperado, revertir la transacción
       DB::rollBack();
-      return $this->responseError(['message' => 'Error al crear el detalle de la venta', 'error' => $e->getMessage()], 500);
+      return $this->responseError(['message' => 'Error al agregar el producto/servicio de la venta', 'error' => $e->getMessage()], 500);
     }
   }
 

@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\TmpSale;
 use Illuminate\Http\Request;
 use App\Services\Implementation\TmpInstallationService;
 use App\Services\Implementation\TmpSaleService;
@@ -121,7 +122,15 @@ class TmpInstallationController extends Controller{
       $ventasId = $this->request->input('ventas_id');
 
       if(empty($ventasId)){
+        // Consulta el último registro
+        $latestSale = TmpSale::latest()->first();
+        $nro_orden = 1;
+        if($latestSale){
+          $nro_orden = $latestSale->nro_orden + 1;
+        }
+
         $reqSale = [
+          "nro_orden" => $nro_orden,
           "comentario" => "pendiente",
           "user_create_id" => $this->request->input('user_auth_id')
         ];

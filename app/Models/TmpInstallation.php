@@ -16,6 +16,7 @@ class TmpInstallation extends Model implements AuthorizableContract, Authenticat
 
      protected $fillable = [
         'ventas_id',
+        'direcciones_id',
         'tipo',
         'direccion',
         'numero',
@@ -45,4 +46,9 @@ class TmpInstallation extends Model implements AuthorizableContract, Authenticat
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+    public function address(){
+        return $this->belongsTo(Address::class, 'direcciones_id');
+    }
+
 }

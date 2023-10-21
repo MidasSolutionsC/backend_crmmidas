@@ -16,7 +16,9 @@ class TmpSaleDetail extends Model implements AuthorizableContract, Authenticatab
     
     protected $fillable = [
         'ventas_id',
-        'servicios_id',
+        'productos_id',
+        'promociones_id',
+        'cantidad',
         'tipo_estados_id',
         'instalaciones_id',
         'observacion',
@@ -39,6 +41,8 @@ class TmpSaleDetail extends Model implements AuthorizableContract, Authenticatab
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
+        'fecha_cierre' => 'datetime:Y-m-d H:i:s',
+        'datos_json' => 'array',
     ];
 
     /**

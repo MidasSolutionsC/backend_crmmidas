@@ -55,7 +55,7 @@ class TmpSaleService implements ISale{
   }
 
   public function getAll(){
-    $query = $this->model->select();
+    $query = $this->model->with('saleDetails')->select();
     $result = $query->get();
     return $result;
   }

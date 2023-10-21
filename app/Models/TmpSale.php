@@ -49,4 +49,10 @@ class TmpSale extends Model implements AuthorizableContract, AuthenticatableCont
     public function client(){
         return $this->belongsTo(Client::class, 'clientes_id');
     }
+
+    public function saleDetails()
+    {
+        return $this->hasMany(TmpSaleDetail::class, 'ventas_id', 'id');
+    }
+
 }

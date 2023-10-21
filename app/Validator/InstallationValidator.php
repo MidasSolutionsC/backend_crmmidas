@@ -24,6 +24,7 @@ class InstallationValidator {
   private function rules(){
     return [
       'ventas_id' => 'required|integer',
+      'direcciones_id' => 'nullable|integer',
       'tipo' => 'required|string|max:20',
       'direccion' => 'required|string|max:200',
       'numero' => 'nullable|string|max:20',

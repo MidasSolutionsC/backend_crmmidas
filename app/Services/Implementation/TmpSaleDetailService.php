@@ -30,7 +30,7 @@ class TmpSaleDetailService implements ISaleDetail{
 
     $query->select(
       'tmp_ventas_detalles.*',
-      'SR.nombre as servicios_nombre',
+      // 'SR.nombre as servicios_nombre',
       'IT.provincia as instalaciones_provincia',
       'IT.localidad as instalaciones_localidad',
       'IT.codigo_postal as instalaciones_codigo_postal',
@@ -47,7 +47,7 @@ class TmpSaleDetailService implements ISaleDetail{
 
     $query->join('tmp_ventas as VT', 'tmp_ventas_detalles.ventas_id', 'VT.id');
     $query->leftJoin('tmp_instalaciones as IT', 'tmp_ventas_detalles.instalaciones_id', 'IT.id');
-    $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
+    // $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
 
 
     // Aplicar filtro de búsqueda si se proporciona un término
@@ -86,7 +86,7 @@ class TmpSaleDetailService implements ISaleDetail{
     $query = $this->model->query();
     $query->select(
       'tmp_ventas_detalles.*',
-      'SR.nombre as servicios_nombre',
+      // 'SR.nombre as servicios_nombre',
       'IT.provincia as instalaciones_provincia',
       'IT.localidad as instalaciones_localidad',
       'IT.codigo_postal as instalaciones_codigo_postal',
@@ -103,7 +103,7 @@ class TmpSaleDetailService implements ISaleDetail{
 
     $query->join('tmp_ventas as VT', 'tmp_ventas_detalles.ventas_id', 'VT.id');
     $query->leftJoin('tmp_instalaciones as IT', 'tmp_ventas_detalles.instalaciones_id', 'IT.id');
-    $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
+    // $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
     $result = $query->get();
     return $result;
   }
@@ -148,9 +148,9 @@ class TmpSaleDetailService implements ISaleDetail{
     $query = $this->model->query();
     $query->select(
       'tmp_ventas_detalles.*',
-      'TS.id as tipo_servicios_id',
-      'TS.nombre as tipo_servicios_nombre',
-      'SR.nombre as servicios_nombre',
+      // 'TS.id as tipo_servicios_id',
+      // 'TS.nombre as tipo_servicios_nombre',
+      // 'SR.nombre as servicios_nombre',
       'IT.provincia as instalaciones_provincia',
       'IT.localidad as instalaciones_localidad',
       'IT.codigo_postal as instalaciones_codigo_postal',
@@ -167,8 +167,8 @@ class TmpSaleDetailService implements ISaleDetail{
 
     $query->join('tmp_ventas as VT', 'tmp_ventas_detalles.ventas_id', 'VT.id');
     $query->leftJoin('tmp_instalaciones as IT', 'tmp_ventas_detalles.instalaciones_id', 'IT.id');
-    $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
-    $query->leftJoin('tipo_servicios as TS', 'SR.tipo_servicios_id', 'TS.id');
+    // $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
+    // $query->leftJoin('tipo_servicios as TS', 'SR.tipo_servicios_id', 'TS.id');
 
     $result = $query->find($id);
     return $result;
@@ -177,7 +177,7 @@ class TmpSaleDetailService implements ISaleDetail{
   public function create(array $data){
     $existingRecord = $this->model->withTrashed()
     ->where('ventas_id', $data['ventas_id'])
-    ->where('servicios_id', $data['servicios_id'])
+    ->where('productos_id', $data['productos_id'])
     ->whereNotNull('deleted_at')->first();
     $saleDetail = null;
 

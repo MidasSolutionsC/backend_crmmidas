@@ -40,6 +40,7 @@ class SaleDetail extends Model implements AuthorizableContract, AuthenticatableC
     protected $casts = [
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
+        'fecha_cierre' => 'datetime:Y-m-d H:i:s',
     ];
 
     /**

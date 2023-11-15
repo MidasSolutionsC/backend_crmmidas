@@ -16,13 +16,13 @@ class TmpSaleDocumentService implements ISaleDocument{
   }
 
   public function getAll(){
-    $query = $this->model->select();
+    $query = $this->model->with('typeDocument')->select();
     $result = $query->get();
     return $result;
   }
 
   public function getFilterBySale(int $saleId){
-    $query = $this->model->select();
+    $query = $this->model->with('typeDocument:id,nombre,abreviacion')->select();
     if($saleId){
       $query->where('ventas_id', $saleId);
     }
@@ -31,7 +31,7 @@ class TmpSaleDocumentService implements ISaleDocument{
   }
 
   public function getById(int $id){
-    $query = $this->model->select();
+    $query = $this->model->with('typeDocument')->select();
     $result = $query->find($id);
     return $result;
   }

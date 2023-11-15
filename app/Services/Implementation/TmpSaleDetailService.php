@@ -84,6 +84,11 @@ class TmpSaleDetailService implements ISaleDetail{
 
   public function getAll(){
     $query = $this->model->query();
+    $query->with([
+      'product:id,marcas_id,nombre,tipo_producto,tipo_servicios_id,marcas_id', 
+      'product.latestPrice',
+      'promotion:id,nombre,tipo_descuento,tipo_monedas_id,descuento'
+    ]);
     $query->select(
       'tmp_ventas_detalles.*',
       // 'SR.nombre as servicios_nombre',
@@ -110,11 +115,19 @@ class TmpSaleDetailService implements ISaleDetail{
 
   public function getFilterBySale(int $saleId){
     $query = $this->model->query();
+    $query->with([
+      'product:id,marcas_id,nombre,descripcion,tipo_producto,tipo_servicios_id,marcas_id', 
+      'product.latestPrice.typeCurrency:id,nombre,iso_code,simbolo',
+      'product.typeService:id,nombre',
+      'product.brand:id,nombre',
+      'promotion:id,nombre,tipo_descuento,tipo_monedas_id,descuento',
+      'promotion.typeCurrency:id,nombre,iso_code,simbolo',
+    ]);
     $query->select(
       'tmp_ventas_detalles.*',
-      'TS.id as tipo_servicios_id',
-      'TS.nombre as tipo_servicios_nombre',
-      'SR.nombre as servicios_nombre',
+      // 'TS.id as tipo_servicios_id',
+      // 'TS.nombre as tipo_servicios_nombre',
+      // 'SR.nombre as servicios_nombre',
       'IT.provincia as instalaciones_provincia',
       'IT.localidad as instalaciones_localidad',
       'IT.codigo_postal as instalaciones_codigo_postal',
@@ -132,8 +145,8 @@ class TmpSaleDetailService implements ISaleDetail{
 
     $query->join('tmp_ventas as VT', 'tmp_ventas_detalles.ventas_id', 'VT.id');
     $query->leftJoin('tmp_instalaciones as IT', 'tmp_ventas_detalles.instalaciones_id', 'IT.id');
-    $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
-    $query->leftJoin('tipo_servicios as TS', 'SR.tipo_servicios_id', 'TS.id');
+    // $query->join('servicios as SR', 'tmp_ventas_detalles.servicios_id', 'SR.id');
+    // $query->leftJoin('tipo_servicios as TS', 'SR.tipo_servicios_id', 'TS.id');
     $query->leftJoin('tipo_estados as TE', 'tmp_ventas_detalles.tipo_estados_id', 'TE.id');
 
     if($saleId){

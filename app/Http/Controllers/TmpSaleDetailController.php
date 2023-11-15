@@ -179,9 +179,6 @@ class TmpSaleDetailController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        if(!empty($datos_json)){
-          $this->request['datos_json'] = json_encode($datos_json);
-        }
         $result = $this->tmpSaleDetailService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }

@@ -70,7 +70,6 @@ class TypeServiceController extends Controller{
       if($validator->fails()){
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        // $this->request->merge(['fecha_registro' => Carbon::now()]);
         $result = $this->typeService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }

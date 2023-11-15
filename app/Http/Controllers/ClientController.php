@@ -177,19 +177,12 @@ class ClientController extends Controller{
       $resultFull = [];
       $validationError = false; // Variable de control
 
-      $dataPerson = $this->request->input('datos_persona');
-      $dataCompany = $this->request->input('datos_empresa');
+      $dataPerson = $this->request->input('person');
+      $dataCompany = $this->request->input('company');
       $personaJuridica = $this->request->input('persona_juridica');
       $this->request['persona_juridica'] = boolval($personaJuridica);
 
-      $identificaciones = $this->request->input('identificaciones');
-      $resultIdentificaciones = [];
-
-      $contactos = $this->request->input('contactos');
-      $resultContactos = [];
-
-      $cuentasBancarias = $this->request->input('cuentas_bancarias');
-      $resultCuentaBancarias = [];
+      $cuentasBancarias = $this->request->input('bank_accounts');
 
       if(is_null($personaJuridica)) {
         $response = $this->responseError(["persona_juridica" => ["No especifico el campo persona jurídica"]], 422);
@@ -229,6 +222,9 @@ class ClientController extends Controller{
               $dataClientWithoutPerson['empresas_id'] = $resCompany->id;
               $resultFull['company'] = $resCompany;
 
+              $identificaciones = $dataCompany['identifications'];
+              $contactos = $dataCompany['contacts'];
+
               // REGISTRAR IDENTIFICACIONES DE LA EMPRESA
               foreach($identificaciones as $identity){
                 $identity['empresas_id'] = $resCompany->id;
@@ -245,9 +241,9 @@ class ClientController extends Controller{
                 } else {
                   // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
                   if(empty($identity['id'])){
-                    $resultIdentificaciones[] = $this->identificationService->create($identity);
+                    $this->identificationService->create($identity);
                   } else {
-                    $resultIdentificaciones[] = $this->identificationService->update($identity, $identity['id']);
+                    $this->identificationService->update($identity, $identity['id']);
                   }
                 }
               }
@@ -269,10 +265,10 @@ class ClientController extends Controller{
                   // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
                   if(empty($contact['id'])){
                     $contact['user_create_id'] = $this->request->input('user_auth_id');
-                    $resultContactos[] = $this->contactService->create($contact);
+                    $this->contactService->create($contact);
                   } else {
                     $contact['user_update_id'] = $this->request->input('user_auth_id');
-                    $resultContactos[] = $this->contactService->update($contact, $contact['id']);
+                    $this->contactService->update($contact, $contact['id']);
                   }
                 }
               }
@@ -314,6 +310,9 @@ class ClientController extends Controller{
               $this->request['personas_id'] = $resPerson->id;
               $dataClientWithoutCompany['personas_id'] = $resPerson->id;
 
+              $identificaciones = $dataPerson['identifications'];
+              $contactos = $dataPerson['contacts'];
+
               // REGISTRAR IDENTIFICACIONES DE LA PERSONA
               foreach($identificaciones as $identity){
                 $identity['personas_id'] = $resPerson->id;
@@ -329,9 +328,9 @@ class ClientController extends Controller{
                 } else {
                   // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
                   if(empty($identity['id'])){
-                    $resultIdentificaciones[] = $this->identificationService->create($identity);
+                    $this->identificationService->create($identity);
                   } else {
-                    $resultIdentificaciones[] = $this->identificationService->update($identity, $identity['id']);
+                    $this->identificationService->update($identity, $identity['id']);
                   }
                 }
               }
@@ -352,9 +351,9 @@ class ClientController extends Controller{
                 } else {
                   // REGISTRAR O ACTUALIZAR LOS DATOS DE IDENTIFICACIONES
                   if(empty($contact['id'])){
-                    $resultContactos[] = $this->contactService->create($contact);
+                    $this->contactService->create($contact);
                   } else {
-                    $resultContactos[] = $this->contactService->update($contact, $contact['id']);
+                    $this->contactService->update($contact, $contact['id']);
                   }
                 }
               }
@@ -378,6 +377,8 @@ class ClientController extends Controller{
       } else {
         // CLIENTE
         $resClient = $this->clientService->create($this->request->all());
+
+        $resultCuentaBancarias = [];
         
         // REGISTRAR CONTACTOS
         foreach($cuentasBancarias as $bankAccount){
@@ -402,7 +403,6 @@ class ClientController extends Controller{
           }
         }
 
-        // $resClient->bank_accounts = $resultCuentaBancarias;
         $resClient->load('bankAccounts');
         $resultFull['client'] = $resClient;
 
@@ -433,20 +433,13 @@ class ClientController extends Controller{
       DB::beginTransaction();
       $resultFull = [];
 
-      $dataPerson = $this->request->input('datos_persona');
-      $dataCompany = $this->request->input('datos_empresa');
+      $dataPerson = $this->request->input('person');
+      $dataCompany = $this->request->input('company');
       $personaJuridica = $this->request->input('persona_juridica');
       $this->request['persona_juridica'] = boolval($personaJuridica);
 
-      $identificaciones = $this->request->input('identificaciones');
-      $resultIdentificaciones = [];
+      $cuentasBancarias = $this->request->input('bank_accounts');
 
-      $contactos = $this->request->input('contactos');
-      $resultContactos = [];
-
-      $cuentasBancarias = $this->request->input('cuentas_bancarias');
-      $resultCuentaBancarias = [];
-      
       if(is_null($personaJuridica)) {
         $response = $this->responseError(["persona_juridica" => ["No especifico el campo persona juridica"]], 422);
         DB::rollBack();
@@ -475,29 +468,38 @@ class ClientController extends Controller{
             $resCompany = $this->companyService->update($dataCompany, $dataCompany['id']);
 
             if($resCompany){
+              $identificaciones = $dataCompany['identifications'];
+              $contactos = $dataCompany['contacts'];
+
               // DOCUMENTOS
               $beforeIdentifications = $resCompany->identifications;
               $beforeIdentifications = $beforeIdentifications->toArray();
 
-              // Extrae los IDs de los arrays en $identificaciones
-              $beforeIds = array_column($beforeIdentifications, 'id');
-              $identIds = array_column($identificaciones, 'id');
-              $itemsToDelete = array_diff($beforeIds, $identIds);
-                        
-              // ELIMINAR DOCUMENTOS
-              IdentificationDocument::whereIn('id', $itemsToDelete)->delete();
+              if(count($beforeIdentifications) > 0){
+                // Extrae los IDs de los arrays en $identificaciones
+                $beforeIds = array_column($beforeIdentifications, 'id');
+                $identIds = array_column($identificaciones, 'id');
+                $itemsToDelete = array_diff($beforeIds, $identIds);
+                          
+                // ELIMINAR DOCUMENTOS
+                IdentificationDocument::whereIn('id', $itemsToDelete)->delete();
+              }
+
 
               // CONTACTOS
               $beforeContacts = $resCompany->contacts;
               $beforeContacts = $beforeContacts->toArray();
 
-              // Extrae los IDs de los arrays en $identificaciones
-              $beforeContactIds = array_column($beforeContacts, 'id');
-              $contactIds = array_column($contactos, 'id');
-              $itemsContactToDelete = array_diff($beforeContactIds, $contactIds);
-                        
-              // ELIMINAR DOCUMENTOS
-              Contact::whereIn('id', $itemsContactToDelete)->delete();
+              if(count($beforeContacts) > 0){
+                // Extrae los IDs de los arrays en $identificaciones
+                $beforeContactIds = array_column($beforeContacts, 'id');
+                $contactIds = array_column($contactos, 'id');
+                $itemsContactToDelete = array_diff($beforeContactIds, $contactIds);
+                          
+                // ELIMINAR DOCUMENTOS
+                Contact::whereIn('id', $itemsContactToDelete)->delete();
+              }
+
            
               // REGISTRAR IDENTIFICACIONES DE LA EMPRESA
               foreach($identificaciones as $identity){
@@ -546,8 +548,6 @@ class ClientController extends Controller{
               }
 
               $resCompany->load('identifications', 'contacts', 'addresses');
-              // $resCompany->identifications = $resultIdentificaciones;
-              // $resCompany->contacts = $resultContactos;
               $resultFull['company'] = $resCompany;
             }
           }
@@ -573,30 +573,37 @@ class ClientController extends Controller{
             // registrar persona
             $resPerson = $this->personService->update($dataPerson, $dataPerson['id']);
             if($resPerson){
+
+              $identificaciones = $dataPerson['identifications'];
+              $contactos = $dataPerson['contacts'];
   
               // DOCUMENTOS
               $beforeIdentifications = $resPerson->identifications;
               $beforeIdentifications = $beforeIdentifications->toArray();
 
               // Extrae los IDs de los arrays en $identificaciones
-              $beforeIds = array_column($beforeIdentifications, 'id');
-              $identIds = array_column($identificaciones, 'id');
-              $itemsToDelete = array_diff($beforeIds, $identIds);
-                        
-              // ELIMINAR DOCUMENTOS
-              IdentificationDocument::whereIn('id', $itemsToDelete)->delete();
+              if(count($beforeIdentifications) > 0){
+                $beforeIds = array_column($beforeIdentifications, 'id');
+                $identIds = array_column($identificaciones, 'id');
+                $itemsToDelete = array_diff($beforeIds, $identIds);
+                          
+                // ELIMINAR DOCUMENTOS
+                IdentificationDocument::whereIn('id', $itemsToDelete)->delete();
+              }
 
               // CONTACTOS
               $beforeContacts = $resPerson->contacts;
               $beforeContacts = $beforeContacts->toArray();
 
               // Extrae los IDs de los arrays en $identificaciones
-              $beforeContactIds = array_column($beforeContacts, 'id');
-              $contactIds = array_column($contactos, 'id');
-              $itemsContactToDelete = array_diff($beforeContactIds, $contactIds);
-                        
-              // ELIMINAR DOCUMENTOS
-              Contact::whereIn('id', $itemsContactToDelete)->delete();
+              if(count($beforeContacts) > 0){
+                $beforeContactIds = array_column($beforeContacts, 'id');
+                $contactIds = array_column($contactos, 'id');
+                $itemsContactToDelete = array_diff($beforeContactIds, $contactIds);
+                          
+                // ELIMINAR DOCUMENTOS
+                Contact::whereIn('id', $itemsContactToDelete)->delete();
+              }
               
               // REGISTRAR IDENTIFICACIONES DE LA PERSONA
               foreach($identificaciones as $identity){
@@ -667,13 +674,17 @@ class ClientController extends Controller{
         $beforeBankAccounts = $resClient->bankAccounts;
         $beforeBankAccounts = $beforeBankAccounts->toArray();
 
-        // Extrae los IDs de los arrays en $identificaciones
-        $beforeIds = array_column($beforeBankAccounts, 'id');
-        $bankAccountIds = array_column($cuentasBancarias, 'id');
-        $itemsToDelete = array_diff($beforeIds, $bankAccountIds);
-                  
-        // ELIMINAR DOCUMENTOS
-        BankAccount::whereIn('id', $itemsToDelete)->delete();
+        if(count($beforeBankAccounts)){
+          $beforeIds = array_column($beforeBankAccounts, 'id');
+          // Extrae los IDs de los arrays en $identificaciones
+          $bankAccountIds = array_column($cuentasBancarias, 'id');
+          $itemsToDelete = array_diff($beforeIds, $bankAccountIds);
+
+          // ELIMINAR DOCUMENTOS
+          BankAccount::whereIn('id', $itemsToDelete)->delete();
+        }           
+        
+        $resultCuentaBancarias = [];
 
         // REGISTRAR CONTACTOS
         foreach($cuentasBancarias as $bankAccount){

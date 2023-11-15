@@ -61,6 +61,10 @@ class TmpSaleService implements ISale{
   }
 
   public function getById(int $id){
+    // $query = $this->model->with(['saleDetails' => function ($query) {
+      //   $query->select('tmp_ventas_detalles.id', 'tmp_ventas_detalles.observacion');
+      //   $query->take(2); // Limita a 50 registros de la tabla relacionada
+      // }])->select();
     $query = $this->model->select();
     $result = $query->find($id);
     return $result;

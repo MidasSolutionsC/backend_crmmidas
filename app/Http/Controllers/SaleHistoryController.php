@@ -48,7 +48,6 @@ class SaleHistoryController extends Controller{
     }
   }
 
-
   public function get($id){
     try{
       $result = $this->saleHistoryService->getById($id);

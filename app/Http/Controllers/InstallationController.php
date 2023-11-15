@@ -1,9 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Sale;
 use Illuminate\Http\Request;
 use App\Services\Implementation\InstallationService;
+use App\Services\Implementation\SaleService;
 use App\Validator\InstallationValidator;
+use App\Validator\SaleValidator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class InstallationController extends Controller{
 
@@ -11,11 +16,22 @@ class InstallationController extends Controller{
   private $installationService;
   private $installationValidator;
 
-  public function __construct(Request $request, InstallationService $installationService, InstallationValidator $installationValidator)
+  private $saleService;
+  private $saleValidator;
+
+  public function __construct(
+    Request $request, 
+    InstallationService $installationService, 
+    InstallationValidator $installationValidator,
+    SaleService $saleService,
+    SaleValidator $saleValidator
+  )
   {
     $this->request = $request;
     $this->installationService = $installationService;
     $this->installationValidator = $installationValidator;
+    $this->saleService = $saleService;
+    $this->saleValidator = $saleValidator;
   }
 
   public function listAll(){
@@ -30,6 +46,36 @@ class InstallationController extends Controller{
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al listar las instalaciones', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function search(){
+    try{
+      $result = $this->installationService->search($this->request->all());
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos de la instalación', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function getBySale($saleId){
+    try{
+      $result = $this->installationService->getBySale($saleId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos de la instalación', 'error' => $e->getMessage()], 500);
     }
   }
 
@@ -61,6 +107,58 @@ class InstallationController extends Controller{
   
       return $response;
     } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al crear la instalación', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function createComplete(){
+    try{
+      // Iniciar una transacción
+      DB::beginTransaction();
+
+      $ventasId = $this->request->input('ventas_id');
+
+      if(empty($ventasId)){
+        // Consulta el último registro
+        $latestSale = Sale::latest()->first();
+        $nro_orden = 1;
+        if($latestSale){
+          $nro_orden = $latestSale->nro_orden + 1;
+        }
+
+        $reqSale = [
+          "nro_orden" => $nro_orden,
+          "comentario" => "",
+          "user_create_id" => $this->request->input('user_auth_id')
+        ];
+
+        $resSale = $this->saleService->create($reqSale);
+        if($resSale){
+          // $ventasId = $resSale->id;
+          $this->request['ventas_id'] = $resSale->id;
+        }
+      } 
+
+
+      $validator = $this->installationValidator->validate();
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
+      } else {
+        $result = $this->installationService->create($this->request->all());
+        $response = $this->responseCreated([$result]);
+      }
+  
+      // Si todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch(\Exception $e){
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
       return $this->responseError(['message' => 'Error al crear la instalación', 'error' => $e->getMessage()], 500);
     }
   }

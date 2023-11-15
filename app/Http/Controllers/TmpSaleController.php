@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Installation;
+use App\Models\Sale;
 use App\Models\SaleDetail;
 use App\Models\TmpInstallation;
 use App\Models\TmpSaleDetail;
@@ -98,10 +99,17 @@ class TmpSaleController extends Controller
         DB::rollBack();
       }
 
+      // Consulta el último registro
+      // $latestSale = Sale::latest()->first();
+      // $nro_orden = 1;
+      // if($latestSale){
+      //   $nro_orden = $latestSale->nro_orden + 1;
+      // }
+
       // Copiar datos de temp_clientes a clientes
       DB::statement('INSERT INTO ventas 
-        (clientes_id, fecha, hora, comentario, user_create_id, is_active, created_at)
-      SELECT clientes_id, fecha, hora, comentario, user_create_id, is_active, created_at
+        (nro_orden, retailx_id, smart_id, direccion_smart_id, clientes_id, fecha, hora, comentario, user_create_id, is_active, created_at)
+      SELECT nro_orden, retailx_id, smart_id, direccion_smart_id, clientes_id, fecha, hora, comentario, user_create_id, is_active, created_at
       FROM tmp_ventas WHERE id = ?', [$saleId]);
 
       // Obtener el último ID insertado de la tabla ventas

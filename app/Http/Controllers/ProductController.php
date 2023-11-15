@@ -204,11 +204,17 @@ class ProductController extends Controller{
       if(!empty($combinedErrors)){
         $response = $this->responseError($combinedErrors, 422);
       } else {
+
+        if($this->request->input('tipo_producto') == 'F'){
+          $this->request['tipo_servicios_id'] = NULL;
+        }
+
         $resProduct = $this->productService->update($this->request->all(), $id);
         if($resProduct){
           $this->request['productos_id'] = $resProduct->id;
           // Obtener el nombre del tipo de servicio relacionado
-          $resProduct->tipo_servicios_nombre = $resProduct->typeService->nombre;
+          $resProduct->tipo_servicios_nombre = $resProduct->typeService->nombre ?? null;
+
           // Ahora, obtén el precio más reciente del producto
         } else {
           $response = $this->responseError(['message' => 'Erro al obtener el id producto'], 422);

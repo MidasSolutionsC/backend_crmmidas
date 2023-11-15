@@ -56,7 +56,11 @@ class TmpSaleDetail extends Model implements AuthorizableContract, Authenticatab
         return $this->belongsTo(TmpInstallation::class, 'instalaciones_id');
     }
 
-    public function service(){
-        return $this->belongsTo(Service::class, 'servicios_id');
+    public function product(){
+        return $this->belongsTo(Product::class, 'productos_id');
+    }
+
+    public function promotion(){
+        return $this->belongsTo(Promotion::class, 'promociones_id');
     }
 }

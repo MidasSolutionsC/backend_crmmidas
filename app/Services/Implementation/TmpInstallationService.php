@@ -26,7 +26,7 @@ class TmpInstallationService implements IInstallation{
   public function search(array $data){
     $search = $data['search'];
     $ventasId = !empty($data['ventas_id'])? $data['ventas_id']: null;
-    $limit = !empty($data['limit'])? $data['limit']: 25;
+    $len = !empty($data['len'])? $data['len']: 25;
 
     $query = $this->model->select();
     $query->selectRaw("CONCAT_WS(', ',
@@ -43,7 +43,7 @@ class TmpInstallationService implements IInstallation{
     }
 
     $query->havingRaw("direccion_completo like ?", ['%' . $search . '%']);
-    $query->take($limit); // Limite de resultados
+    $query->take($len); // Limite de resultados
     $result = $query->get();
     return $result;
   }

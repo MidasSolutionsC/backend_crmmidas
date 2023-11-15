@@ -454,8 +454,11 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // INSTALACIONES
   $router->group(['prefix' => '/installation'], function () use ($router) {
     $router->get('/', 'InstallationController@listAll');
+    $router->post('/search', 'InstallationController@search');
+    $router->get('/filterSale/{saleId}', 'InstallationController@getBySale');
     $router->get('/{id}', 'InstallationController@get');
     $router->post('/', 'InstallationController@create');
+    $router->post('/register', 'InstallationController@createComplete');
     $router->put('/{id}', 'InstallationController@update');
     $router->delete('/{id}', 'InstallationController@delete');
     $router->get('/restore/{id}', 'InstallationController@restore');
@@ -481,6 +484,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/{id}', 'SaleDocumentController@get');
     $router->get('/filterSale/{saleId}', 'SaleDocumentController@getFilterBySale');
     $router->post('/', 'SaleDocumentController@create');
+    $router->post('register/', 'SaleDocumentController@createComplete');
     $router->put('/{id}', 'SaleDocumentController@update');
     $router->delete('/{id}', 'SaleDocumentController@delete');
     $router->get('/restore/{id}', 'SaleDocumentController@restore');
@@ -504,6 +508,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/{id}', 'SaleDetailController@get');
     $router->get('/filterSale/{saleId}', 'SaleDetailController@getFilterBySale');
     $router->post('/', 'SaleDetailController@create');
+    $router->post('/register', 'SaleDetailController@createComplete');
     $router->put('/{id}', 'SaleDetailController@update');
     $router->delete('/{id}', 'SaleDetailController@delete');
     $router->get('/restore/{id}', 'SaleDetailController@restore');

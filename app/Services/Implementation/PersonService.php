@@ -201,7 +201,7 @@ class PersonService implements IPerson{
   }
 
   public function update(array $data, int $id){
-    $data['created_at'] = Carbon::now(); 
+    $data['updated_at'] = Carbon::now(); 
     $person = $this->model->find($id);
     if($person){
       $person->fill($data);

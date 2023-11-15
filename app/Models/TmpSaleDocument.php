@@ -50,4 +50,8 @@ class TmpSaleDocument extends Model implements AuthorizableContract, Authenticat
     public function tmpSaleDetail(){
         return $this->belongsTo(TmpSaleDetail::class, 'ventas_detalles_id');
     }
+
+    public function typeDocument(){
+        return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
+    }
 }

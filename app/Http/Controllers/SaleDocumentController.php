@@ -119,12 +119,11 @@ class SaleDocumentController extends Controller{
 
         $resSale = $this->saleService->create($reqSale);
         if($resSale){
-          // $ventasId = $resSale->id;
           $this->request['ventas_id'] = $resSale->id;
         }
       } 
 
-
+      $this->saleDocumentValidator->setRequest($this->request->all());
       $validator = $this->saleDocumentValidator->validate();
   
       if($validator->fails()){

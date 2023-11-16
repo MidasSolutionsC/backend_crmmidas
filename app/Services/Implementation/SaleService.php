@@ -93,7 +93,7 @@ class SaleService implements ISale
 
 
     $query = $this->model->query();
-    $query->with(['client.user.person.identifications']);
+    // $query->with(['client.user.person.identifications']);
     $query->select(
       'ventas.*',
       'CL.persona_juridica as clientes_persona_juridica',
@@ -116,7 +116,7 @@ class SaleService implements ISale
       // ')
     );
 
-    $query->join('clientes as CL', 'ventas.clientes_id', 'CL.id');
+    $query->leftJoin('clientes as CL', 'ventas.clientes_id', 'CL.id');
     $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
     $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
     // $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
@@ -156,7 +156,9 @@ class SaleService implements ISale
   public function create(array $data)
   {
     $data['created_at'] = Carbon::now();
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
     $sale = $this->model->create($data);
     if ($sale) {
       $sale->created_at = Carbon::parse($sale->created_at)->format('Y-m-d H:i:s');
@@ -168,7 +170,9 @@ class SaleService implements ISale
   public function update(array $data, int $id)
   {
     $data['updated_at'] = Carbon::now();
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
     $sale = $this->model->find($id);
     if ($sale) {
       $sale->fill($data);

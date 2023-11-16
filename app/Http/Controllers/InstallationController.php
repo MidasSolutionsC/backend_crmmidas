@@ -79,6 +79,21 @@ class InstallationController extends Controller{
     }
   }
 
+  public function getByAddress($addressId){
+    try{
+      $result = $this->installationService->getByAddress($addressId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos de la instalación', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->installationService->getById($id);
@@ -181,6 +196,60 @@ class InstallationController extends Controller{
       return $response;
     } catch(\Exception $e){
       return $this->responseError(['message' => 'Error al actualizar los datos de la instalación', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function updateComplete($id){
+    try{
+      // Iniciar una transacción
+      DB::beginTransaction();
+
+      $ventasId = $this->request->input('ventas_id');
+
+      if(empty($ventasId)){
+        // Consulta el último registro
+        $latestSale = Sale::latest()->first();
+        $nro_orden = 1;
+        if($latestSale){
+          $nro_orden = $latestSale->nro_orden + 1;
+        }
+
+        $reqSale = [
+          "nro_orden" => $nro_orden,
+          "comentario" => "",
+          "user_create_id" => $this->request->input('user_auth_id')
+        ];
+
+        $resSale = $this->saleService->create($reqSale);
+        if($resSale){
+          // $ventasId = $resSale->id;
+          $this->request['ventas_id'] = $resSale->id;
+        }
+      } 
+
+      $this->installationValidator->setRequest($this->request->all(), $id);
+      $validator = $this->installationValidator->validate();
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
+      } else {
+
+        // $response = $this->responseUpdate([$this->request->all()]);
+        $result = $this->installationService->update($this->request->all(), $id);
+        $response = $this->responseUpdate([$result]);
+      }
+  
+      // Si todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch(\Exception $e){
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al actualizar la instalación', 'error' => $e->getMessage()], 500);
     }
   }
 

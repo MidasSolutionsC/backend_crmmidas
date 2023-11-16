@@ -17,6 +17,12 @@ class TmpSaleDocumentValidator{
     }
   }
 
+  public function setRequest(array  $data, int $id = null){
+    $this->request = new Request();
+    $this->request->replace($data);
+    $this->id = $id;
+  }
+
   public function validate(){
     return Validator::make($this->request->all(), $this->rules());
   }
@@ -31,7 +37,7 @@ class TmpSaleDocumentValidator{
       'user_create_id' => 'nullable|integer',
       'user_update_id' => 'integer',
       'user_delete_id' => 'integer',
-      'is_active' => 'boolean',
+      'is_active' => 'nullable|boolean',
     ];
   }
 

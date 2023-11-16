@@ -122,7 +122,6 @@ class SaleDetailController extends Controller{
       DB::beginTransaction();
       
       $ventasId = $this->request->input('ventas_id');
-      $datos_json = $this->request->input('datos_json');
 
       if(empty($ventasId)){
         // Consulta el último registro
@@ -144,7 +143,7 @@ class SaleDetailController extends Controller{
           $this->request['ventas_id'] = $resSale->id;
         }
       } 
-     
+
       $validator = $this->saleDetailValidator->validate();
   
       if($validator->fails()){

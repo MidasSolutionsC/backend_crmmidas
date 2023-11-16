@@ -77,6 +77,26 @@ class TmpInstallationService implements IInstallation{
     return $result;
   }
 
+  public function getByAddress(int $addressId){
+    $query = $this->model->query();
+
+    $query->selectRaw("CONCAT_WS(', ',
+      CASE WHEN tipo IS NOT NULL AND tipo != '' THEN CONCAT(tipo, ' ', direccion) ELSE NULL END,
+      CASE WHEN numero IS NOT NULL AND numero != '' THEN CONCAT(' N° ', numero) ELSE NULL END,
+      CASE WHEN escalera IS NOT NULL AND escalera != '' THEN escalera ELSE NULL END,
+      CASE WHEN portal IS NOT NULL AND portal != '' THEN portal ELSE NULL END,
+      CASE WHEN planta IS NOT NULL AND planta != '' THEN planta ELSE NULL END,
+      CASE WHEN puerta IS NOT NULL AND puerta != '' THEN puerta ELSE NULL END
+    ) as direccion_completo");
+
+    if($addressId){
+      $query->where('direcciones_id', $addressId);
+    }
+
+    $result = $query->get();
+    return $result;
+  }
+
   public function getById(int $id){
     $query = $this->model->select();
     $query->selectRaw("CONCAT(tipo, ' ',  direccion, ', N° ', numero, ', ', escalera, ', ',  portal, ', ',  planta, ' ',  puerta) as direccion_completo");

@@ -41,6 +41,7 @@ class SaleDetail extends Model implements AuthorizableContract, AuthenticatableC
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
         'fecha_cierre' => 'datetime:Y-m-d H:i:s',
+        'datos_json' => 'array',
     ];
 
     /**
@@ -56,5 +57,13 @@ class SaleDetail extends Model implements AuthorizableContract, AuthenticatableC
 
     public function promotion(){
         return $this->belongsTo(Promotion::class, 'promociones_id');
+    }
+
+    public function installation(){
+        return $this->belongsTo(Installation::class, 'instalaciones_id');
+    }
+
+    public function typeStatus(){
+        return $this->belongsTo(TypeStatus::class, 'tipo_estados_id');
     }
 }

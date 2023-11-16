@@ -77,6 +77,29 @@ class InstallationService implements IInstallation{
     return $result;
   }
 
+  public function getByAddress(int $addressId){
+    $query = $this->model->query();
+
+    $query->select();
+    $query->selectRaw("CONCAT_WS(', ',
+      CASE WHEN tipo IS NOT NULL AND tipo != '' THEN CONCAT(tipo, ' ', direccion) ELSE NULL END,
+      CASE WHEN numero IS NOT NULL AND numero != '' THEN CONCAT(' N° ', numero) ELSE NULL END,
+      CASE WHEN escalera IS NOT NULL AND escalera != '' THEN escalera ELSE NULL END,
+      CASE WHEN portal IS NOT NULL AND portal != '' THEN portal ELSE NULL END,
+      CASE WHEN planta IS NOT NULL AND planta != '' THEN planta ELSE NULL END,
+      CASE WHEN puerta IS NOT NULL AND puerta != '' THEN puerta ELSE NULL END
+    ) as direccion_completo");
+
+    if($addressId){
+      $query->where('direcciones_id', $addressId);
+    }
+
+    $query->latest();
+
+    $result = $query->first();
+    return $result;
+  }
+
   public function getById(int $id){
     $query = $this->model->select();
     $result = $query->find($id);
@@ -85,7 +108,10 @@ class InstallationService implements IInstallation{
 
   public function create(array $data){
     $data['created_at'] = Carbon::now(); 
-    $data['user_create_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_create_id'] = $data['user_auth_id'];
+    }
+    
     $installation = $this->model->create($data);
     if($installation){
       $installation->created_at = Carbon::parse($installation->created_at)->format('Y-m-d H:i:s');
@@ -96,8 +122,12 @@ class InstallationService implements IInstallation{
 
   public function update(array $data, int $id){
     $data['updated_at'] = Carbon::now(); 
-    $data['user_update_id'] = $data['user_auth_id'];
+    if(isset($data['user_auth_id'])){
+      $data['user_update_id'] = $data['user_auth_id'];
+    }
+
     $installation = $this->model->find($id);
+
     if($installation){
       $installation->fill($data);
       $installation->save();

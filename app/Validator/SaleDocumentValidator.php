@@ -17,6 +17,12 @@ class SaleDocumentValidator{
     }
   }
 
+  public function setRequest(array  $data, int $id = null){
+    $this->request = new Request();
+    $this->request->replace($data);
+    $this->id = $id;
+  }
+
   public function validate(){
     return Validator::make($this->request->all(), $this->rules());
   }
@@ -27,11 +33,11 @@ class SaleDocumentValidator{
       'ventas_detalles_id' => 'nullable|integer',
       'tipo_documentos_id' => 'nullable|integer',
       'nombre' => 'required|string|max:70',
-      'archivo' => 'required|string|max:100',
-      'user_create_id' => 'required|integer',
-      'user_update_id' => 'integer',
-      'user_delete_id' => 'integer',
-      'is_active' => 'boolean',
+      'archivo' => 'nullable|string|max:100',
+      'user_create_id' => 'nullable|integer',
+      'user_update_id' => 'nullable|integer',
+      'user_delete_id' => 'nullable|integer',
+      'is_active' => 'nullable|boolean',
     ];
   }
 

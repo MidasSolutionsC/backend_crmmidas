@@ -66,8 +66,8 @@ class Person extends Model implements AuthenticatableContract, AuthorizableContr
         return $this->hasMany(IdentificationDocument::class, 'personas_id')
             ->join('tipo_documentos as TD', 'documentos_identificaciones.tipo_documentos_id', '=', 'TD.id')
             ->select(
-                'documentos_identificaciones.id', 
-                'documentos_identificaciones.personas_id', 
+                'documentos_identificaciones.id AS id', 
+                'documentos_identificaciones.personas_id AS personas_id', 
                 'documentos_identificaciones.tipo_documentos_id', 
                 'documentos_identificaciones.documento', 
                 'documentos_identificaciones.reverso_documento', 

@@ -433,8 +433,11 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // VENTAS
   $router->group(['prefix' => '/sale'], function () use ($router) {
     $router->get('/', 'SaleController@listAll');
+    $router->get('/index', 'SaleController@index');
     $router->get('/{id}', 'SaleController@get');
     $router->post('/', 'SaleController@create');
+    $router->post('/cancelProcess/{id}', 'SaleController@cancelProcess');
+    $router->post('/finalProcess/{id}', 'SaleController@finalProcess');
     $router->put('/{id}', 'SaleController@update');
     $router->delete('/{id}', 'SaleController@delete');
     $router->get('/restore/{id}', 'SaleController@restore');

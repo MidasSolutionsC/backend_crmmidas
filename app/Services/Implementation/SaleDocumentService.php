@@ -22,7 +22,8 @@ class SaleDocumentService implements ISaleDocument{
   }
 
   public function getFilterBySale(int $saleId){
-    $query = $this->model->select();
+    // $query = $this->model->select();
+    $query = $this->model->with('typeDocument:id,nombre,abreviacion')->select();
     if($saleId){
       $query->where('ventas_id', $saleId);
     }

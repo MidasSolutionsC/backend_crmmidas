@@ -22,48 +22,77 @@ class SaleService implements ISale
     $this->model = new Sale();
   }
 
-  public function index(array $data){
-    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+  public function index(array $data)
+  {
+    $page = !empty($data['page']) ? $data['page'] : 1; // Número de página
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
-    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+    $search = !empty($data['search']) ? $data['search'] : ""; // Término de búsqueda
 
     $query = $this->model->query();
+    $query->with([
+      'client.person.identifications',
+      'client.company.identifications',
+      'saleDetails',
+      'userCreate.person:id,nombres,apellido_paterno,apellido_materno',
+      'userCreate.typeUser:id,nombre',
+      'userUpdate.person:id,nombres,apellido_paterno,apellido_materno',
+      'userUpdate.typeUser:id,nombre'
+    ]);
+    $query->select();
 
-    $query->select(
-      'ventas.*',
-      'CL.persona_juridica as clientes_persona_juridica',
-      DB::raw('
-        CASE 
-          WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
-          WHEN CL.persona_juridica = 1 THEN EM.razon_social
-          ELSE NULL
-        END AS clientes_nombre,
-        CASE 
-          WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
-          WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
-          ELSE NULL
-        END AS clientes_tipo_documento,
-        CASE 
-          WHEN CL.persona_juridica = 0 THEN PR.documento
-          WHEN CL.persona_juridica = 1 THEN EM.documento
-          ELSE NULL
-        END AS clientes_documento
-      ')
-    );
+    // $query->select(
+    //   'ventas.*',
+    //   'CL.persona_juridica as clientes_persona_juridica',
+    //   DB::raw('
+    //     CASE 
+    //       WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
+    //       WHEN CL.persona_juridica = 1 THEN EM.razon_social
+    //       ELSE NULL
+    //     END AS clientes_nombre,
+    //     CASE 
+    //       WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
+    //       WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
+    //       ELSE NULL
+    //     END AS clientes_tipo_documento,
+    //     CASE 
+    //       WHEN CL.persona_juridica = 0 THEN PR.documento
+    //       WHEN CL.persona_juridica = 1 THEN EM.documento
+    //       ELSE NULL
+    //     END AS clientes_documento
+    //   ')
+    // );
 
-    $query->join('clientes as CL', 'ventas.clientes_id', 'CL.id');
-    $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
-    $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
-    $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
-    $query->leftJoin('tipo_documentos as TDE', 'EM.tipo_documentos_id', 'TDE.id');
+    // $query->join('clientes as CL', 'ventas.clientes_id', 'CL.id');
+    // $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
+    // $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
+    // $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
+    // $query->leftJoin('tipo_documentos as TDE', 'EM.tipo_documentos_id', 'TDE.id');
 
     // Aplicar filtro de búsqueda si se proporciona un término
-    if (!empty($search)) {
-        // $query->where('productos.nombre', 'LIKE', "%$search%")
-        //       ->orWhere('productos.descripcion', 'LIKE', "%$search%")
-        //       ->orWhere('PP.precio', 'LIKE', "%$search%")
-        //       ->orWhere('TS.nombre', 'LIKE', "%$search%");
-    }
+    // if (!empty($search)) {
+    //   $query->where('productos.nombre', 'LIKE', "%$search%")
+    //         ->orWhere('productos.descripcion', 'LIKE', "%$search%")
+    //         ->orWhere('PP.precio', 'LIKE', "%$search%")
+    //         ->orWhere('TS.nombre', 'LIKE', "%$search%");
+    // }
+    
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    $query->where(function ($query) use ($search) {
+      if(!empty($search)){
+        $query->where('fecha', 'LIKE', "%$search%")
+        ->orWhere('hora', 'LIKE', "%$search%");
+
+        $query->orWhereHas('client.person.identificationDocument', function ($query) use ($search) {
+            $query->select();
+            $query->where('documento', 'like', '%' . $search . '%');
+            $query->orWhereHas('typeDocument', function ($subQuery) use ($search) {
+              $subQuery->select();
+              $subQuery->where('abreviacion', 'LIKE', "%$search%");
+            });    
+        });   
+      }
+    });
 
     // Handle sorting
     if (!empty($data['column']) && !empty($data['order'])) {
@@ -75,9 +104,9 @@ class SaleService implements ISale
     $result = $query->paginate($perPage, ['*'], 'page', $page);
     $items = new Collection($result->items());
     $items = $items->map(function ($item, $key) use ($result) {
-        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
-        $item['index'] = $index;
-        return $item;
+      $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+      $item['index'] = $index;
+      return $item;
     });
 
     $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
@@ -94,32 +123,43 @@ class SaleService implements ISale
 
     $query = $this->model->query();
     // $query->with(['client.user.person.identifications']);
-    $query->select(
-      'ventas.*',
-      'CL.persona_juridica as clientes_persona_juridica',
-      // DB::raw('
-      //   CASE 
-      //     WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
-      //     WHEN CL.persona_juridica = 1 THEN EM.razon_social
-      //     ELSE NULL
-      //   END AS clientes_nombre,
-      //   CASE 
-      //     WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
-      //     WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
-      //     ELSE NULL
-      //   END AS clientes_tipo_documento,
-      //   CASE 
-      //     WHEN CL.persona_juridica = 0 THEN PR.documento
-      //     WHEN CL.persona_juridica = 1 THEN EM.documento
-      //     ELSE NULL
-      //   END AS clientes_documento
-      // ')
-    );
+    $query->with([
+      // 'client.person.identifications:documentos_identificaciones.id,documentos_identificaciones.documento',
+      'client.person.identifications',
+      'client.company.identifications',
+      'saleDetails',
+      'userCreate.person:id,nombres,apellido_paterno,apellido_materno',
+      'userCreate.typeUser:id,nombre',
+      'userUpdate.person:id,nombres,apellido_paterno,apellido_materno',
+      'userUpdate.typeUser:id,nombre'
+    ]);
+    $query->select();
+    // $query->select(
+    //   'ventas.*',
+    //   'CL.persona_juridica as clientes_persona_juridica',
+    //   DB::raw('
+    //     CASE 
+    //       WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
+    //       WHEN CL.persona_juridica = 1 THEN EM.razon_social
+    //       ELSE NULL
+    //     END AS clientes_nombre,
+    //     CASE 
+    //       WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
+    //       WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
+    //       ELSE NULL
+    //     END AS clientes_tipo_documento,
+    //     CASE 
+    //       WHEN CL.persona_juridica = 0 THEN PR.documento
+    //       WHEN CL.persona_juridica = 1 THEN EM.documento
+    //       ELSE NULL
+    //     END AS clientes_documento
+    //   ')
+    // );
 
-    $query->leftJoin('clientes as CL', 'ventas.clientes_id', 'CL.id');
-    $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
-    $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
-    // $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
+    // $query->leftJoin('clientes as CL', 'ventas.clientes_id', 'CL.id');
+    // $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
+    // $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
+    // // $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
     // $query->leftJoin('tipo_documentos as TDE', 'EM.tipo_documentos_id', 'TDE.id');
 
     // switch ($tipo_usuario) {
@@ -156,7 +196,7 @@ class SaleService implements ISale
   public function create(array $data)
   {
     $data['created_at'] = Carbon::now();
-    if(isset($data['user_auth_id'])){
+    if (isset($data['user_auth_id'])) {
       $data['user_create_id'] = $data['user_auth_id'];
     }
     $sale = $this->model->create($data);
@@ -170,7 +210,7 @@ class SaleService implements ISale
   public function update(array $data, int $id)
   {
     $data['updated_at'] = Carbon::now();
-    if(isset($data['user_auth_id'])){
+    if (isset($data['user_auth_id'])) {
       $data['user_update_id'] = $data['user_auth_id'];
     }
     $sale = $this->model->find($id);

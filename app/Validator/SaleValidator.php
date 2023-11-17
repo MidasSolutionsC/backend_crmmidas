@@ -17,6 +17,12 @@ class SaleValidator {
     }
   }
 
+  public function setRequest(array  $data, int $id = null){
+    $this->request = new Request();
+    $this->request->replace($data);
+    $this->id = $id;
+  }
+
   public function validate(){
     return Validator::make($this->request->all(), $this->rules());
   }

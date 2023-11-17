@@ -191,6 +191,104 @@ class SaleController extends Controller{
       return $this->responseError(['message' => 'Error al crear el producto', 'error' => $e->getMessage()], 500);
     }
   }
+
+  public function finalProcess($id)
+  {
+    try {
+      // Iniciar una transacción
+      DB::beginTransaction();
+
+      $clientId = $this->request->input('clientes_id');
+
+      if(empty($clientId)){
+        $response = $this->responseError(["message" => ["no se especifico id del cliente"]], 422);
+        DB::rollBack();
+      }
+
+      // $saleAfter = (array)$this->saleService->getById($id);
+      $saleAfter = json_decode(json_encode($this->saleService->getById($id)), true);
+
+      $saleCurrent = $this->request->all();
+      $dataMerge = array_merge($saleAfter, $saleCurrent);
+      // $dataMerge = array_merge($saleAfter, $saleCurrent, ['nro_orden' => $saleAfter['nro_orden']]);
+
+      // return $this->responseError(['message' => 'Error al actualizar los datos de la venta', 'error' => $saleAfter]);
+
+      $this->saleValidator->setRequest($dataMerge, $id);
+      $validator = $this->saleValidator->validate();
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
+      } else {
+        $result = $this->saleService->update($this->request->all(), $id);
+        if($result != null){
+          $response = $this->responseUpdate([$result]);
+        } else {
+          $response = $this->responseError(['message' => 'Error al actualizar los datos de la venta', 'error' => $result]);
+        }
+      }
+      
+      // SFFi todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+      // Maneja la excepción, por ejemplo, muestra un mensaje de error
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al finalizar la venta', 'error' => $e->getMessage()], 422);
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch (\Exception $e) {
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al completar la venta', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function cancelProcess($id)
+  {
+    try {
+      // Iniciar una transacción
+      DB::beginTransaction();
+
+      // $saleAfter = (array)$this->saleService->getById($id);
+      $saleAfter = json_decode(json_encode($this->saleService->getById($id)), true);
+
+      $saleCurrent = $this->request->all();
+      $dataMerge = array_merge($saleAfter, $saleCurrent, ['is_active' => 0]);
+
+      $this->saleValidator->setRequest($dataMerge, $id);
+      $validator = $this->saleValidator->validate();
+  
+      if($validator->fails()){
+        $response = $this->responseError($validator->errors(), 422);
+      } else {
+        $result = $this->saleService->update($this->request->all(), $id);
+        if($result != null){
+          $response = $this->responseUpdate([$result]);
+        } else {
+          $response = $this->responseError(['message' => 'Error al actualizar los datos de la venta', 'error' => $result]);
+        }
+      }
+      
+      // SFFi todo está bien, confirmar la transacción
+      DB::commit();
+      return $response;
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+      // Maneja la excepción, por ejemplo, muestra un mensaje de error
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al cancelar la venta', 'error' => $e->getMessage()], 422);
+    } catch (ValidationException $e) {
+      // Si hay errores de validación, revertir la transacción y devolver los errores
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error en la validación de datos.', 'error' => $e->validator->getMessageBag()], 422);
+    } catch (\Exception $e) {
+      // Si hay un error inesperado, revertir la transacción
+      DB::rollBack();
+      return $this->responseError(['message' => 'Error al cancelar la venta', 'error' => $e->getMessage()], 500);
+    }
+  }
   
   public function delete($id){
     try{

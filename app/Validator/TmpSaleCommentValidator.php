@@ -28,9 +28,9 @@ class TmpSaleCommentValidator{
       'fecha' => 'nullable|date:Y-m-d',
       'hora' => ['nullable', 'regex:/^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/'],
       'user_create_id' => 'nullable|integer',
-      'user_update_id' => 'integer',
-      'user_delete_id' => 'integer',
-      'is_active' => 'boolean',
+      'user_update_id' => 'nullable|integer',
+      'user_delete_id' => 'nullable|integer',
+      'is_active' => 'nullable|boolean',
 
     ];
   }

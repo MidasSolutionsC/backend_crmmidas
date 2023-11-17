@@ -47,4 +47,12 @@ class SaleDocument extends Model implements AuthorizableContract, Authenticatabl
         return $this->belongsTo(Sale::class, 'ventas_id');
     }
 
+    public function saleDetail(){
+        return $this->belongsTo(SaleDetail::class, 'ventas_detalles_id');
+    }
+
+    public function typeDocument(){
+        return $this->belongsTo(TypeDocument::class, 'tipo_documentos_id');
+    }
+
 }

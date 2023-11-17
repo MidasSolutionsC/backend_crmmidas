@@ -50,6 +50,14 @@ class Sale extends Model implements AuthorizableContract, AuthenticatableContrac
         return $this->belongsTo(Client::class, 'clientes_id');
     }
 
+    public function userCreate(){
+        return $this->belongsTo(User::class, 'user_create_id');
+    }
+
+    public function userUpdate(){
+        return $this->belongsTo(User::class, 'user_update_id');
+    }
+
     public function saleDetails()
     {
         return $this->hasMany(SaleDetail::class, 'ventas_id', 'id');

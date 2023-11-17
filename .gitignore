@@ -1,8 +1,5 @@
 /vendor
-<<<<<<< HEAD
 /public/files
-=======
->>>>>>> origin/main
 /.idea
 Homestead.json
 Homestead.yaml

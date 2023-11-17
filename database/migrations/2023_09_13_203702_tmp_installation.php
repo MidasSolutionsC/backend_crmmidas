@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('tmp_instalaciones', function (Blueprint $table) {
             $table->id();
             $table->foreignId('ventas_id'); 
+            $table->foreignId('direcciones_id')->nullable(); 
             $table->string('tipo', 20);
             $table->string('direccion', 200);
             $table->string('numero', 20)->nullable();
@@ -33,6 +34,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('ventas_id')->references('id')->on('tmp_ventas');
+            $table->foreign('direcciones_id')->references('id')->on('direcciones');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');
             $table->foreign('user_delete_id')->references('id')->on('usuarios');

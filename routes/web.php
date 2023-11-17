@@ -454,8 +454,13 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // INSTALACIONES
   $router->group(['prefix' => '/installation'], function () use ($router) {
     $router->get('/', 'InstallationController@listAll');
+    $router->post('/search', 'InstallationController@search');
+    $router->get('/getByAddress/{addressId}', 'InstallationController@getByAddress');
+    $router->get('/filterSale/{saleId}', 'InstallationController@getBySale');
     $router->get('/{id}', 'InstallationController@get');
     $router->post('/', 'InstallationController@create');
+    $router->post('/register', 'InstallationController@createComplete');
+    $router->put('/update/{id}', 'InstallationController@updateComplete');
     $router->put('/{id}', 'InstallationController@update');
     $router->delete('/{id}', 'InstallationController@delete');
     $router->get('/restore/{id}', 'InstallationController@restore');
@@ -481,7 +486,8 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/{id}', 'SaleDocumentController@get');
     $router->get('/filterSale/{saleId}', 'SaleDocumentController@getFilterBySale');
     $router->post('/', 'SaleDocumentController@create');
-    $router->put('/{id}', 'SaleDocumentController@update');
+    $router->post('register/', 'SaleDocumentController@createComplete');
+    $router->post('/update/{id}', 'SaleDocumentController@update');
     $router->delete('/{id}', 'SaleDocumentController@delete');
     $router->get('/restore/{id}', 'SaleDocumentController@restore');
   });
@@ -492,6 +498,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/filterSale/{saleId}', 'TmpSaleDocumentController@getFilterBySale');
     $router->get('/{id}', 'TmpSaleDocumentController@get');
     $router->post('/', 'TmpSaleDocumentController@create');
+    $router->post('register/', 'TmpSaleDocumentController@createComplete');
     $router->post('/update/{id}', 'TmpSaleDocumentController@update');
     $router->delete('/{id}', 'TmpSaleDocumentController@delete');
     $router->get('/restore/{id}', 'TmpSaleDocumentController@restore');
@@ -503,6 +510,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/{id}', 'SaleDetailController@get');
     $router->get('/filterSale/{saleId}', 'SaleDetailController@getFilterBySale');
     $router->post('/', 'SaleDetailController@create');
+    $router->post('/register', 'SaleDetailController@createComplete');
     $router->put('/{id}', 'SaleDetailController@update');
     $router->delete('/{id}', 'SaleDetailController@delete');
     $router->get('/restore/{id}', 'SaleDetailController@restore');

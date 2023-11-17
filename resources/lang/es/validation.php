@@ -28,6 +28,7 @@ return [
     'numeric' => 'El campo :attribute debe ser :size.',
   ],
   'json' => 'El campo :attribute debe ser una cadena JSON válida.',
+  'valid_json' => 'El campo :attribute debe ser un objeto JSON válido.',
   'array' => 'El campo :attribute debe ser un arreglo.',
   'file' => 'El campo :attribute debe ser un File.',
   'mimes' => 'El campo :attribute debe ser un archivo de tipo: :values.', // Mensaje para la regla 'file'

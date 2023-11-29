@@ -48,6 +48,21 @@ class SaleCommentController extends Controller{
     }
   }
 
+  public function getFilterBySaleDetail($saleDetailId){
+    try{
+      $result = $this->saleCommentService->getFilterBySaleDetail($saleDetailId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los comentarios de la venta', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function get($id){
     try{
       $result = $this->saleCommentService->getById($id);

@@ -88,7 +88,8 @@ class SaleDetailService implements ISaleDetail{
       'product.typeService:id,nombre,icono', 
       'promotion.typeCurrency:id,nombre,iso_code,simbolo', 
       'typeStatus',
-      'installation'
+      'installation',
+      // 'comments',
     ]);
     $query->select();
 

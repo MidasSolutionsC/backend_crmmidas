@@ -32,6 +32,25 @@ class SaleCommentService implements ISaleComment{
     return $result;
   }
 
+  public function getFilterBySaleDetail(int $saleDetailId){
+    $query = $this->model->query();
+
+    $query->with(['userCreate.person']);
+    $query->select();
+
+    if($saleDetailId){
+      $query->where('ventas_detalles_id', $saleDetailId);
+    }
+
+    $result = $query->orderBy('created_at', 'desc')
+      ->take(10) // Obtener los últimos 10 registros
+      ->get();
+
+
+    $newResult = collect($result)->sortBy('created_at')->values();
+    return $newResult;
+  }
+
   public function getById(int $id){
     $query = $this->model->select();
     $result = $query->find($id);

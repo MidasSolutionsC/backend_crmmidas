@@ -83,7 +83,13 @@ class SaleDetailService implements ISaleDetail{
     $query = $this->model->query();
 
     // $query->with(['product:id,nombre,tipo_servicios_id','product.typeService:id,nombre', 'promotion', 'typeStatus']);
-    $query->with(['product.latestPrice.typeCurrency:id,nombre,iso_code,simbolo','product.typeService:id,nombre', 'promotion.typeCurrency:id,nombre,iso_code,simbolo', 'typeStatus']);
+    $query->with([
+      'product.latestPrice.typeCurrency:id,nombre,iso_code,simbolo',
+      'product.typeService:id,nombre,icono', 
+      'promotion.typeCurrency:id,nombre,iso_code,simbolo', 
+      'typeStatus',
+      'installation'
+    ]);
     $query->select();
 
     // $query->select(

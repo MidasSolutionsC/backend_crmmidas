@@ -100,6 +100,21 @@ class SaleController extends Controller{
     }
   }
 
+  public function getWithAllReference($id){
+    try{
+      $result = $this->saleService->getByIdWithAll($id);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response([$result]);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al obtener los datos de la venta', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function create(){
     try{
       $validator = $this->saleValidator->validate();

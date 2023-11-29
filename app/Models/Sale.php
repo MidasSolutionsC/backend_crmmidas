@@ -62,4 +62,9 @@ class Sale extends Model implements AuthorizableContract, AuthenticatableContrac
     {
         return $this->hasMany(SaleDetail::class, 'ventas_id', 'id');
     }
+
+    public function installations()
+    {
+        return $this->hasMany(Installation::class, 'ventas_id', 'id');
+    }
 }

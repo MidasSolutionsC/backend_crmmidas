@@ -31,51 +31,20 @@ class SaleService implements ISale
     $query = $this->model->query();
     $query->with([
       'client.person.identifications',
+      // 'client.person.contacts',
+      // 'client.person.addresses',
       'client.company.identifications',
-      'saleDetails',
+      // 'client.company.contacts',
+      // 'client.company.addresses',
+      // 'client.bankAccounts',
+      // 'client.bankAccounts.typeBankAccount:id,nombre',
+      // 'saleDetails',
       'userCreate.person:id,nombres,apellido_paterno,apellido_materno',
       'userCreate.typeUser:id,nombre',
       'userUpdate.person:id,nombres,apellido_paterno,apellido_materno',
       'userUpdate.typeUser:id,nombre'
     ]);
     $query->select();
-
-    // $query->select(
-    //   'ventas.*',
-    //   'CL.persona_juridica as clientes_persona_juridica',
-    //   DB::raw('
-    //     CASE 
-    //       WHEN CL.persona_juridica = 0 THEN CONCAT(PR.nombres, " ", PR.apellido_paterno, " ", PR.apellido_materno)
-    //       WHEN CL.persona_juridica = 1 THEN EM.razon_social
-    //       ELSE NULL
-    //     END AS clientes_nombre,
-    //     CASE 
-    //       WHEN CL.persona_juridica = 0 THEN TDP.abreviacion
-    //       WHEN CL.persona_juridica = 1 THEN TDE.abreviacion
-    //       ELSE NULL
-    //     END AS clientes_tipo_documento,
-    //     CASE 
-    //       WHEN CL.persona_juridica = 0 THEN PR.documento
-    //       WHEN CL.persona_juridica = 1 THEN EM.documento
-    //       ELSE NULL
-    //     END AS clientes_documento
-    //   ')
-    // );
-
-    // $query->join('clientes as CL', 'ventas.clientes_id', 'CL.id');
-    // $query->leftJoin('personas as PR', 'CL.personas_id', 'PR.id');
-    // $query->leftJoin('empresas as EM', 'CL.empresas_id', 'EM.id');
-    // $query->leftJoin('tipo_documentos as TDP', 'PR.tipo_documentos_id', 'TDP.id');
-    // $query->leftJoin('tipo_documentos as TDE', 'EM.tipo_documentos_id', 'TDE.id');
-
-    // Aplicar filtro de búsqueda si se proporciona un término
-    // if (!empty($search)) {
-    //   $query->where('productos.nombre', 'LIKE', "%$search%")
-    //         ->orWhere('productos.descripcion', 'LIKE', "%$search%")
-    //         ->orWhere('PP.precio', 'LIKE', "%$search%")
-    //         ->orWhere('TS.nombre', 'LIKE', "%$search%");
-    // }
-    
 
     // Aplicar filtro de búsqueda si se proporciona un término
     $query->where(function ($query) use ($search) {
@@ -126,8 +95,14 @@ class SaleService implements ISale
     $query->with([
       // 'client.person.identifications:documentos_identificaciones.id,documentos_identificaciones.documento',
       'client.person.identifications',
+      // 'client.person.contacts',
+      // 'client.person.addresses',
       'client.company.identifications',
-      'saleDetails',
+      // 'client.company.contacts',
+      // 'client.company.addresses',
+      // 'client.bankAccounts:id,cuenta,tipo_cuentas_bancarias_id,is_primary',
+      // 'client.bankAccounts.typeBankAccount:id,nombre',
+      // 'saleDetails',
       'userCreate.person:id,nombres,apellido_paterno,apellido_materno',
       'userCreate.typeUser:id,nombre',
       'userUpdate.person:id,nombres,apellido_paterno,apellido_materno',
@@ -189,6 +164,32 @@ class SaleService implements ISale
   public function getById(int $id)
   {
     $query = $this->model->select();
+    $result = $query->find($id);
+    return $result;
+  }
+
+  public function getByIdWithAll(int $id)
+  {
+    $query = $this->model->query();
+    // $query->with(['client.user.person.identifications']);
+    $query->with([
+      // 'client.person.identifications:documentos_identificaciones.id,documentos_identificaciones.documento',
+      'client.person.identifications',
+      'client.person.contacts',
+      'client.person.addresses',
+      'client.company.identifications',
+      'client.company.contacts',
+      'client.company.addresses',
+      // 'client.bankAccounts:id,cuenta,tipo_cuentas_bancarias_id,is_primary',
+      'client.bankAccounts.typeBankAccount:id,nombre',
+      'saleDetails',
+      'installations',
+      'userCreate.person:id,nombres,apellido_paterno,apellido_materno',
+      'userCreate.typeUser:id,nombre',
+      'userUpdate.person:id,nombres,apellido_paterno,apellido_materno',
+      'userUpdate.typeUser:id,nombre'
+    ]);
+    $query->select();
     $result = $query->find($id);
     return $result;
   }

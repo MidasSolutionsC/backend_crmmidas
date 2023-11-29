@@ -435,6 +435,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->get('/', 'SaleController@listAll');
     $router->get('/index', 'SaleController@index');
     $router->get('/{id}', 'SaleController@get');
+    $router->get('getWithAllReference/{id}', 'SaleController@getWithAllReference');
     $router->post('/', 'SaleController@create');
     $router->post('/cancelProcess/{id}', 'SaleController@cancelProcess');
     $router->post('/finalProcess/{id}', 'SaleController@finalProcess');

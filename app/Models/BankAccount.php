@@ -39,4 +39,7 @@ class BankAccount extends Model implements AuthenticatableContract, Authorizable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function typeBankAccount(){
+        return $this->belongsTo(TypeBankAccount::class, 'tipo_cuentas_bancarias_id');
+    }
 }

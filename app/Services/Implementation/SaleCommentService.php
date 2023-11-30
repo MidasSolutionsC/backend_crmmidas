@@ -6,6 +6,8 @@ use App\Models\SaleComment;
 use App\Services\Interfaces\ISaleComment;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 
 class SaleCommentService implements ISaleComment{
@@ -15,6 +17,47 @@ class SaleCommentService implements ISaleComment{
   public function __construct()
   {
     $this->model = new SaleComment();
+  }
+
+  
+  public function index(array $data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+    $saleDetailId = !empty($data['ventas_detalles_id']) ? $data['ventas_detalles_id']: null; // Término de búsqueda
+
+    $query = SaleComment::query();
+    $query->select();
+
+    if(!empty($saleDetailId)){
+      $query->where('ventas_detalles_id', $saleDetailId);
+    }
+
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    if (!empty($search)) {
+        // $query->where('IT.localidad', 'LIKE', "%$search%")
+        //       ->orWhere('IT.provincia', 'LIKE', "%$search%")
+        //       ->orWhere('SR.nombre', 'LIKE', "%$search%");
+    }
+
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
   }
 
   public function getAll(){
@@ -35,7 +78,7 @@ class SaleCommentService implements ISaleComment{
   public function getFilterBySaleDetail(int $saleDetailId){
     $query = $this->model->query();
 
-    $query->with(['userCreate.person']);
+    $query->with(['userCreate.person', 'userCreate.typeUser:id,nombre']);
     $query->select();
 
     if($saleDetailId){
@@ -49,6 +92,38 @@ class SaleCommentService implements ISaleComment{
 
     $newResult = collect($result)->sortBy('created_at')->values();
     return $newResult;
+  }
+
+  public function getFilterBySaleDetailAsync(array $data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+    $saleDetailId = !empty($data['ventas_detalles_id']) ? $data['ventas_detalles_id']: null; // Término de búsqueda
+
+    $query = SaleComment::query();
+    $query->select();
+
+    if(!empty($saleDetailId)){
+      $query->where('ventas_detalles_id', $saleDetailId);
+    }
+
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
   }
 
   public function getById(int $id){

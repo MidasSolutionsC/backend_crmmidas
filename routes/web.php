@@ -558,8 +558,10 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // SERVICIOS COMENTARIOS
   $router->group(['prefix' => '/saleComment'], function () use ($router) {
     $router->get('/', 'SaleCommentController@listAll');
+    $router->get('/index', 'SaleCommentController@index');
     $router->get('/{id}', 'SaleCommentController@get');
     $router->get('/filterSale/{saleId}', 'SaleCommentController@getFilterBySale');
+    $router->get('/filterSaleDetail/{saleDetailId}', 'SaleCommentController@getFilterBySaleDetail');
     $router->post('/', 'SaleCommentController@create');
     $router->put('/{id}', 'SaleCommentController@update');
     $router->delete('/{id}', 'SaleCommentController@delete');

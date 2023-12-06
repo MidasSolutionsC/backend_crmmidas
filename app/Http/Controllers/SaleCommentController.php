@@ -18,6 +18,24 @@ class SaleCommentController extends Controller{
     $this->saleCommentValidator = $saleCommentValidator;
   }
 
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->saleCommentService->index($data);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los comentarios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->saleCommentService->getAll();
@@ -36,6 +54,21 @@ class SaleCommentController extends Controller{
   public function getFilterBySale($saleId){
     try{
       $result = $this->saleCommentService->getFilterBySale($saleId);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los comentarios de la venta', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function getFilterBySaleDetail($saleDetailId){
+    try{
+      $result = $this->saleCommentService->getFilterBySaleDetail($saleDetailId);
       $response = $this->response();
   
       if($result != null){

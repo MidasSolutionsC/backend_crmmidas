@@ -39,4 +39,12 @@ class SaleComment extends Model implements AuthorizableContract, Authenticatable
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
+    public function userCreate(){
+        return $this->belongsTo(User::class, 'user_create_id', 'id');
+    }
+
+    public function userUpdate(){
+        return $this->belongsTo(User::class, 'user_update_id', 'id');
+    }
+
 }

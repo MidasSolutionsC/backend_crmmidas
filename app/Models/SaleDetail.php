@@ -66,4 +66,8 @@ class SaleDetail extends Model implements AuthorizableContract, AuthenticatableC
     public function typeStatus(){
         return $this->belongsTo(TypeStatus::class, 'tipo_estados_id');
     }
+
+    public function comments(){
+        return $this->hasMany(SaleComment::class, 'ventas_detalles_id', 'id');
+    }
 }

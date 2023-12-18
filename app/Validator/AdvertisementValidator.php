@@ -27,7 +27,7 @@ class AdvertisementValidator {
       'descripcion' => 'nullable|string|max:550',
       'tipo' => 'required|string|in:I,E',
       'imagen' => 'nullable|string|max:100',
-      'file' => 'nullable|file|max:10240', // 10 megabytes.
+      'file' => 'nullable|file|max:102400', // 100 megabytes.
       'is_active' => 'nullable|boolean',
       'user_create_id' => 'nullable|integer',
       'user_update_id' => 'integer',

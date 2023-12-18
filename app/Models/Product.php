@@ -1,4 +1,5 @@
-<?php   
+<?php
+
 namespace App\Models;
 
 use Illuminate\Auth\Authenticatable;
@@ -9,7 +10,8 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class Product extends Model implements AuthorizableContract, AuthenticatableContract{
+class Product extends Model implements AuthorizableContract, AuthenticatableContract
+{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
     protected $table = "productos";
@@ -30,7 +32,7 @@ class Product extends Model implements AuthorizableContract, AuthenticatableCont
         'updated_at',
         'deleted_at',
     ];
-    
+
 
     public $timestamps = false;
 
@@ -43,15 +45,18 @@ class Product extends Model implements AuthorizableContract, AuthenticatableCont
     ];
 
     // En el modelo Promotion
-    public function typeService(){
+    public function typeService()
+    {
         return $this->belongsTo(TypeService::class, 'tipo_servicios_id');
     }
 
-    public function category(){
+    public function category()
+    {
         return $this->belongsTo(Category::class, 'categorias_id');
     }
 
-    public function brand(){
+    public function brand()
+    {
         return $this->belongsTo(Brand::class, 'marcas_id');
     }
 
@@ -60,13 +65,19 @@ class Product extends Model implements AuthorizableContract, AuthenticatableCont
         return $this->hasMany(ProductPrice::class, 'productos_id');
     }
 
-    public function latestPrice() {
+    public function latestPrice()
+    {
         return $this->hasOne(ProductPrice::class, 'productos_id')->latest();
     }
 
-    public function getLastPrice(){
+    public function getLastPrice()
+    {
         $ultimoPrecio = $this->precios()->latest('created_at')->first();
         return $ultimoPrecio ? $ultimoPrecio->precio : null;
     }
 
+    public function saleDetails()
+    {
+        return $this->hasMany(SaleDetail::class, 'productos_id');
+    }
 }

@@ -1,4 +1,5 @@
-<?php   
+<?php
+
 namespace App\Models;
 
 use Illuminate\Auth\Authenticatable;
@@ -9,7 +10,8 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 
-class Brand extends Model implements AuthorizableContract, AuthenticatableContract{
+class Brand extends Model implements AuthorizableContract, AuthenticatableContract
+{
     use Authenticatable, Authorizable, HasFactory, SoftDeletes;
 
     protected $table = "marcas";
@@ -35,4 +37,10 @@ class Brand extends Model implements AuthorizableContract, AuthenticatableContra
         'created_at' => 'datetime:Y-m-d H:i:s',
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
+
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'marcas_id');
+    }
 }

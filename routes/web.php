@@ -611,4 +611,11 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->delete('/{id}', 'IpAllowedController@delete');
     $router->get('/restore/{id}', 'IpAllowedController@restore');
   });
+
+  // REPORTES
+  $router->group(['prefix' => '/report'], function () use ($router) {
+    $router->post('/sales-brand', 'ReportController@salesByBrand');
+    $router->post('/sales-coordinator', 'ReportController@salesByCoordinator');
+    $router->post('/sales-seller', 'ReportController@salesBySeller');
+  });
 });

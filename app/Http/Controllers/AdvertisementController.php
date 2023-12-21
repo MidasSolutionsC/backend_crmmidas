@@ -19,6 +19,9 @@ class AdvertisementController extends Controller{
     $this->advertisementValidator = $advertisementValidator;
   }
 
+  public function getAll() {
+    return response()->json($this->advertisementService->getAll());
+    }
   public function index(){
     try{
       $data = $this->request->input('data');
@@ -89,7 +92,6 @@ class AdvertisementController extends Controller{
       return $this->responseError(['message' => 'Error al crear el anuncio', 'error' => $e->getMessage()], 500);
     }
   }
-
   public function update($id){
     try{
       $validator = $this->advertisementValidator->validate();

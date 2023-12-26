@@ -97,8 +97,7 @@ class UserController extends Controller{
       return $this->responseError(['message' => 'Error al listar los usuarios', 'error' => $e->getMessage()], 500);
     }
   }
-
-  public function get($id){
+ public function get($id){
     try{
       $result = $this->userService->getById($id);
       $response = $this->response();

@@ -24,11 +24,17 @@ class SaleService implements ISale
 
   public function index(array $data)
   {
+    $id_usuario = Auth::user()->id;
+    $o_usuario = User::find($id_usuario);
+    $o_tipo_usuario = TypeUser::find($o_usuario->tipo_usuarios_id);
+    $tipo_usuario = strtoupper(trim($o_tipo_usuario->nombre));
+
     $page = !empty($data['page']) ? $data['page'] : 1; // Número de página
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
     $search = !empty($data['search']) ? $data['search'] : ""; // Término de búsqueda
 
     $query = $this->model->query();
+
     $query->with([
       'client.person.identifications',
       // 'client.person.contacts',
@@ -46,20 +52,50 @@ class SaleService implements ISale
     ]);
     $query->select();
 
+
+    //POR ROL
+
+    switch ($tipo_usuario) {
+
+      case 'VENDEDOR':
+        $query->where('user_create_id', $id_usuario);
+
+        break;
+      case 'BACKOFFICE':
+        DB::statement("SET SQL_MODE=''");
+        $query->join('integrantes as I', 'ventas.user_create_id', '=', 'I.usuarios_id')->where('I.deleted_at', null);
+        $query->select([
+          'ventas.*',
+          'I.id as integrante_id' // Alias para la columna 'id' de la tabla 'integrantes'
+        ]);
+        $query->whereIn('I.grupos_id', function ($subquery) use ($id_usuario) {
+          $subquery->select('grupos_id')
+            ->from('integrantes')
+            ->where('usuarios_id', $id_usuario);
+        });
+        $query->groupBy('ventas.id');
+        break;
+
+      default;
+    }
+
+    //////////
+
+
     // Aplicar filtro de búsqueda si se proporciona un término
     $query->where(function ($query) use ($search) {
-      if(!empty($search)){
+      if (!empty($search)) {
         $query->where('fecha', 'LIKE', "%$search%")
-        ->orWhere('hora', 'LIKE', "%$search%");
+          ->orWhere('hora', 'LIKE', "%$search%");
 
         $query->orWhereHas('client.person.identificationDocument', function ($query) use ($search) {
-            $query->select();
-            $query->where('documento', 'like', '%' . $search . '%');
-            $query->orWhereHas('typeDocument', function ($subQuery) use ($search) {
-              $subQuery->select();
-              $subQuery->where('abreviacion', 'LIKE', "%$search%");
-            });    
-        });   
+          $query->select();
+          $query->where('documento', 'like', '%' . $search . '%');
+          $query->orWhereHas('typeDocument', function ($subQuery) use ($search) {
+            $subQuery->select();
+            $subQuery->where('abreviacion', 'LIKE', "%$search%");
+          });
+        });
       }
     });
 

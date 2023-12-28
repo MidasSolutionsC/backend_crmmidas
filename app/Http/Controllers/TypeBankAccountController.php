@@ -18,6 +18,24 @@ class TypeBankAccountController extends Controller{
     $this->typeBankAccountValidator = $typeBankAccountValidator;
   }
 
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->typeBankAccountService->index($data);
+      $response = $this->response();
+  
+      if(!is_null($result)){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los tipo de cuentas bancarias', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->typeBankAccountService->getAll();

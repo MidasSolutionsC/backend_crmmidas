@@ -17,6 +17,24 @@ class TypeDocumentController extends Controller{
     $this->typeDocumentValidator = $typeDocumentValidator;
   }
 
+  public function index(){
+    try{
+      $data = $this->request->input('data');
+      $data = json_decode($data, true);
+
+      $result = $this->typeDocumentService->index($data);
+      $response = $this->response();
+  
+      if(!is_null($result)){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los tipo de documentos', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->typeDocumentService->getAll();

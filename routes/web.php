@@ -36,6 +36,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // PAISES
   $router->group(['prefix' => '/country'], function () use ($router) {
     $router->get('/', 'CountryController@listAll');
+    $router->get('/index', 'CountryController@index');
     $router->get('/{id}', 'CountryController@get');
     $router->post('/', 'CountryController@create');
     $router->put('/{id}', 'CountryController@update');
@@ -57,6 +58,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // SEDES
   $router->group(['prefix' => '/campus'], function () use ($router) {
     $router->get('/', 'CampusController@listAll');
+    $router->get('/index', 'CampusController@index');
     $router->get('/{id}', 'CampusController@get');
     $router->post('/', 'CampusController@create');
     $router->post('/{id}', 'CampusController@update');
@@ -67,6 +69,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // TIPO DE ESTADOS
   $router->group(['prefix' => '/typeStatus'], function () use ($router) {
     $router->get('/', 'TypeStatusController@listAll');
+    $router->get('/index', 'TypeStatusController@index');
     $router->get('/{id}', 'TypeStatusController@get');
     $router->post('/', 'TypeStatusController@create');
     $router->put('/{id}', 'TypeStatusController@update');
@@ -77,6 +80,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // TIPO DE DOCUMENTOS
   $router->group(['prefix' => '/typeDocument'], function () use ($router) {
     $router->get('/', 'TypeDocumentController@listAll');
+    $router->get('/index', 'TypeDocumentController@index');
     $router->get('/{id}', 'TypeDocumentController@get');
     $router->post('/', 'TypeDocumentController@create');
     $router->put('/{id}', 'TypeDocumentController@update');
@@ -87,6 +91,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // TIPO DE USUARIO
   $router->group(['prefix' => '/typeUser'], function () use ($router) {
     $router->get('/', 'TypeUserController@listAll');
+    $router->get('/index', 'TypeUserController@index');
     $router->get('/{id}', 'TypeUserController@get');
     $router->post('/', 'TypeUserController@create');
     $router->put('/{id}', 'TypeUserController@update');
@@ -316,6 +321,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // TIPO DE CUENTAS BANCARIAS
   $router->group(['prefix' => '/typeBankAccount'], function () use ($router) {
     $router->get('/', 'TypeBankAccountController@listAll');
+    $router->get('/index', 'TypeBankAccountController@index');
     $router->get('/{id}', 'TypeBankAccountController@get');
     $router->post('/', 'TypeBankAccountController@create');
     $router->put('/{id}', 'TypeBankAccountController@update');
@@ -338,6 +344,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
   // TPO DE SERVICIOS
   $router->group(['prefix' => '/typeService'], function () use ($router) {
     $router->get('/', 'TypeServiceController@listAll');
+    $router->get('/index', 'TypeServiceController@index');
     $router->post('/search', 'TypeServiceController@search');
     $router->get('/{id}', 'TypeServiceController@get');
     $router->post('/', 'TypeServiceController@create');

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -6,7 +7,8 @@ use App\Services\Implementation\AdvertisementService;
 use App\Validator\AdvertisementValidator;
 use App\Utilities\FileUploader;
 
-class AdvertisementController extends Controller{
+class AdvertisementController extends Controller
+{
 
   private $request;
   private $advertisementService;
@@ -19,134 +21,156 @@ class AdvertisementController extends Controller{
     $this->advertisementValidator = $advertisementValidator;
   }
 
-  public function getAll() {
+  public function getAll()
+  {
     return response()->json($this->advertisementService->getAll());
-    }
-  public function index(){
-    try{
+  }
+  public function index()
+  {
+    try {
       $data = $this->request->input('data');
       $data = json_decode($data, true);
 
       $result = $this->advertisementService->index($data);
       $response = $this->response();
-  
-      if($result != null){
+
+      if ($result != null) {
         $response = $this->response($result);
-      } 
-  
+      }
+
       return $response;
-    } catch(\Exception $e){
+    } catch (\Exception $e) {
       return $this->responseError(['message' => 'Error al listar los anuncios', 'error' => $e->getMessage()], 500);
     }
   }
 
-  public function listAll(){
-    try{
+  public function listAll()
+  {
+    try {
       $result = $this->advertisementService->getAll();
       $response = $this->response();
-  
-      if($result != null){
+
+      if ($result != null) {
         $response = $this->response($result);
-      } 
-  
+      }
+
       return $response;
-    } catch(\Exception $e){
+    } catch (\Exception $e) {
       return $this->responseError(['message' => 'Error al listar los anuncios', 'error' => $e->getMessage()], 500);
     }
   }
 
-  public function get($id){
-    try{
+  public function get($id)
+  {
+    try {
       $result = $this->advertisementService->getById($id);
       $response = $this->response();
-  
-      if($result != null){
+
+      if ($result != null) {
         $response = $this->response([$result]);
-      } 
-  
+      }
+
       return $response;
-    } catch(\Exception $e){
+    } catch (\Exception $e) {
       return $this->responseError(['message' => 'Error al obtener los datos del anuncio', 'error' => $e->getMessage()], 500);
     }
   }
 
-  public function create(){
-    try{
+  public function create()
+  {
+    try {
       $validator = $this->advertisementValidator->validate();
-  
-      if($validator->fails()){
+
+      if ($validator->fails()) {
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        if($this->request->has('file')){
+        if ($this->request->has('file')) {
           $file = $this->request->file('file');
           $fileName = FileUploader::upload($file, 'files/advertisement/', []);
           $this->request['imagen'] = $fileName;
         }
-        
+
         $result = $this->advertisementService->create($this->request->all());
         $response = $this->responseCreated([$result]);
       }
-  
+
       return $response;
-    } catch(\Exception $e){
+    } catch (\Exception $e) {
       return $this->responseError(['message' => 'Error al crear el anuncio', 'error' => $e->getMessage()], 500);
     }
   }
-  public function update($id){
-    try{
+
+  public function order()
+  {
+    try {
+
+      $result = $this->advertisementService->order($this->request->all());
+
+      $response = $this->response($result);
+
+      return $response;
+    } catch (\Exception $e) {
+      return $this->responseError(['message' => 'Error al ordenar los anuncios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function update($id)
+  {
+    try {
       $validator = $this->advertisementValidator->validate();
-  
-      if($validator->fails()){
+
+      if ($validator->fails()) {
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        if($this->request->has('file')){
+        if ($this->request->has('file')) {
           $file = $this->request->file('file');
           $fileName = FileUploader::upload($file, 'files/advertisement/', []);
           $this->request['imagen'] = $fileName;
-        }        
+        }
 
         $result = $this->advertisementService->update($this->request->all(), $id);
-        if($result != null){
+        if ($result != null) {
           $response = $this->responseUpdate([$result]);
         } else {
           $response = $this->responseError(['message' => 'Error al actualizar los datos del anuncio', 'error' => $result]);
         }
       }
-  
+
       return $response;
-    } catch(\Exception $e){
+    } catch (\Exception $e) {
       return $this->responseError(['message' => 'Error al actualizar los datos del anuncio', 'error' => $e->getMessage()], 500);
     }
   }
 
-  public function delete($id){
-    try{
+  public function delete($id)
+  {
+    try {
       $result = $this->advertisementService->delete($id);
-      if($result){
+      if ($result) {
         $response = $this->responseDelete([$result]);
       } else {
         $response = $this->responseError(['message' => 'El recurso solicitado no existe o ha sido eliminado previamente.']);
       }
-  
+
       return $response;
-    } catch(\Exception $e){
+    } catch (\Exception $e) {
       return $this->responseError(['message' => 'Error al eliminar el anuncio', 'error' => $e->getMessage()], 500);
     }
   }
 
-  public function restore($id){
-    try{
+  public function restore($id)
+  {
+    try {
       $result = $this->advertisementService->restore($id);
-      if($result){
+      if ($result) {
         $response = $this->responseRestore([$result]);
       } else {
         $response = $this->responseError(['message' => 'El recurso solicitado ha sido restaurado previamente.']);
       }
-  
+
       return $response;
-    } catch(\Exception $e){
+    } catch (\Exception $e) {
       return $this->responseError(['message' => 'Error al restaurar el anuncio', 'error' => $e->getMessage()], 500);
     }
-    
   }
 }

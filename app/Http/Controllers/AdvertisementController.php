@@ -25,6 +25,7 @@ class AdvertisementController extends Controller
   {
     return response()->json($this->advertisementService->getAll());
   }
+
   public function index()
   {
     try {
@@ -100,6 +101,7 @@ class AdvertisementController extends Controller
     }
   }
 
+
   public function order()
   {
     try {
@@ -113,6 +115,7 @@ class AdvertisementController extends Controller
       return $this->responseError(['message' => 'Error al ordenar los anuncios', 'error' => $e->getMessage()], 500);
     }
   }
+
 
   public function update($id)
   {

@@ -4,6 +4,7 @@ namespace App\Services\Interfaces;
 
 
 interface ITypeUser{
+  function index(array $data);
   function getAll();
   function getById(int $id);
   function getByName(string $nombre);

@@ -5,6 +5,9 @@ namespace App\Services\Implementation;
 use App\Models\TypeUser;
 use App\Services\Interfaces\ITypeUser;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class TypeUserService implements ITypeUser{
 
@@ -13,6 +16,43 @@ class TypeUserService implements ITypeUser{
   public function __construct()
   {
     $this->model = new TypeUser();
+  }
+
+  public function index($data){
+    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+    $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
+    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
+
+    $query = $this->model->query();
+
+
+    // Aplicar filtro de búsqueda si se proporciona un término
+    $query->where(function ($query) use ($search) {
+      if(!empty($search)){
+        $query->where('nombre', 'LIKE', "%$search%")
+          ->orWhere('descripcion', 'like', "%$search%")
+          ->orWhere('created_at', 'like', "%$search%")
+          ->orWhere('updated_at', 'like', "%$search%");
+      }
+    });
+  
+    // Handle sorting
+    if (!empty($data['column']) && !empty($data['order'])) {
+      $column = $data['column'];
+      $order = $data['order'];
+      $query->orderBy($column, $order);
+    }
+
+    $result = $query->paginate($perPage, ['*'], 'page', $page);
+    $items = new Collection($result->items());
+    $items = $items->map(function ($item, $key) use ($result) {
+        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+        $item['index'] = $index;
+        return $item;
+    });
+
+    $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
+    return $paginator;
   }
 
   public function getAll(){

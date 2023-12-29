@@ -606,6 +606,7 @@ $router->group(['prefix' => '/api/v1'], function () use ($router) {
     $router->post('/update/{id}', 'AdvertisementController@update');
     $router->delete('/{id}', 'AdvertisementController@delete');
     $router->get('/restore/{id}', 'AdvertisementController@restore');
+    $router->post('/order', 'AdvertisementController@order');
   });
 
   // IPs

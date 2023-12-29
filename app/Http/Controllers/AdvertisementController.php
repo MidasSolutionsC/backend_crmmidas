@@ -25,7 +25,7 @@ class AdvertisementController extends Controller
   {
     return response()->json($this->advertisementService->getAll());
   }
-  
+
   public function index()
   {
     try {
@@ -100,6 +100,23 @@ class AdvertisementController extends Controller
       return $this->responseError(['message' => 'Error al crear el anuncio', 'error' => $e->getMessage()], 500);
     }
   }
+
+
+  public function order()
+  {
+    try {
+
+      $result = $this->advertisementService->order($this->request->all());
+
+      $response = $this->response($result);
+
+      return $response;
+    } catch (\Exception $e) {
+      return $this->responseError(['message' => 'Error al ordenar los anuncios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+
   public function update($id)
   {
     try {

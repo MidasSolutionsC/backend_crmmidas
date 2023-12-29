@@ -105,7 +105,7 @@ class SaleDocumentController extends Controller{
       $ventasId = $this->request->input('ventas_id');
 
       if(empty($ventasId)){
-        $latestSale = Sale::latest()->first();
+        $latestSale = Sale::withTrashed()->latest()->first();
         $nro_orden = 1;
         if($latestSale){
           $nro_orden = $latestSale->nro_orden + 1;

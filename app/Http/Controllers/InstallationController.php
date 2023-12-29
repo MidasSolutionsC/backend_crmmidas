@@ -135,7 +135,7 @@ class InstallationController extends Controller{
 
       if(empty($ventasId)){
         // Consulta el último registro
-        $latestSale = Sale::latest()->first();
+        $latestSale = Sale::withTrashed()->latest()->first();
         $nro_orden = 1;
         if($latestSale){
           $nro_orden = $latestSale->nro_orden + 1;
@@ -208,7 +208,7 @@ class InstallationController extends Controller{
 
       if(empty($ventasId)){
         // Consulta el último registro
-        $latestSale = Sale::latest()->first();
+        $latestSale = Sale::withTrashed()->latest()->first();
         $nro_orden = 1;
         if($latestSale){
           $nro_orden = $latestSale->nro_orden + 1;

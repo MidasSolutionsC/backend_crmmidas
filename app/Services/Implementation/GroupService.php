@@ -3,12 +3,17 @@
 namespace App\Services\Implementation;
 
 use App\Models\Group;
+use App\Models\TypeUser;
+use App\Models\User;
 use App\Services\Interfaces\IGroup;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
-class GroupService implements IGroup{
+class GroupService implements IGroup
+{
 
   private $model;
 
@@ -17,11 +22,19 @@ class GroupService implements IGroup{
     $this->model = new Group();
   }
 
-  public function index($data){
-    $page = !empty($data['page'])? $data['page'] : 1; // Número de página
+  public function index($data)
+  {
+
+    $id_usuario = Auth::user()->id;
+    $o_usuario = User::find($id_usuario);
+    $o_tipo_usuario = TypeUser::find($o_usuario->tipo_usuarios_id);
+    $tipo_usuario = strtoupper(trim($o_tipo_usuario->nombre));
+
+
+    $page = !empty($data['page']) ? $data['page'] : 1; // Número de página
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 10; // Elementos por página
-    $search = !empty($data['search']) ? $data['search']: ""; // Término de búsqueda
-    
+    $search = !empty($data['search']) ? $data['search'] : ""; // Término de búsqueda
+
     $query = Group::query();
     // $query = User::with(['person', 'typeUser']); // Carga las relaciones 'persona' y 'tipoUsuario'
     $query->select(
@@ -33,16 +46,34 @@ class GroupService implements IGroup{
       'PC.apellido_paterno as personas_create_apellido_paterno',
       'PC.apellido_materno as personas_create_apellido_materno',
     );
-    
+
     $query->join('sedes as SD', 'grupos.sedes_id', 'SD.id');
     $query->join('usuarios as UC', 'grupos.user_create_id', 'UC.id');
     $query->leftJoin('usuarios as UM', 'grupos.user_update_id', 'UM.id');
     $query->join('personas as PC', 'UC.personas_id', 'PC.id');
 
+
+    //POR ROL
+
+    if ($tipo_usuario == 'COORDINADOR') {
+
+
+      $query->whereIn('grupos.id', function ($subquery) use ($id_usuario) {
+        $subquery->select('grupos_id')
+          ->from('integrantes')
+          ->where('deleted_at', null)
+          ->where('usuarios_id', $id_usuario);
+      });
+    }
+
+    //////////
+
+
+
     // Aplicar filtro de búsqueda si se proporciona un término
     if (!empty($search)) {
-        $query->where('grupos.nombre', 'LIKE', "%$search%")
-              ->orWhere('SD.nombre', 'LIKE', "%$search%");
+      $query->where('grupos.nombre', 'LIKE', "%$search%")
+        ->orWhere('SD.nombre', 'LIKE', "%$search%");
     }
 
     // Handle sorting
@@ -55,16 +86,17 @@ class GroupService implements IGroup{
     $result = $query->paginate($perPage, ['*'], 'page', $page);
     $items = new Collection($result->items());
     $items = $items->map(function ($item, $key) use ($result) {
-        $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
-        $item['index'] = $index;
-        return $item;
+      $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
+      $item['index'] = $index;
+      return $item;
     });
 
     $paginator = new LengthAwarePaginator($items, $result->total(), $result->perPage(), $result->currentPage());
     return $paginator;
   }
 
-  public function getAll(){
+  public function getAll()
+  {
     $query = $this->model->select(
       'grupos.*',
       'SD.nombre as sedes_nombre',
@@ -80,19 +112,21 @@ class GroupService implements IGroup{
     return $result;
   }
 
-  public function getById(int $id){
+  public function getById(int $id)
+  {
     $query = $this->model->select();
     $result = $query->find($id);
     return $result;
   }
 
-  public function create(array $data){
-    $data['created_at'] = Carbon::now(); 
-    if(isset($data['user_auth_id'])){
+  public function create(array $data)
+  {
+    $data['created_at'] = Carbon::now();
+    if (isset($data['user_auth_id'])) {
       $data['user_create_id'] = $data['user_auth_id'];
     }
     $group = $this->model->create($data);
-    if($group){
+    if ($group) {
       $group->created_at = Carbon::parse($group->created_at)->format('Y-m-d H:i:s');
       $group->sedes_nombre = $group->campus->nombre;
     }
@@ -100,13 +134,14 @@ class GroupService implements IGroup{
     return $group;
   }
 
-  public function update(array $data, int $id){
-    $data['updated_at'] = Carbon::now(); 
-    if(isset($data['user_auth_id'])){
+  public function update(array $data, int $id)
+  {
+    $data['updated_at'] = Carbon::now();
+    if (isset($data['user_auth_id'])) {
       $data['user_create_id'] = $data['user_auth_id'];
     }
     $group = $this->model->find($id);
-    if($group){
+    if ($group) {
       $group->fill($data);
       $group->save();
       $group->updated_at = Carbon::parse($group->updated_at)->format('Y-m-d H:i:s');
@@ -117,13 +152,14 @@ class GroupService implements IGroup{
     return null;
   }
 
-  public function delete(int $id){
+  public function delete(int $id)
+  {
     $group = $this->model->find($id);
-    if($group != null){
+    if ($group != null) {
       $group->is_active = 0;
       $group->save();
       $result = $group->delete();
-      if($result){
+      if ($result) {
         $group->deleted_st = Carbon::parse($group->deleted_at)->format('Y-m-d H:i:s');
         return $group;
       }
@@ -132,21 +168,18 @@ class GroupService implements IGroup{
     return false;
   }
 
-  public function restore(int $id){
+  public function restore(int $id)
+  {
     $group = $this->model->withTrashed()->find($id);
-    if($group != null && $group->trashed()){
+    if ($group != null && $group->trashed()) {
       $group->is_active = 1;
       $group->save();
       $result = $group->restore();
-      if($result){
+      if ($result) {
         return $group;
       }
     }
 
     return false;
   }
-
 }
-
-
-?>

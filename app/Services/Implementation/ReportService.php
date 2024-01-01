@@ -79,6 +79,11 @@ class ReportService implements IReport
     $fecha_inicio = $data['fecha_inicio'];
     $fecha_fin = $data['fecha_fin'];
 
+    $count_user = User::where('deleted_at', null)->count();
+    $count_product = Product::where('deleted_at', null)->count();
+    $count_sale = Sale::where('deleted_at', null)->count();
+
+
 
     $reporteVentas = Group::all()->map(function ($grupo) use ($fecha_inicio, $fecha_fin) {
       // $coordinador = User::find($grupo->coordinador_id);
@@ -102,11 +107,18 @@ class ReportService implements IReport
 
       return [
         'coordinacion' => htmlspecialchars($grupo->nombre),
-        'vendedores' => $ventasVendedores,
+        'vendedores' => $ventasVendedores
+
+
       ];
     });
 
-    return $reporteVentas;
+    return [
+      'data' => $reporteVentas,
+      'count_user' => $count_user,
+      'count_product' => $count_product,
+      'count_sale' => $count_sale,
+    ];
   }
 
   public function getById(int $id)

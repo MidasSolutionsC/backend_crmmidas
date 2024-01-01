@@ -71,24 +71,26 @@ class SaleService implements ISale
         $query->whereIn('I.grupos_id', function ($subquery) use ($id_usuario) {
           $subquery->select('grupos_id')
             ->from('integrantes')
+            ->where('deleted_at', null)
             ->where('usuarios_id', $id_usuario);
         });
         $query->groupBy('ventas.id');
         break;
-        case 'COORDINADOR':
-          DB::statement("SET SQL_MODE=''");
-          $query->join('integrantes as I', 'ventas.user_create_id', '=', 'I.usuarios_id')->where('I.deleted_at', null);
-          $query->select([
-            'ventas.*',
-            'I.id as integrante_id' // Alias para la columna 'id' de la tabla 'integrantes'
-          ]);
-          $query->whereIn('I.grupos_id', function ($subquery) use ($id_usuario) {
-            $subquery->select('grupos_id')
-              ->from('integrantes')
-              ->where('usuarios_id', $id_usuario);
-          });
-          $query->groupBy('ventas.id');
-          break;
+      case 'COORDINADOR':
+        DB::statement("SET SQL_MODE=''");
+        $query->join('integrantes as I', 'ventas.user_create_id', '=', 'I.usuarios_id')->where('I.deleted_at', null);
+        $query->select([
+          'ventas.*',
+          'I.id as integrante_id' // Alias para la columna 'id' de la tabla 'integrantes'
+        ]);
+        $query->whereIn('I.grupos_id', function ($subquery) use ($id_usuario) {
+          $subquery->select('grupos_id')
+            ->from('integrantes')
+            ->where('deleted_at', null)
+            ->where('usuarios_id', $id_usuario);
+        });
+        $query->groupBy('ventas.id');
+        break;
 
       default;
     }

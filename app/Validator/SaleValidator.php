@@ -32,6 +32,7 @@ class SaleValidator {
     return [
       // 'nro_orden' => "required_if:" . $this->id .",null|integer",
       'nro_orden' => 'required|integer',
+      'tipo_estados_id' => 'nullable|integer',
       'retailx_id' => 'nullable|string|max:20',
       'smart_id' => 'nullable|string|max:20',
       'direccion_smart_id' => 'nullable|string|max:20',

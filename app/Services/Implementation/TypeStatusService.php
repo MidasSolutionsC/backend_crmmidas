@@ -66,6 +66,12 @@ class TypeStatusService implements ITypeStatus{
     return $result;
   }
 
+  public function getByName(string $name){
+    $query = $this->model->select();
+    $result = $query->whereRaw('LOWER(nombre) = ?', [strtolower($name)])->first();
+    return $result;
+  }
+
   public function create(array $data){
     $existingRecord = $this->model->withTrashed()->where('nombre', $data['nombre'])->whereNotNull('deleted_at')->first();
     $typeStatus = null;

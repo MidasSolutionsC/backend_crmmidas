@@ -27,9 +27,11 @@ return new class extends Migration
             $table->foreignId('user_create_id');            
             $table->foreignId('user_update_id')->nullable();            
             $table->foreignId('user_delete_id')->nullable(); 
+            $table->foreignId('tipo_estados_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('tipo_estados_id')->references('id')->on('tipo_estados');
             $table->foreign('clientes_id')->references('id')->on('clientes');
             $table->foreign('user_create_id')->references('id')->on('usuarios');
             $table->foreign('user_update_id')->references('id')->on('usuarios');

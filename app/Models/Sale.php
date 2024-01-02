@@ -23,6 +23,7 @@ class Sale extends Model implements AuthorizableContract, AuthenticatableContrac
         'fecha',
         'hora',
         'comentario',
+        'tipo_estados_id',
         'user_create_id',
         'user_update_id',
         'user_delete_id',
@@ -56,6 +57,10 @@ class Sale extends Model implements AuthorizableContract, AuthenticatableContrac
 
     public function userUpdate(){
         return $this->belongsTo(User::class, 'user_update_id');
+    }
+
+    public function typeStatus(){
+        return $this->belongsTo(TypeStatus::class, 'tipo_estados_id');
     }
 
     public function saleDetails()

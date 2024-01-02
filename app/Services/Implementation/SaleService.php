@@ -155,6 +155,7 @@ class SaleService implements ISale
       // 'client.bankAccounts:id,cuenta,tipo_cuentas_bancarias_id,is_primary',
       // 'client.bankAccounts.typeBankAccount:id,nombre',
       // 'saleDetails',
+      'typeStatus',
       'userCreate.person:id,nombres,apellido_paterno,apellido_materno',
       'userCreate.typeUser:id,nombre',
       'userUpdate.person:id,nombres,apellido_paterno,apellido_materno',

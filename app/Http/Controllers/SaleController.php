@@ -7,6 +7,7 @@ use App\Services\Implementation\SaleDocumentService;
 use App\Services\Implementation\SaleHistoryService;
 use Illuminate\Http\Request;
 use App\Services\Implementation\SaleService;
+use App\Services\Implementation\TypeStatusService;
 use App\Validator\SaleDetailValidator;
 use App\Validator\SaleDocumentValidator;
 use App\Validator\SaleHistoryValidator;
@@ -31,6 +32,9 @@ class SaleController extends Controller
   private $saleHistoryService;
   private $saleHistoryValidator;
 
+  // ESTADOS
+  private $typeStatusService;
+
   public function __construct(
     Request $request,
     SaleService $saleService,
@@ -40,7 +44,8 @@ class SaleController extends Controller
     SaleDocumentService $saleDocumentService,
     SaleDocumentValidator $saleDocumentValidator,
     SaleHistoryService $saleHistoryService,
-    SaleHistoryValidator $saleHistoryValidator
+    SaleHistoryValidator $saleHistoryValidator,
+    TypeStatusService $typeStatusService,
   ) {
     $this->request = $request;
     $this->saleService = $saleService;
@@ -51,6 +56,7 @@ class SaleController extends Controller
     $this->saleDocumentValidator = $saleDocumentValidator;
     $this->saleHistoryService = $saleHistoryService;
     $this->saleHistoryValidator = $saleHistoryValidator;
+    $this->typeStatusService = $typeStatusService;
   }
 
   public function index()
@@ -243,7 +249,11 @@ class SaleController extends Controller
       if ($validator->fails()) {
         $response = $this->responseError($validator->errors(), 422);
       } else {
-        $result = $this->saleService->update($this->request->all(), $id);
+        $typeStatus = $this->typeStatusService->getByName('Pendiente');
+        $dataSave = $this->request->all();
+        $dataSave['tipo_estados_id'] = $typeStatus->id;
+
+        $result = $this->saleService->update($dataSave, $id);
         if ($result != null) {
           $response = $this->responseUpdate([$result]);
         } else {

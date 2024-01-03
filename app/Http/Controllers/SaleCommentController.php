@@ -36,6 +36,40 @@ class SaleCommentController extends Controller{
     }
   }
 
+  public function getLastRowsPagination(){
+    try{
+      $data = $this->request->all();
+
+      $result = $this->saleCommentService->getLastRowsPagination($data);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los comentarios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
+  public function getAdjacentMessages(){
+    try{
+      $data = $this->request->all();
+
+      $result = $this->saleCommentService->getAdjacentMessages($data);
+      $response = $this->response();
+  
+      if($result != null){
+        $response = $this->response($result);
+      } 
+  
+      return $response;
+    } catch(\Exception $e){
+      return $this->responseError(['message' => 'Error al listar los comentarios', 'error' => $e->getMessage()], 500);
+    }
+  }
+
   public function listAll(){
     try{
       $result = $this->saleCommentService->getAll();

@@ -72,6 +72,7 @@ class SaleCommentService implements ISaleComment
   public function getFilterBySale(int $saleId)
   {
     $query = $this->model->select();
+    $query->with(['userCreate.person', 'userCreate.typeUser:id,nombre']);
     if ($saleId) {
       $query->where('ventas_id', $saleId);
     }
@@ -79,6 +80,7 @@ class SaleCommentService implements ISaleComment
     return $result;
   }
 
+  
   public function getFilterBySaleDetail(int $saleDetailId)
   {
     $query = $this->model->query();
@@ -107,6 +109,7 @@ class SaleCommentService implements ISaleComment
     $saleDetailId = !empty($data['ventas_detalles_id']) ? $data['ventas_detalles_id'] : null; // Término de búsqueda
 
     $query = SaleComment::query();
+    $query->with(['userCreate.person', 'userCreate.typeUser:id,nombre']);
     $query->select();
 
     if (!empty($saleDetailId)) {
@@ -132,16 +135,25 @@ class SaleCommentService implements ISaleComment
     return $paginator;
   }
 
+  // OBTENER LOS ÚLTIMOS 20 REGISTROS
   public function getLastRowsPagination(array $data)
   {
     $page = !empty($data['page']) ? $data['page'] : 1; // Número de página
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 20; // Elementos por página
+    $saleId = !empty($data['ventas_id']) ? $data['ventas_id'] : null; // Término de búsqueda
     $saleDetailId = !empty($data['ventas_detalles_id']) ? $data['ventas_detalles_id'] : null; // Término de búsqueda
 
     $query = SaleComment::query();
+    $query->with(['userCreate.person', 'userCreate.typeUser:id,nombre']);
+    
+    if (!empty($saleId)) {
+      $query->where('ventas_id', $saleId);
+    }
 
     if (!empty($saleDetailId)) {
       $query->where('ventas_detalles_id', $saleDetailId);
+    } else {
+      $query->whereNull('ventas_detalles_id');
     }
 
     $totalRecords = $query->count(); // Obtener el total de registros
@@ -149,12 +161,15 @@ class SaleCommentService implements ISaleComment
     // Calcular la página actual
     $currentPage = max(1, ceil($totalRecords / $perPage) - $page + 1);
 
-    $last20Query = $query->orderBy('id', 'asc')
-      ->skip(max(0, $totalRecords - $perPage)) // Saltar los registros anteriores a los últimos 20
-      ->take($perPage); // Tomar los últimos 20 registros
+    // $last20Query = $query->orderBy('id', 'asc')
+    //   ->skip(max(0, $totalRecords - $perPage)) // Saltar los registros anteriores a los últimos 20
+    //   ->take($perPage); // Tomar los últimos 20 registros
 
-    $result = $last20Query->paginate($perPage, ['*'], 'page', $currentPage);
+    $query->orderBy('created_at', 'desc')->take($perPage); // Obtener los últimos 10 registros
+
+    $result = $query->paginate($perPage);
     $items = new Collection($result->items());
+    $items = collect($items)->sortBy('created_at')->values();
     $items = $items->map(function ($item, $key) use ($result) {
       $index = ($result->currentPage() - 1) * $result->perPage() + $key + 1;
       $item['index'] = $index;
@@ -165,9 +180,9 @@ class SaleCommentService implements ISaleComment
     return $paginator;
   }
 
+  // OBTENER MENSAJES ANTES O DESPUÉS DEL ID MENSAJE INDICADO
   public function getAdjacentMessages(array $data)
   {
-
     $page = !empty($data['page']) ? $data['page'] : 1; // Número de página
     $perPage = !empty($data['perPage']) ? $data['perPage'] : 20; // Elementos por página
     $saleId = !empty($data['ventas_id']) ? $data['ventas_id'] : null; // Término de búsqueda
@@ -178,8 +193,14 @@ class SaleCommentService implements ISaleComment
     $query = SaleComment::query();
     $query->with(['userCreate.person', 'userCreate.typeUser:id,nombre']);
 
+    if (!empty($saleId)) {
+      $query->where('ventas_id', $saleId);
+    }
+
     if (!empty($saleDetailId)) {
       $query->where('ventas_detalles_id', $saleDetailId);
+    } else {
+      $query->whereNull('ventas_detalles_id');
     }
 
     if ($direction === 'next') {
